@@ -38,7 +38,7 @@ endgenerate
  * Type: Combinational Logic
  * Description: Add 16 16-bit input and return 20-bit output.
  */
-always @ (ain) begin : ADDER_LOGIC
+always @ (activation) begin : ADDER_LOGIC
     aout = activation[15] + activation[14] + activation[13] + activation[12]
          + activation[11] + activation[10] + activation[9] + activation[8]
          + activation[7] + activation[6] + activation[5] + activation[4]
@@ -46,3 +46,5 @@ always @ (ain) begin : ADDER_LOGIC
 end
 
 endmodule
+
+// End of ADDER_16b-20b //

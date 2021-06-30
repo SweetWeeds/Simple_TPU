@@ -32,7 +32,6 @@ module MMU (
 
 wire signed [7:0] wout [0:15][0:15];  // Weight output
 wire signed [15:0] mul_result_reg [0:15][0:15];
-wire signed [19:0] aout_reg [0:15];
 
 // Instantiation of PE modules.
 generate
@@ -49,12 +48,12 @@ generate
                     .aout(mul_result_reg[i][j])
                 );
             end else begin
-                PE PE1 (
+                PE PE0 (
                     .reset_n(reset_n),
                     .clk(clk),
                     .wen(wen),
                     .ain(ain[(i + 1) * 8 - 1 : i * 8]),
-                    .win(wout[i - 1][j]),
+                    .win(wout[i + 1][j]),
                     .wout(wout[i][j]),
                     .aout(mul_result_reg[i][j])
                 );
@@ -65,31 +64,32 @@ endgenerate
 
 // Instantiation of ADDER_16b_20b modules.
 generate
-    for (genvar i = 15; i >= 0; i = i - 1) begin
-        ADDER_16b_20b ADDER (
+    for (genvar j = 15; j >= 0; j = j - 1) begin
+        ADDER_16b_20b ADDER0 (
             .ain(
                 {
-                    mul_result_reg[i][15],
-                    mul_result_reg[i][14],
-                    mul_result_reg[i][13],
-                    mul_result_reg[i][12],
-                    mul_result_reg[i][11],
-                    mul_result_reg[i][10],
-                    mul_result_reg[i][9],
-                    mul_result_reg[i][8],
-                    mul_result_reg[i][7],
-                    mul_result_reg[i][6],
-                    mul_result_reg[i][5],
-                    mul_result_reg[i][4],
-                    mul_result_reg[i][3],
-                    mul_result_reg[i][2],
-                    mul_result_reg[i][1],
-                    mul_result_reg[i][0]
+                    mul_result_reg[15][j],
+                    mul_result_reg[14][j],
+                    mul_result_reg[13][j],
+                    mul_result_reg[12][j],
+                    mul_result_reg[11][j],
+                    mul_result_reg[10][j],
+                    mul_result_reg[9][j],
+                    mul_result_reg[8][j],
+                    mul_result_reg[7][j],
+                    mul_result_reg[6][j],
+                    mul_result_reg[5][j],
+                    mul_result_reg[4][j],
+                    mul_result_reg[3][j],
+                    mul_result_reg[2][j],
+                    mul_result_reg[1][j],
+                    mul_result_reg[0][j]
                 }
             ),
-            .aout(aout_reg[i])
+            .aout(aout[(j + 1) * 20 - 1 : j * 20])
         );
     end
 endgenerate
 
 endmodule
+// End of MMU //

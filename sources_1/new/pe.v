@@ -45,7 +45,7 @@ assign wout = weight;
  * Description:
  */
 always @ (posedge clk or negedge reset_n) begin: PE_LOGIC
-    if (reset_n === 1'b0) begin
+    if (reset_n == 1'b0) begin
         // Reset (Active low, async)
         weight  <= 8'sd0;
         aout    <= 16'sd0;
