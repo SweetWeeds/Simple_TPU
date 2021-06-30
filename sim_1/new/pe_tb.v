@@ -26,28 +26,51 @@ parameter  CLOCK_PS          = 10000;      //  should be a multiple of 10
 localparam clock_period      = CLOCK_PS/1000.0;
 localparam half_clock_period = clock_period / 2;
 localparam minimum_period    = clock_period / 10;
+parameter i = 0;
 
-reg reset_n, clk, load_weight;
-reg [7:0] ain, win, weight_out;
-reg [19:0] out;
+reg reset_n = 1'b1, clk, wen = 1'b1;
+reg [7:0] ain[3:0], win;
+wire [19:0] wout[3:0], aout[3:0];
+
+PE PE1 (.reset_n(reset_n), .clk(clk), .wen(wen), .ain(ain[0]), .win(win),     .wout(wout[1]));
+PE PE2 (.reset_n(reset_n), .clk(clk), .wen(wen), .ain(ain[1]), .win(wout[1]), .wout(wout[2]));
+PE PE3 (.reset_n(reset_n), .clk(clk), .wen(wen), .ain(ain[2]), .win(wout[2]), .wout(wout[3]));
+PE PE4 (.reset_n(reset_n), .clk(clk), .wen(wen), .ain(ain[3]), .win(wout[3]), .wout());
 
 /**
  *  Clock signal generation.
  *  Clock is assumed to be initialized to 1'b0 at time 0.
  */
-initial
-begin : CLOCK_GENERATOR
+initial begin : CLOCK_GENERATOR
     clk = 1'b0;
     forever
         # half_clock_period clk = ~clk;
 end
 
-PE PE1 (
-    .reset_n(reset_n),          // Asynchronous reset signal
-    .clk(clk),              // Input clock
-    .load_weight(load_weight),      // control signal for load weight
-    .ain(ain),        // First Input-data (8-bit) 
-    .win(win)        // Input Weight (8-bit)
-);
+initial begin: TEST_BENCH
+    // Initialization with 'reset_n'
+    # minimum_period;
+    reset_n = 1'b0;
+    # minimum_period;
+    reset_n = 1'b1;
+    
+    // Load weight
+    wen = 1'b1;
+    win = 8'sd1;
+    # clock_period;
+    win = 8'sd2;
+    # clock_period;
+    win = 8'sd3;
+    # clock_period;
+    win = 8'sd4;
+    # clock_period;
+    wen = 1'b0;
+
+    // Input activation values
+    ain[0] = 8'sd9;
+    ain[1] = 8'sd8;
+    ain[2] = 8'sd7;
+    ain[3] = 8'sd6;
+end
 
 endmodule
