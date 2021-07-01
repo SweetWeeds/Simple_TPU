@@ -5,7 +5,7 @@
 // 
 // Create Date: 2021/06/30 13:00
 // Design Name: Matrix Multiply Unit
-// Module Name: MMU
+// Module Name: MATRIX_MULTIPLY_UNIT
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module MMU (
+module MATRIX_MULTIPLY_UNIT (
     input reset_n,
     input clk,
     input wen,
@@ -90,4 +90,4 @@ generate
 endgenerate
 
 endmodule
-// End of MMU //
+// End of MATRIX_MULTIPLY_UNIT //

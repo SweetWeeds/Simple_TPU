@@ -33,7 +33,7 @@ reg [319:0] fifo [0:15];
 
 assign dout = fifo[15];
 
-always @ (posedge clk or negedge reset_n) begin : FIFO_LOGIC
+always @ (posedge clk) begin : FIFO_LOGIC
     if (reset_n == 1'b0) begin
         for (i = 0; i < 16; i = i + 1) begin
             fifo[i] <= 320'd0;

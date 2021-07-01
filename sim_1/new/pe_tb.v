@@ -1,17 +1,17 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
+// Company: Postech DICE
+// Engineer: Hankyul Kwon
 // 
 // Create Date: 2021/06/29 16:50:39
-// Design Name: 
-// Module Name: pe_tb
-// Project Name: 
+// Design Name: Processing Element Testbench
+// Module Name: PE_test
+// Project Name: Systolic Array
 // Target Devices: 
-// Tool Versions: 
+// Tool Versions: Vivado 2020.2
 // Description: 
 // 
-// Dependencies: 
+// Dependencies: pe.v
 // 
 // Revision:
 // Revision 0.01 - File Created

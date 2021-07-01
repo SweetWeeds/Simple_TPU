@@ -1,17 +1,17 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
+// Company: POSTECH DICE Lab.
+// Engineer: Hankyul Kwon
 // 
 // Create Date: 2021/06/30 14:28:26
-// Design Name: 
+// Design Name: Matrix-Multiply Unit Test Bench
 // Module Name: mmu_tb
-// Project Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: 
+// Project Name: Systolic Array
+// Target Devices: ZCU102
+// Tool Versions: Vivado 2020.2
+// Description: Testbench for MMU module.
 // 
-// Dependencies: 
+// Dependencies: matrix_multiply_unit.v
 // 
 // Revision:
 // Revision 0.01 - File Created
@@ -35,7 +35,7 @@ reg [7:0] ain [0:15], win [0:15];
 wire [19:0] aout [0:15];
 
 // Instantiation
-MMU MMU0 (
+MATRIX_MULTIPLY_UNIT MMU (
     .reset_n(reset_n),
     .clk(clk),
     .wen(wen),
