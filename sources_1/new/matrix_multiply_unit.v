@@ -11,15 +11,13 @@
 // Tool Versions: 
 // Description: 16x16 8-bit Matrix Multiply Unit
 // 
-// Dependencies: pe.v 
+// Dependencies: pe.v, adder.v
 // 
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
 // 
 //////////////////////////////////////////////////////////////////////////////////
-
-//`include "pe.v"
 
 module MMU (
     input reset_n,
@@ -30,8 +28,8 @@ module MMU (
     output signed [319:0] aout //output signed [19:0] aout [0:15]
 );
 
-wire signed [7:0] wout [0:15][0:15];  // Weight output
-wire signed [15:0] mul_result_reg [0:15][0:15];
+wire signed [7:0] wout [0:15][0:15];            // Weight output
+wire signed [15:0] mul_result_reg [0:15][0:15]; // Multiplication results
 
 // Instantiation of PE modules.
 generate
@@ -62,10 +60,10 @@ generate
     end
 endgenerate
 
-// Instantiation of ADDER_16b_20b modules.
+// Instantiation of ADDER_4_16b_20b modules.
 generate
     for (genvar j = 15; j >= 0; j = j - 1) begin
-        ADDER_16b_20b ADDER0 (
+        ADDER_4_16b_20b ADDER0 (
             .ain(
                 {
                     mul_result_reg[15][j],

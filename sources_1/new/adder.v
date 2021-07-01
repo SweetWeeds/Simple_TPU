@@ -5,7 +5,7 @@
 // 
 // Create Date: 2021/06/30 13:46
 // Design Name: Adder for 16 x 16-bit to 20-bit
-// Module Name: ADDER_16b_20b
+// Module Name: ADDER_4_16b_20b
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module ADDER_16b_20b (
+module ADDER_4_16b_20b (
     input [255:0] ain,
     output reg signed [19:0] aout
 );

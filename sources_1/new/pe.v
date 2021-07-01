@@ -26,16 +26,16 @@
  *  
  */
 module PE (
-    input  reset_n,    // Asynchronous reset signal
-    input  clk,        // Input clock
-    input  wen,             // control signal for load weight
-    input  signed [7:0] ain,          // First Input-data (8-bit) 
-    input  signed [7:0] win,          // Input Weight (8-bit)
-    output signed [7:0] wout,         // 
-    output reg signed [15:0] aout           // Output data (16-bit)
+    input  reset_n, // Asynchronous reset signal
+    input  clk,     // Input clock
+    input  wen,     // control signal for load weight
+    input  signed [7:0] ain,        // First Input-data (8-bit) 
+    input  signed [7:0] win,        // Input Weight (8-bit)
+    output signed [7:0] wout,       // 
+    output reg signed [15:0] aout   // Output data (16-bit)
 );
 
-reg signed [7:0] weight;         // Weight value (weight <= win)
+reg signed [7:0] weight;    // Weight value (weight <= win)
 
 assign wout = weight;
 
@@ -54,8 +54,7 @@ always @ (posedge clk or negedge reset_n) begin: PE_LOGIC
         weight  <= win;
         aout    <= 16'sd0;
     end else begin
-        // Keep weight value
-        weight  <= weight;
+        // Calculate activation output value.
         aout    <= ain * weight;
     end
 end
