@@ -97,7 +97,7 @@ FIFO_256x16x8b DATA_FIFO (
 FIFO_16x16x20b ACC (
     .reset_n(reset_n),
     .clk(clk),
-    .en(WRITE_EN),
+    .en(MAT_MUL_SIG),
     .din(MMU_ACC_PATH),
     .dout()
 );

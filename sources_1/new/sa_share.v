@@ -24,24 +24,29 @@
  *
  *-------------------------------------------------------------------------*/
 
-// Functions and Parameters
-function integer clogb2;
-    input integer depth;
-        for (clogb2=0; depth>0; clogb2=clogb2+1)
-        depth = depth >> 1;
-endfunction
-
-/** bram_256x16x8b.v **/
-parameter RAM_WIDTH = 16*8;                  // Specify RAM data width
-parameter RAM_DEPTH = 256;                  // Specify RAM depth (number of entries)
-parameter RAM_PERFORMANCE = "LOW_LATENCY"; // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
-parameter INIT_FILE = "";                       // Specify name/location of RAM initialization file if using one (leave blank if not)
-
 // Clock parameters
 parameter  CLOCK_PS          = 10000;      //  should be a multiple of 10
 localparam clock_period      = CLOCK_PS / 1000.0;
 localparam half_clock_period = clock_period / 2;
 localparam minimum_period    = clock_period / 10;
+
+
+/** Functions **/
+function integer clogb2;
+    input integer depth;
+        for (clogb2=0; depth>0; clogb2=clogb2+1)
+        depth = depth >> 1;
+endfunction
+/** End of Functions **/
+
+
+/** bram_256x16x8b.v **/
+parameter RAM_WIDTH = 16*8;     // Specify RAM data width
+parameter RAM_DEPTH = 256;      // Specify RAM depth (number of entries)
+parameter RAM_PERFORMANCE = "LOW_LATENCY"; // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
+parameter INIT_FILE = "";       // Specify name/location of RAM initialization file if using one (leave blank if not)
+/** End of bram_256x16x8b.v **/
+
 
 /** controller.v **/
 // Instruction Set
@@ -65,3 +70,4 @@ localparam [OPERAND_BITS-1:0]   M1_IDLE_STATE           = 8'h0,
 
 // M1_MAT_MUL_STATE's minor mode (M2)
 localparam MODE_BITS = 4;
+/** End of controller.v **/
