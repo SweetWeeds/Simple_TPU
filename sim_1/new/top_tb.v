@@ -119,28 +119,31 @@ initial begin: TEST_BENCH
     end
 
     // 4. Load Data
-    for (integer i = 0; i < 4; i = i + 1) begin
+    for (integer i = 0; i < 5; i = i + 1) begin
         OPCODE = LOAD_DATA_INST;
         ADDR = i;
         # clock_period;
     end
 
     // 5. Load Weight
-    for (integer i = 0; i < 4; i = i + 1) begin
+    for (integer i = 0; i < 21; i = i + 1) begin
         OPCODE = LOAD_WEIGHT_INST;
         ADDR = i;
         # clock_period;
     end
 
     // 6. Matrix Multiplication
-    for (integer i = 0; i < 4; i = i + 1) begin
-        OPCODE = LOAD_WEIGHT_INST;
-        ADDR = i;
+    for (integer i = 0; i < 5; i = i + 1) begin
+        OPCODE = MAT_MUL_INST;
         # clock_period;
     end
 
     // 7. Matrix Multiplication and load data
-
+    for (integer i = 0; i < 5; i = i + 1) begin
+        OPCODE = MM_AND_LOAD_DATA_INST;
+        ADDR = i;
+        # clock_period;
+    end
 
 end
 
