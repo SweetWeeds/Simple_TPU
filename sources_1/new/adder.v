@@ -21,32 +21,34 @@
 
 module ADDER_4_16b_20b (
     input [255:0] ain,
-    output reg signed [19:0] aout
+    output signed [19:0] aout
 );
 
-wire signed [15:0] activation [0:15];
+wire signed [15:0] stage1 [0:15];
+wire signed [16:0] stage2 [0:7];
+wire signed [17:0] stage3 [0:3];
+wire signed [18:0] stage4 [0:1];
 
+// Assignments
 generate
-    // Assignments
+    // Stage1
     for (genvar i = 15; i >= 0; i = i - 1) begin
-        assign activation[i] = ain[(i + 1) * 16 - 1 : i * 16];
+        assign stage1[i] = ain[(i + 1) * 16 - 1 : i * 16];
     end
+    // Stage2
+    for (genvar i = 7; i >= 0; i = i - 1) begin
+        assign stage2[i] = stage1[i * 2 + 1] + stage1[i * 2];
+    end
+    // Stage3
+    for (genvar i = 3; i >= 0; i = i - 1) begin
+        assign stage3[i] = stage2[i * 2 + 1] + stage2[i * 2];
+    end
+    // Stage 4
+    assign stage4[1] = stage3[3] + stage3[2];
+    assign stage4[0] = stage3[1] + stage3[0];
+    // Activation out
+    assign aout = stage4[1] + stage4[0];
 endgenerate
-
-/**
- * Block name: ADDER_LOGIC
- * Type: Combinational Logic
- * Description: Add 16 16-bit input and return 20-bit output.
- */
-always @ (activation[15] or activation[14] or activation[13] or activation[12]
-         or activation[11] or activation[10] or activation[9] or activation[8]
-         or activation[7] or activation[6] or activation[5] or activation[4]
-         or activation[3] or activation[2] or activation[1] or activation[0]) begin : ADDER_LOGIC
-    aout = activation[15] + activation[14] + activation[13] + activation[12]
-         + activation[11] + activation[10] + activation[9] + activation[8]
-         + activation[7] + activation[6] + activation[5] + activation[4]
-         + activation[3] + activation[2] + activation[1] + activation[0];
-end
 
 endmodule
 

@@ -5,11 +5,11 @@
 // 
 // Create Date: 2021/06/30 13:00
 // Design Name: First-in First-out Memory
-// Module Name: FIFO_256x16x8b
+// Module Name: FIFO_4x16x8b
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
-// Description: FIFO (Width: 128-bit, depth: 256)
+// Description: FIFO (Width: 128-bit, depth: 4)
 // 
 // Dependencies:
 // 
@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module FIFO_256x16x8b (
+module FIFO_4x16x8b (
     input reset_n,
     input clk,
     input en,
@@ -29,22 +29,22 @@ module FIFO_256x16x8b (
 
 integer i;
 
-reg [127:0] fifo [0:255];
+reg [127:0] fifo [0:3];
 
-assign dout = fifo[255];
+assign dout = fifo[3];
 
 always @ (posedge clk or negedge reset_n) begin : FIFO_LOGIC
     if (reset_n == 1'b0) begin
-        for (i = 0; i < 256; i = i + 1) begin
+        for (i = 0; i < 4; i = i + 1) begin
             fifo[i] <= 128'd0;
         end
     end else if (en) begin
         fifo[0] <= din;
-        for (i = 0; i < 255; i = i + 1) begin
+        for (i = 0; i < 4; i = i + 1) begin
             fifo[i + 1] <= fifo[i];
         end
     end
 end
 
 endmodule
-// End of FIFO_256x16x8b //
+// End of FIFO_4x16x8b //

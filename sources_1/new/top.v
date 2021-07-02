@@ -23,12 +23,15 @@
 module SYSTOLIC_ARRAY (
     input reset_n,
     input clk,
-    input [31:0] instruction
+    input [INST_BITS-1:0] instruction,
+    output [319:0] dout
 );
+
+localparam INST_BITS = 140;
 
 // Control signals
 wire LOAD_DATA_SIG, LOAD_WEIGHT_SIG, WRITE_DATA_SIG, WRITE_WEIGHT_SIG,
-     WRITE_RESULT_SIG, MAT_MUL_SIG;
+     WRITE_RESULT_SIG, MAT_MUL_SIG, ACC_SIG;
 // Datapaths
 wire [127:0] DATA_FIFO_MMU_PATH, WEIGHT_FIFO_MMU_PATH,
             UB_DATA_FIFO_PATH, WB_WEIGHT_FIFO_PATH, CTRL_DOUT;
@@ -36,10 +39,7 @@ wire [319:0] MMU_ACC_PATH;
 wire [7:0] ADDRA, ADDRB;
 
 // Controller
-/*
-CONTROLLER CTRL (
-    .reset_n(reset_n),
-    .clk(clk),
+CONTROL_UNIT CU (
     .instruction(instruction),
     .load_data(LOAD_DATA_SIG),
     .load_weight(LOAD_WEIGHT_SIG),
@@ -47,14 +47,14 @@ CONTROLLER CTRL (
     .write_weight(WRITE_WEIGHT_SIG),
     .write_result(WRITE_RESULT_SIG),
     .mat_mul(MAT_MUL_SIG),
+    .acc(ACC_SIG),
     .addra(ADDRA),
-    .addrb(ADDRB)
+    .addrb(ADDRB),
     .dout(CTRL_DOUT)
 );
-*/
 
 // Weight-FIFO
-FIFO_256x16x8b WEIGHT_FIFO (
+FIFO_4x16x8b WEIGHT_FIFO (
     .reset_n(reset_n),
     .clk(clk),
     .en(LOAD_WEIGHT_SIG),
@@ -66,7 +66,7 @@ FIFO_256x16x8b WEIGHT_FIFO (
 BRAM_256x16x8b UB (
     .clk(clk),
     .wea(WRITE_DATA_SIG),
-    .enb(READ_EN),
+    .enb(LOAD_DATA_SIG),
     .addra(ADDRA),
     .addrb(ADDRB),
     .dina(CTRL_DOUT),
@@ -77,7 +77,7 @@ BRAM_256x16x8b UB (
 BRAM_256x16x8b WB (
     .clk(clk),
     .wea(WRITE_WEIGHT_SIG),
-    .enb(READ_EN),
+    .enb(LOAD_DATA_SIG),
     .addra(ADDRA),
     .addrb(ADDRB),
     .dina(CTRL_DOUT),
@@ -85,21 +85,12 @@ BRAM_256x16x8b WB (
 );
 
 // Data-FIFO
-FIFO_256x16x8b DATA_FIFO (
+FIFO_4x16x8b DATA_FIFO (
     .reset_n(reset_n),
     .clk(clk),
-    .en(READ_EN),
+    .en(LOAD_DATA_SIG),
     .din(UB_DATA_FIFO_PATH),
     .dout(DATA_FIFO_MMU_PATH)
-);
-
-// Accumulator
-FIFO_16x16x20b ACC (
-    .reset_n(reset_n),
-    .clk(clk),
-    .en(MAT_MUL_SIG),
-    .din(MMU_ACC_PATH),
-    .dout()
 );
 
 // Matrix-Multiplication Unit
@@ -107,9 +98,19 @@ MATRIX_MULTIPLY_UNIT MMU (
     .reset_n(reset_n),
     .clk(clk),
     .wen(LOAD_WEIGHT_SIG),
+    .mmen(MAT_MUL_SIG),
     .ain(DATA_FIFO_MMU_PATH),
     .win(WEIGHT_FIFO_MMU_PATH),
     .aout(MMU_ACC_PATH)
+);
+
+// Accumulator
+FIFO_16x16x20b ACC (
+    .reset_n(reset_n),
+    .clk(clk),
+    .en(ACC_SIG),
+    .din(MMU_ACC_PATH),
+    .dout(dout)
 );
 
 endmodule

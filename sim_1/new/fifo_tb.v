@@ -19,14 +19,11 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-
 module fifo_test;
 
+`include "sa_share.v"
+
 // Parameters
-parameter  CLOCK_PS          = 10000;      //  should be a multiple of 10
-localparam clock_period      = CLOCK_PS / 1000.0;
-localparam half_clock_period = clock_period / 2;
-localparam minimum_period    = clock_period / 10;
 integer i = 0, j = 0;
 
 // regs & wires

@@ -1,73 +1,27 @@
-/*-------------------------------------------------------------------------
- *
- *  Copyright (c) 2021 by Han Kyul Kwon, All rights reserved.
- *
- *  File name  : sa_share.v
- *  Written by : Kwon, Han Kyul
- *               School of Electrical Engineering
- *               Sungkyunkwan University
- *  Written on : 2021.07.01  (version 1.0)
- *  Version    : 1.0
- *  Design     : Definitions shared by all design files and testbench files.
- *
- *  Modification History:
- *      * version 1.1, Oct 30, 2019  by Hyoung Bok Min
- *        - Macro "perr()" is newly introduced.
- *          This macro can be used instead of system task $error().
- *        - parameter STOP_ERRORS and integer err_count are used for the macros.
- *      * version 1.0, July 04, 2018  by Hyoung Bok Min
- *        version 1.0 released.
- *
- * Note:
- *     * This file is intended to be included by almost all design files
- *       and testbench files.
- *
- *-------------------------------------------------------------------------*/
-
-// Clock parameters
-parameter  CLOCK_PS          = 10000;      //  should be a multiple of 10
-localparam clock_period      = CLOCK_PS / 1000.0;
-localparam half_clock_period = clock_period / 2;
-localparam minimum_period    = clock_period / 10;
-
-
-/** Functions **/
-function integer clogb2;
-    input integer depth;
-        for (clogb2=0; depth>0; clogb2=clogb2+1)
-        depth = depth >> 1;
-endfunction
-/** End of Functions **/
-
-
-/** bram_256x16x8b.v **/
-parameter RAM_WIDTH = 16*8;     // Specify RAM data width
-parameter RAM_DEPTH = 256;      // Specify RAM depth (number of entries)
-parameter RAM_PERFORMANCE = "LOW_LATENCY"; // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
-parameter INIT_FILE = "";       // Specify name/location of RAM initialization file if using one (leave blank if not)
-/** End of bram_256x16x8b.v **/
-
-
-/** controller.v **/
 // Instruction Set
-localparam ISA_BITS = 16;
-localparam OPERAND_BITS = 8;
-localparam [OPERAND_BITS-1:0] IDLE          = 8'h00,
-                              LOAD_DATA     = 8'h01,
-                              LOAD_WEIGHT   = 8'h02,
-                              MAT_MUL       = 8'h03,
-                              WRITE_DATA    = 8'h04,
-                              WRITE_WEIGHT  = 8'h05,
-                              WRITE_RESULT  = 8'h06;
+localparam OPCODE_BITS  = 4,
+           ADDR_BITS    = 8,
+           OPERAND_BITS = 128,
+           INST_BITS    = OPCODE_BITS + OPERAND_BITS + ADDR_BITS;
 
-// Major mode (M1)
-localparam [OPERAND_BITS-1:0]   M1_IDLE_STATE           = 8'h0,
-                                M1_LOAD_DATA_STATE      = 8'h1,
-                                M1_LOAD_WEIGHT_STATE    = 8'h2,
-                                M1_MAT_MUL_STATE        = 8'h3,
-                                M1_WRITE_DATA_STATE     = 8'h4,
-                                M1_WRITE_WEIGHT_STATE   = 8'h5;
+// Parsing range
+localparam OPCODE_FROM  = INST_BITS-1,  // 140-1=139
+           OPCODE_TO    = OPCODE_FROM-OPCODE_BITS+1,  // 139-4+1=136
+           ADDR_FROM    = OPCODE_TO-1,  // 136-1=135
+           ADDR_TO      = ADDR_FROM-ADDR_BITS+1, // 135-8+1=128
+           OPERAND_FROM = ADDR_TO-1,    // 128-1=127
+           OPERAND_TO   = OPERAND_FROM-OPERAND_BITS+1;  // 127-128+1=0
+
+// State params
+localparam [OPCODE_BITS-1:0]    IDLE_INST               = 4'h0,
+                                LOAD_DATA_INST          = 4'h1,
+                                LOAD_WEIGHT_INST        = 4'h2,
+                                MAT_MUL_INST            = 4'h3,
+                                MM_AND_LOAD_DATA_INST   = 4'h4,
+                                WRITE_DATA_INST         = 4'h5,
+                                WRITE_WEIGHT_INST       = 4'h6,
+                                WRITE_RESULT_INST       = 4'h7,
+                                ACCUMULATION_INST       = 4'h8;
 
 // M1_MAT_MUL_STATE's minor mode (M2)
 localparam MODE_BITS = 4;
-/** End of controller.v **/

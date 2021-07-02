@@ -23,6 +23,7 @@ module MATRIX_MULTIPLY_UNIT (
     input reset_n,
     input clk,
     input wen,
+    input mmen,
     input [127:0] ain,  //input signed [7:0] ain [0:15],
     input [127:0] win,  //input signed [7:0] win [0:15],
     output signed [319:0] aout //output signed [19:0] aout [0:15]
@@ -30,6 +31,9 @@ module MATRIX_MULTIPLY_UNIT (
 
 wire signed [7:0] wout [0:15][0:15];            // Weight output
 wire signed [15:0] mul_result_reg [0:15][0:15]; // Multiplication results
+wire signed [319:0] aout_reg;
+
+assign aout = (mmen == 1'b1) ? aout_reg : 320'd0;
 
 // Instantiation of PE modules.
 generate
@@ -84,7 +88,7 @@ generate
                     mul_result_reg[0][j]
                 }
             ),
-            .aout(aout[(j + 1) * 20 - 1 : j * 20])
+            .aout(aout_reg[(j + 1) * 20 - 1 : j * 20])
         );
     end
 endgenerate
