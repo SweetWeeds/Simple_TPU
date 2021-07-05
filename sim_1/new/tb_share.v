@@ -30,7 +30,7 @@ localparam [OPCODE_BITS-1:0]    // Do nothing (1-cycyle)
                                 DATA_FIFO_INST          = 4'h1,
                                 // Weight-FIFO Enable (1-cycle)
                                 WEIGHT_FIFO_INST        = 4'h2,
-                                // Write result data from ACC to UB (1-cycle)
+                                // Write result data from ACC to UB (2-cycle)
                                 // ADDR: 
                                 WRITE_DATA_INST         = 4'h3,
                                 // Write data into UB (1-cycle)

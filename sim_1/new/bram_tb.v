@@ -21,17 +21,22 @@
 
 module bram_test;
 
+`include "tb_share.v"
+
 // Clock localparams
 localparam  CLOCK_PS          = 10000;      //  should be a multiple of 10
 localparam clock_period      = CLOCK_PS / 1000.0;
 localparam half_clock_period = clock_period / 2;
 localparam minimum_period    = clock_period / 10;
+localparam RAM_WIDTH = 16*20;     // Specify RAM data width
+localparam RAM_DEPTH = 256;      // Specify RAM depth (number of entries)
 
 integer i = 0, j = 0;
 reg signed [7:0] TEST_DATA [0:255][0:15];
 
 // regs & wires
 reg reset_n = 1'b1, clk, en = 1'b1;
+reg acc_en = 1'b0;
 reg wea;  // Write enable
 reg enb;  // Read Enable; for additional power savings; disable when not in use
 reg [clogb2(RAM_DEPTH-1)-1:0] addra;   // Write address bus; width determined from RAM_DEPTH
@@ -42,16 +47,25 @@ wire rstb;       // Output reset (does not affect memory contents)
 wire regceb;      // Output register enable
 
 // Instantiation
-UNIFIED_BUFFER UB (
+BRAM_256x16x8b UB (
     .clk(clk),
     .wea(wea),
     .enb(enb),
     .addra(addra),
     .addrb(addrb),
     .dina(dina),
-    .doutb(doutb),
-    .rstb(rstb),
-    .regceb(regceb)
+    .doutb(doutb)
+);
+
+ACCUMULATOR ACC (
+    .clk(clk),
+    .wea(wea),
+    .enb(enb),
+    .acc_en(acc_en),
+    .addra(addra),
+    .addrb(addrb),
+    .dina(dina),
+    .doutb(doutb)
 );
 
 /**

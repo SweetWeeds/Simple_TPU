@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module TOP_test;
+module CU_test;
 
 `include "tb_share.v"
 
@@ -43,10 +43,23 @@ assign instruction[ADDRB_FROM:ADDRB_TO]     = ADDRB;
 assign instruction[OPERAND_FROM:OPERAND_TO] = OPERAND;
 
 // Instantiation
-SYSTOLIC_ARRAY SA0 (
+CONTROL_UNIT CU0 (
     .reset_n(reset_n),
     .clk(clk),
     .instruction(instruction),
+    .flag(flag),
+    .read_ub(),
+    .write_ub(),
+    .read_wb(),
+    .write_wb(),
+    .read_acc(),
+    .write_acc(),
+    .data_fifo_en(),
+    .weight_fifo_en(weight_fifo_en),
+    .mm_en(mm_en),
+    .acc_en(acc_en),
+    .addra(addra),
+    .addrb(addrb),
     .dout(dout)
 );
 

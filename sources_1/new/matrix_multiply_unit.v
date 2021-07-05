@@ -15,7 +15,7 @@
 // 
 // Revision:
 // Revision 0.01 - File Created
-// Additional Comments:
+// Additional Comm_ents:
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
@@ -23,7 +23,7 @@ module MATRIX_MULTIPLY_UNIT (
     input reset_n,
     input clk,
     input wen,
-    input mmen,
+    input mm_en,
     input [127:0] ain,  //input signed [7:0] ain [0:15],
     input [127:0] win,  //input signed [7:0] win [0:15],
     output signed [319:0] aout //output signed [19:0] aout [0:15]
@@ -33,7 +33,7 @@ wire signed [7:0] wout [0:15][0:15];            // Weight output
 wire signed [15:0] mul_result_reg [0:15][0:15]; // Multiplication results
 wire signed [319:0] aout_reg;
 
-assign aout = (mmen == 1'b1) ? aout_reg : 320'd0;
+assign aout = (mm_en == 1'b1) ? aout_reg : 320'd0;
 
 // Instantiation of PE modules.
 generate

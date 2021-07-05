@@ -27,27 +27,35 @@ module SYSTOLIC_ARRAY (
     output [319:0] dout
 );
 
-localparam INST_BITS = 140;
+`include "sa_share.v"
 
 // Control signals
-wire LOAD_DATA_SIG, LOAD_WEIGHT_SIG, WRITE_DATA_SIG, WRITE_WEIGHT_SIG,
-     WRITE_RESULT_SIG, MAT_MUL_SIG, ACC_SIG;
+wire READ_UB_SIG, WRITE_UB_SIG, READ_WB_SIG, WRITE_WB_SIG, READ_ACC_SIG,
+    WRITE_ACC_SIG, DATA_FIFO_EN_SIG, MMU_LOAD_WEIGHT_SIG, WEIGHT_FIFO_EN_SIG, MM_EN_SIG, ACC_EN_SIG;
 // Datapaths
 wire [127:0] DATA_FIFO_MMU_PATH, WEIGHT_FIFO_MMU_PATH,
             UB_DATA_FIFO_PATH, WB_WEIGHT_FIFO_PATH, CTRL_DOUT;
 wire [319:0] MMU_ACC_PATH;
 wire [7:0] ADDRA, ADDRB;
+wire flag;
 
 // Controller
 CONTROL_UNIT CU (
+    .reset_n(reset_n),
+    .clk(clk),
     .instruction(instruction),
-    .load_data(LOAD_DATA_SIG),
-    .load_weight(LOAD_WEIGHT_SIG),
-    .write_data(WRITE_DATA_SIG),
-    .write_weight(WRITE_WEIGHT_SIG),
-    .write_result(WRITE_RESULT_SIG),
-    .mat_mul(MAT_MUL_SIG),
-    .acc(ACC_SIG),
+    .flag(flag),
+    .read_ub(READ_UB_SIG),
+    .write_ub(WRITE_UB_SIG),
+    .read_wb(READ_WB_SIG),
+    .write_wb(WRITE_WB_SIG),
+    .read_acc(READ_ACC_SIG),
+    .write_acc(WRITE_ACC_SIG),
+    .data_fifo_en(DATA_FIFO_EN_SIG),
+    .mmu_load_weight_en(MMU_LOAD_WEIGHT_SIG),
+    .weight_fifo_en(WEIGHT_FIFO_EN_SIG),
+    .mm_en(MM_EN_SIG),
+    .acc_en(ACC_EN_SIG),
     .addra(ADDRA),
     .addrb(ADDRB),
     .dout(CTRL_DOUT)
@@ -57,7 +65,7 @@ CONTROL_UNIT CU (
 FIFO_4x16x8b WEIGHT_FIFO (
     .reset_n(reset_n),
     .clk(clk),
-    .en(LOAD_WEIGHT_SIG),
+    .en(WEIGHT_FIFO_EN_SIG),
     .din(WB_WEIGHT_FIFO_PATH),
     .dout(WEIGHT_FIFO_MMU_PATH)
 );
@@ -65,8 +73,8 @@ FIFO_4x16x8b WEIGHT_FIFO (
 // Unified Buffer
 BRAM_256x16x8b UB (
     .clk(clk),
-    .wea(WRITE_DATA_SIG),
-    .enb(LOAD_DATA_SIG),
+    .wea(WRITE_UB_SIG),
+    .enb(READ_UB_SIG),
     .addra(ADDRA),
     .addrb(ADDRB),
     .dina(CTRL_DOUT),
@@ -76,8 +84,8 @@ BRAM_256x16x8b UB (
 // Weight Buffer
 BRAM_256x16x8b WB (
     .clk(clk),
-    .wea(WRITE_WEIGHT_SIG),
-    .enb(LOAD_DATA_SIG),
+    .wea(WRITE_WB_SIG),
+    .enb(READ_WB_SIG),
     .addra(ADDRA),
     .addrb(ADDRB),
     .dina(CTRL_DOUT),
@@ -88,7 +96,7 @@ BRAM_256x16x8b WB (
 FIFO_4x16x8b DATA_FIFO (
     .reset_n(reset_n),
     .clk(clk),
-    .en(LOAD_DATA_SIG),
+    .en(DATA_FIFO_EN_SIG),
     .din(UB_DATA_FIFO_PATH),
     .dout(DATA_FIFO_MMU_PATH)
 );
@@ -97,20 +105,31 @@ FIFO_4x16x8b DATA_FIFO (
 MATRIX_MULTIPLY_UNIT MMU (
     .reset_n(reset_n),
     .clk(clk),
-    .wen(LOAD_WEIGHT_SIG),
-    .mmen(MAT_MUL_SIG),
+    .wen(MMU_LOAD_WEIGHT_SIG),
+    .mm_en(MM_EN_SIG),
     .ain(DATA_FIFO_MMU_PATH),
     .win(WEIGHT_FIFO_MMU_PATH),
     .aout(MMU_ACC_PATH)
 );
 
 // Accumulator
-FIFO_16x16x20b ACC (
-    .reset_n(reset_n),
+//FIFO_16x16x20b ACC (
+//    .reset_n(reset_n),
+//    .clk(clk),
+//    .en(ACC_SIG),
+//    .din(MMU_ACC_PATH),
+//    .dout(dout)
+//);
+
+ACCUMULATOR ACC (
     .clk(clk),
-    .en(ACC_SIG),
-    .din(MMU_ACC_PATH),
-    .dout(dout)
+    .wea(WRITE_ACC_SIG),
+    .enb(READ_ACC_SIG),
+    .acc_en(ACC_EN_SIG),
+    .addra(ADDRA),
+    .addrb(ADDRB),
+    .dina(MMU_ACC_PATH),
+    .doutb(dout)
 );
 
 endmodule

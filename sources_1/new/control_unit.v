@@ -20,148 +20,269 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module CONTROL_UNIT (
+    input reset_n,
+    input clk,
     input [INST_BITS-1:0] instruction,   // 16-bit instruction
-    output reg load_data,       // Load input data from unified buffer
-    output reg load_weight,     // Load weight to MMU
-    output reg write_data,      // Write input data at unified buffer
-    output reg write_weight,    // Write weight at weight buffer
-    output reg write_result,    // Write results to accumulator
-    output reg mat_mul,         // MMU execution
-    output reg acc,             // Accumulation execution
-    output reg [ADDR_BITS-1:0] addra,    // Unified/Weight Buffer Read Address
-    output reg [ADDR_BITS-1:0] addrb,    // Unfiied/Weight Buffer Write Address
+    output reg flag,            // flag to indicate whether the command is executed
+    output reg read_ub,
+    output reg write_ub,
+    output reg read_wb,
+    output reg write_wb,
+    output reg read_acc,
+    output reg write_acc,
+    output reg data_fifo_en,
+    output reg mmu_load_weight_en,
+    output reg weight_fifo_en,
+    output reg mm_en,
+    output reg acc_en,
+    output reg [ADDRA_BITS-1:0] addra,    // Unified/Weight Buffer Read Address
+    output reg [ADDRB_BITS-1:0] addrb,    // Unfiied/Weight Buffer Write Address
     output reg [OPERAND_BITS-1:0] dout
 );
 
 `include "sa_share.v"
 
-wire [OPCODE_BITS-1:0]   opcode;     // Operation Code
-wire [OPERAND_BITS-1:0]  operand;    // 16x8b datas
-wire [ADDR_BITS-1:0]     addr;       // Address of RAM(Unified/Weight Buffer)
+reg [OPCODE_BITS-1:0]   opcode;     // Operation Code
+reg [1:0]               minor_state;
 
-// Continuous-Assignments
-assign opcode = instruction[OPCODE_FROM:OPCODE_TO];
-assign operand = instruction[OPERAND_FROM:OPERAND_TO];
-assign addr = instruction[ADDR_FROM:ADDR_TO];
+always @ (posedge clk or negedge reset_n) begin : INPUT_LOGIC
+    if (reset_n == 1'b0) begin
+        // Asynchronous reset
+        opcode      <= IDLE_INST;
+        minor_state <= 0;
+        flag        <= 1'b0;
+    end else if (flag == 1'b1) begin
+        // Get next instruction
+        opcode  <= instruction[OPCODE_FROM:OPCODE_TO];
+        addra   <= instruction[ADDRA_FROM:ADDRA_TO];
+        addrb   <= instruction[ADDRB_FROM:ADDRB_TO];
+        dout    <= instruction[OPERAND_FROM:OPERAND_TO];
+        flag    <= 1'b0;
+    end else begin
+        // Next-state logic
+        case (opcode)
+        LOAD_DATA_INST, LOAD_WEIGHT_INST, MAT_MUL_INST, WRITE_DATA_INST : begin
+            if (minor_state < LOAD_DATA_CYCLE) begin
+                minor_state <= minor_state + 1;
+            end else begin
+                minor_state <= 0;
+            end
+        end
+        endcase
+    end
+end
 
-always @ (instruction) begin : OUTPUT_LOGIC
+always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     case (opcode)
+    // IDLE_INST (1-cycle)
     IDLE_INST : begin
-        //flag        = 1'b0;
-        load_data   = 1'b0;
-        load_weight = 1'b0;
-        write_data  = 1'b0;
-        write_weight    = 1'b0;
-        write_result    = 1'b0;
-        mat_mul     = 1'b0;
-        acc         = 1'b0;
-        addra       = 8'h00;
-        addrb       = 8'h00;
-        dout        = 128'd0;
+        flag            = 1'b1;
+        read_ub         = 1'b0;
+        write_ub        = 1'b0;
+        read_wb         = 1'b0;
+        write_wb        = 1'b0;
+        read_acc        = 1'b0;
+        write_acc       = 1'b0;
+        data_fifo_en    = 1'b0;
+        mmu_load_weight_en = 1'b0;
+        weight_fifo_en  = 1'b0;
+        mm_en           = 1'b0;
+        acc_en          = 1'b0;
     end
-    LOAD_DATA_INST : begin
-        //flag        = 1'b0;
-        load_data   = 1'b1;
-        load_weight = 1'b0;
-        write_data  = 1'b0;
-        write_weight    = 1'b0;
-        write_result    = 1'b0;
-        mat_mul     = 1'b0;
-        acc         = 1'b0;
-        addra       = 8'h00;
-        addrb       = addr;
-        dout        = 128'd0;
+    // DATA_FIFO_INST (1-cycle)
+    DATA_FIFO_INST : begin
+        flag            = 1'b1;
+        read_ub         = 1'b0;
+        write_ub        = 1'b0;
+        read_wb         = 1'b0;
+        write_wb        = 1'b0;
+        read_acc        = 1'b0;
+        write_acc       = 1'b0;
+        data_fifo_en    = 1'b1;
+        mmu_load_weight_en = 1'b0;
+        weight_fifo_en  = 1'b0;
+        mm_en           = 1'b0;
+        acc_en          = 1'b0;
     end
-    LOAD_WEIGHT_INST : begin
-        //flag        = 1'b0;
-        load_data   = 1'b0;
-        load_weight = 1'b1;
-        write_data  = 1'b0;
-        write_weight    = 1'b0;
-        write_result    = 1'b0;
-        mat_mul     = 1'b0;
-        acc         = 1'b0;
-        addra       = 8'h00;
-        addrb       = addr;
-        dout        = 128'd0;
+    // WEIGHT_FIFO_INST (1-cycle)
+    WEIGHT_FIFO_INST : begin
+        flag            = 1'b1;
+        read_ub         = 1'b0;
+        write_ub        = 1'b0;
+        read_wb         = 1'b0;
+        write_wb        = 1'b0;
+        read_acc        = 1'b0;
+        write_acc       = 1'b0;
+        data_fifo_en    = 1'b0;
+        mmu_load_weight_en = 1'b0;
+        weight_fifo_en  = 1'b1;
+        mm_en           = 1'b0;
+        acc_en          = 1'b0;
     end
-    MAT_MUL_INST : begin
-        //flag        = 1'b0;
-        load_data   = 1'b0;
-        load_weight = 1'b0;
-        write_data  = 1'b0;
-        write_weight    = 1'b0;
-        write_result    = 1'b0;
-        mat_mul     = 1'b1;
-        acc         = 1'b0;
-        addra       = 8'h00;
-        addrb       = 8'h00;
-        dout        = 128'd0;
-    end
-    MM_AND_LOAD_DATA_INST : begin
-        //flag        = 1'b0;
-        load_data   = 1'b1;
-        load_weight = 1'b0;
-        write_data  = 1'b0;
-        write_weight    = 1'b0;
-        write_result    = 1'b0;
-        mat_mul     = 1'b1;
-        acc         = 1'b0;
-        addra       = 8'h00;
-        addrb       = addr;
-        dout        = 128'd0;
-    end
+    // WRITE_DATA_INST (1-cycle)
     WRITE_DATA_INST : begin
-        //flag        = 1'b0;
-        load_data   = 1'b0;
-        load_weight = 1'b0;
-        write_data  = 1'b1;
-        write_weight    = 1'b0;
-        write_result    = 1'b0;
-        mat_mul     = 1'b0;
-        acc         = 1'b0;
-        addra       = addr;
-        addrb       = 8'h0;
-        dout        = operand;
+        flag            = 1'b1;
+        read_ub         = 1'b0;
+        write_ub        = 1'b1;
+        read_wb         = 1'b0;
+        write_wb        = 1'b0;
+        read_acc        = 1'b0;
+        write_acc       = 1'b0;
+        data_fifo_en    = 1'b0;
+        mmu_load_weight_en = 1'b0;
+        weight_fifo_en  = 1'b0;
+        mm_en           = 1'b0;
+        acc_en          = 1'b0;
     end
+    // WRITE_WEIGHT_INST (1-cycle)
     WRITE_WEIGHT_INST : begin
-        //flag        = 1'b0;
-        load_data   = 1'b0;
-        load_weight = 1'b0;
-        write_data  = 1'b0;
-        write_weight    = 1'b1;
-        write_result    = 1'b0;
-        mat_mul     = 1'b0;
-        acc         = 1'b0;
-        addra       = addr;
-        addrb       = 8'h0;
-        dout        = operand;
+        flag            = 1'b1;
+        read_ub         = 1'b0;
+        write_ub        = 1'b0;
+        read_wb         = 1'b0;
+        write_wb        = 1'b1;
+        read_acc        = 1'b0;
+        write_acc       = 1'b0;
+        data_fifo_en    = 1'b0;
+        mmu_load_weight_en = 1'b0;
+        weight_fifo_en  = 1'b0;
+        mm_en           = 1'b0;
+        acc_en          = 1'b0;
     end
-    ACCUMULATION_INST : begin
-        //flag        = 1'b0;
-        load_data   = 1'b0;
-        load_weight = 1'b0;
-        write_data  = 1'b0;
-        write_weight    = 1'b0;
-        write_result    = 1'b0;
-        mat_mul     = 1'b0;
-        acc         = 1'b1;
-        addra       = 8'h00;
-        addrb       = 8'h00;
-        dout        = 128'd0;        
+    // WRITE_RESULT_INST (2-cycle)
+    //WRITE_RESULT_INST : begin
+    //    if (minor_state == 2'd0) begin
+    //        // 1. Read result data from accumulator.
+    //        flag            = 1'b0;
+    //        read_ub         = 1'b0;
+    //        write_ub        = 1'b0;
+    //        read_wb         = 1'b0;
+    //        write_wb        = 1'b0;
+    //        read_acc        = 1'b1;
+    //        write_acc       = 1'b0;
+    //        data_fifo_en    = 1'b0;
+    //        weight_fifo_en  = 1'b0;
+    //    end else begin
+    //        // 2. Write result data to UB.
+    //        flag            = 1'b1;
+    //        read_ub         = 1'b0;
+    //        write_ub        = 1'b0;
+    //        read_wb         = 1'b0;
+    //        write_wb        = 1'b0;
+    //        read_acc        = 1'b0;
+    //        write_acc       = 1'b0;
+    //        data_fifo_en    = 1'b0;
+    //        weight_fifo_en  = 1'b0;
+    //        dout            = 
+    //    end
+    //end
+    // LOAD_DATA_INST (2-cycle)
+    LOAD_DATA_INST : begin
+        if (minor_state == 2'd0) begin
+            // 1. Read data from UB.
+            flag            = 1'b0;
+            read_ub         = 1'b1;
+            write_ub        = 1'b0;
+            read_wb         = 1'b0;
+            write_wb        = 1'b0;
+            read_acc        = 1'b0;
+            write_acc       = 1'b0;
+            data_fifo_en    = 1'b0;
+            mmu_load_weight_en = 1'b0;
+            weight_fifo_en  = 1'b0;
+            mm_en           = 1'b0;
+            acc_en          = 1'b0;
+        end else begin
+            // 2. Write data to Data-FIFO.
+            flag            = 1'b1;
+            read_ub         = 1'b0;
+            write_ub        = 1'b0;
+            read_wb         = 1'b0;
+            write_wb        = 1'b0;
+            read_acc        = 1'b0;
+            write_acc       = 1'b0;
+            data_fifo_en    = 1'b1;
+            mmu_load_weight_en = 1'b0;
+            weight_fifo_en  = 1'b0;
+            mm_en           = 1'b0;
+            acc_en          = 1'b0;
+        end
+    end
+    // LOAD_WEIGHT_INST (2-cycle)
+    LOAD_WEIGHT_INST : begin
+        if (minor_state == 2'd0) begin
+            // 1. Read weight data from WB.
+            flag            = 1'b0;
+            read_ub         = 1'b0;
+            write_ub        = 1'b0;
+            read_wb         = 1'b1;
+            write_wb        = 1'b0;
+            read_acc        = 1'b0;
+            write_acc       = 1'b0;
+            data_fifo_en    = 1'b0;
+            mmu_load_weight_en = 1'b0;
+            weight_fifo_en  = 1'b0;
+            mm_en           = 1'b0;
+            acc_en          = 1'b0;
+        end else begin
+            // 2. Load weight data to WB.
+            flag            = 1'b1;
+            read_ub         = 1'b0;
+            write_ub        = 1'b0;
+            read_wb         = 1'b0;
+            write_wb        = 1'b0;
+            read_acc        = 1'b0;
+            write_acc       = 1'b0;
+            data_fifo_en    = 1'b0;
+            mmu_load_weight_en = 1'b1;
+            weight_fifo_en  = 1'b1;
+            mm_en           = 1'b0;
+            acc_en          = 1'b0;
+        end
+    end
+    // MAT_MUL_INST (1-cycle)
+    MAT_MUL_INST : begin
+        flag            = 1'b1;
+        read_ub         = 1'b0;
+        write_ub        = 1'b0;
+        read_wb         = 1'b0;
+        write_wb        = 1'b0;
+        read_acc        = 1'b0;
+        write_acc       = 1'b1;
+        data_fifo_en    = 1'b0;
+        mmu_load_weight_en = 1'b0;
+        weight_fifo_en  = 1'b0;
+        mm_en           = 1'b1;
+        acc_en          = 1'b0;
+    end
+    // MAT_MUL_INST_ACC (1-cycle)
+    MAT_MUL_ACC_INST : begin
+        flag            = 1'b0;
+        read_ub         = 1'b0;
+        write_ub        = 1'b0;
+        read_wb         = 1'b0;
+        write_wb        = 1'b0;
+        read_acc        = 1'b0;
+        write_acc       = 1'b0;
+        data_fifo_en    = 1'b0;
+        mmu_load_weight_en = 1'b0;
+        weight_fifo_en  = 1'b0;
+        mm_en           = 1'b1;
+        acc_en          = 1'b0;
     end
     default : begin
-        //flag        = 1'b0;
-        load_data   = 1'b0;
-        load_weight = 1'b0;
-        write_data  = 1'b0;
-        write_weight    = 1'b0;
-        write_result    = 1'b0;
-        mat_mul     = 1'b0;
-        acc         = 1'b0;
-        addra       = 8'h00;
-        addrb       = 8'h00;
-        dout        = 128'd0;
+        flag            = 1'b1;
+        read_ub         = 1'b0;
+        write_ub        = 1'b0;
+        read_wb         = 1'b0;
+        write_wb        = 1'b0;
+        read_acc        = 1'b0;
+        write_acc       = 1'b0;
+        data_fifo_en    = 1'b0;
+        mmu_load_weight_en = 1'b0;
+        weight_fifo_en  = 1'b0;
+        mm_en           = 1'b0;
+        acc_en          = 1'b0;
     end
     endcase
 end

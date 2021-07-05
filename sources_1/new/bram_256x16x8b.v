@@ -32,14 +32,14 @@ localparam INIT_FILE = "";       // Specify name/location of RAM initialization 
 reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 
 // The following code either initializes the memory values to a specified file or to all zeros to match hardware
-generate
-    begin: init_bram_to_zero
-        integer ram_index;
-        initial
-            for (ram_index = 0; ram_index < RAM_DEPTH; ram_index = ram_index + 1)
-                bram[ram_index] = {RAM_WIDTH{1'b0}};
-    end
-endgenerate
+//generate
+//    begin: init_bram_to_zero
+//        integer ram_index;
+//        initial
+//            for (ram_index = 0; ram_index < RAM_DEPTH; ram_index = ram_index + 1)
+//                bram[ram_index] = {RAM_WIDTH{1'b0}};
+//    end
+//endgenerate
 
 always @ (posedge clk) begin : READ_WRITE_LOGIC
     if (wea) begin

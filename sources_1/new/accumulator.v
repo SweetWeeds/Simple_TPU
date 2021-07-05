@@ -1,17 +1,17 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: Postech DICE
-// Engineer: Hankyul Kwon
+// Company: 
+// Engineer: 
 // 
-// Create Date: 2021/06/30 13:00
-// Design Name: Accumulator
-// Module Name: ACCUMULATOR
-// Proiect Name: 
-// Target Devices: 
-// Tool Versions: 
-// Description: FIFO (Width: 128-bit, depth: 256)
+// Create Date: 2021/07/01 15:54:00
+// Design Name: 
+// Module Name: controller
+// Project Name: Systolic Array
+// Target Devices: ZCU102
+// Tool Versions: Vivado 2020.2
+// Description: 
 // 
-// Dependencies:
+// Dependencies: 
 // 
 // Revision:
 // Revision 0.01 - File Created
@@ -20,20 +20,51 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module ACCUMULATOR (
-    input reset_n,      // Asynchronous reset (falling edge)
-    input clk,          // Input clock
-    input en,           // 0: pass-through, 1: accumulate
-    input [319:0] din,  // 16x20b input data
-    output reg [319:0] dout // 16x20b output data
+    input clk,  // Clock
+    input wea,  // Write enable
+    input enb,  // Read Enable, for additional power savings, disable when not in use
+    input acc_en,  // Enable accumulation.
+    input [clogb2(RAM_DEPTH-1)-1:0] addra,   // Write address bus, width determined from RAM_DEPTH
+    input [clogb2(RAM_DEPTH-1)-1:0] addrb,   // Read address bus, width determined from RAM_DEPTH
+    input [RAM_WIDTH-1:0] dina,     // RAM input data
+    output reg [RAM_WIDTH-1:0] doutb   // RAM output data
 );
 
-always @ (posedge clk or negedge reset_n) begin : ACC_LOGIC
-    if (reset_n == 1'b0) begin
-        dout <= 320'd0;
-    end else if (en) begin
-        dout <= din;
+/** Functions **/
+function integer clogb2;
+    input integer depth;
+        for (clogb2=0; depth>0; clogb2=clogb2+1)
+        depth = depth >> 1;
+endfunction
+/** End of Functions **/
+
+localparam RAM_WIDTH = 16*20;     // Specify RAM data width
+localparam RAM_DEPTH = 16;      // Specify RAM depth (number of entries)
+localparam RAM_PERFORMANCE = "LOW_LATENCY"; // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
+localparam INIT_FILE = "";       // Specify name/location of RAM initialization file if using one (leave blank if not)
+
+reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
+
+// The following code either initializes the memory values to a specified file or to all zeros to match hardware
+//generate
+//    begin: init_bram_to_zero
+//        integer ram_index;
+//        initial
+//            for (ram_index = 0; ram_index < RAM_DEPTH; ram_index = ram_index + 1)
+//                bram[ram_index] = {RAM_WIDTH{1'b0}};
+//    end
+//endgenerate
+
+always @ (posedge clk) begin : READ_WRITE_LOGIC
+    if (wea) begin
+        // Write input data (accumulate or pass-through)
+        bram[addra] <= (acc_en == 1'b1) ? (bram[addra] + dina) : dina;
+    end
+    if (enb) begin
+        // Read data
+        doutb <= bram[addrb];
     end
 end
 
 endmodule
-// End of ACCUMULATOR //
+// End of UNIFIED_BUFFER //
