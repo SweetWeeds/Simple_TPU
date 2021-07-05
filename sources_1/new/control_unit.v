@@ -50,25 +50,16 @@ always @ (posedge clk or negedge reset_n) begin : INPUT_LOGIC
         // Asynchronous reset
         opcode      <= IDLE_INST;
         minor_state <= 0;
-        flag        <= 1'b0;
     end else if (flag == 1'b1) begin
         // Get next instruction
         opcode  <= instruction[OPCODE_FROM:OPCODE_TO];
         addra   <= instruction[ADDRA_FROM:ADDRA_TO];
         addrb   <= instruction[ADDRB_FROM:ADDRB_TO];
         dout    <= instruction[OPERAND_FROM:OPERAND_TO];
-        flag    <= 1'b0;
+        minor_state <= 0;
     end else begin
         // Next-state logic
-        case (opcode)
-        LOAD_DATA_INST, LOAD_WEIGHT_INST, MAT_MUL_INST, WRITE_DATA_INST : begin
-            if (minor_state < LOAD_DATA_CYCLE) begin
-                minor_state <= minor_state + 1;
-            end else begin
-                minor_state <= 0;
-            end
-        end
-        endcase
+        minor_state <= minor_state + 1;
     end
 end
 
@@ -257,18 +248,18 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     end
     // MAT_MUL_INST_ACC (1-cycle)
     MAT_MUL_ACC_INST : begin
-        flag            = 1'b0;
+        flag            = 1'b1;
         read_ub         = 1'b0;
         write_ub        = 1'b0;
         read_wb         = 1'b0;
         write_wb        = 1'b0;
         read_acc        = 1'b0;
-        write_acc       = 1'b0;
+        write_acc       = 1'b1;
         data_fifo_en    = 1'b0;
         mmu_load_weight_en = 1'b0;
         weight_fifo_en  = 1'b0;
         mm_en           = 1'b1;
-        acc_en          = 1'b0;
+        acc_en          = 1'b1;
     end
     default : begin
         flag            = 1'b1;

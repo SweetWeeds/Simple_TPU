@@ -38,7 +38,9 @@ function integer clogb2;
 endfunction
 /** End of Functions **/
 
-localparam RAM_WIDTH = 16*20;     // Specify RAM data width
+localparam DATA_SIZE = 20;
+localparam DATA_NUM  = 16;
+localparam RAM_WIDTH = DATA_NUM*DATA_SIZE;     // Specify RAM data width
 localparam RAM_DEPTH = 16;      // Specify RAM depth (number of entries)
 localparam RAM_PERFORMANCE = "LOW_LATENCY"; // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
 localparam INIT_FILE = "";       // Specify name/location of RAM initialization file if using one (leave blank if not)
@@ -56,9 +58,16 @@ reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 //endgenerate
 
 always @ (posedge clk) begin : READ_WRITE_LOGIC
+    integer i;
     if (wea) begin
         // Write input data (accumulate or pass-through)
-        bram[addra] <= (acc_en == 1'b1) ? (bram[addra] + dina) : dina;
+        if (acc_en == 1'b1) begin
+            for (i = RAM_DEPTH - 1; i >= 0; i = i - 1) begin
+                bram[addra][i * 20 + : 20] <= bram[addra][i * 20 + : 20] + dina[i * 20 + : 20];
+            end
+        end else begin
+            bram[addra] <= dina;
+        end
     end
     if (enb) begin
         // Read data
