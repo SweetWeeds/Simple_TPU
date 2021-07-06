@@ -40,7 +40,7 @@ always @ (posedge clk or negedge reset_n) begin : FIFO_LOGIC
         end
     end else if (en) begin
         fifo[0] <= din;
-        for (i = 0; i < 4; i = i + 1) begin
+        for (i = 0; i < 3; i = i + 1) begin
             fifo[i + 1] <= fifo[i];
         end
     end

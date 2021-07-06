@@ -40,11 +40,11 @@ reg signed [7:0] weight;    // Weight value (weight <= win)
 assign wout = weight;
 
 /**
- * Block name: PE_LOGIC
+ * Block name: REG_CTRL_LOGIC
  * Type: Sequential Logic
  * Description:
  */
-always @ (posedge clk or negedge reset_n) begin: PE_LOGIC
+always @ (posedge clk or negedge reset_n) begin: REG_CTRL_LOGIC
     if (reset_n == 1'b0) begin
         // Reset (Active low, async)
         weight  <= 8'sd0;
@@ -53,12 +53,12 @@ always @ (posedge clk or negedge reset_n) begin: PE_LOGIC
         // Load weight value
         weight  <= win;
         aout    <= 16'sd0;
-    end else begin
-        // Calculate activation output value.
-        aout    <= ain * weight;
     end
 end
 
+always @ (ain or weight) begin: MUL_LOGIC
+    aout = ain * weight;
+end
 endmodule
 
 // End of PE //

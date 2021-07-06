@@ -57,7 +57,7 @@ reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 //    end
 //endgenerate
 
-always @ (posedge clk) begin : READ_WRITE_LOGIC
+always @ (negedge clk) begin : READ_WRITE_LOGIC
     integer i;
     if (wea) begin
         // Write input data (accumulate or pass-through)
