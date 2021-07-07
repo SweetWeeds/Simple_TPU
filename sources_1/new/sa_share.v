@@ -61,8 +61,8 @@ localparam [1:0]    IDLE_CYCLE          = 1,
                     WRITE_DATA_CYCLE    = 1,
                     WRITE_WEIGHT_CYCLE  = 1,
                     WRITE_RESULT_CYCLE  = 2,
-                    LOAD_DATA_CYCLE     = 2,
-                    LOAD_WEIGHT_CYCLE   = 2,
+                    LOAD_DATA_CYCLE     = 1,
+                    LOAD_WEIGHT_CYCLE   = 1,
                     MAT_MUL_CYCLE       = 1,
                     MAT_MUL_ACC_CYCLE   = 1;
 

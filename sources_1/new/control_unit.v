@@ -167,69 +167,35 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     //        dout            = 
     //    end
     //end
-    // LOAD_DATA_INST (2-cycle)
+    // LOAD_DATA_INST (1-cycle)
     LOAD_DATA_INST : begin
-        if (minor_state == 2'd0) begin
-            // 1. Read data from UB.
-            flag            = 1'b0;
-            read_ub         = 1'b1;
-            write_ub        = 1'b0;
-            read_wb         = 1'b0;
-            write_wb        = 1'b0;
-            read_acc        = 1'b0;
-            write_acc       = 1'b0;
-            data_fifo_en    = 1'b0;
-            mmu_load_weight_en = 1'b0;
-            weight_fifo_en  = 1'b0;
-            mm_en           = 1'b0;
-            acc_en          = 1'b0;
-        end else begin
-            // 2. Write data to Data-FIFO.
-            flag            = 1'b1;
-            read_ub         = 1'b0;
-            write_ub        = 1'b0;
-            read_wb         = 1'b0;
-            write_wb        = 1'b0;
-            read_acc        = 1'b0;
-            write_acc       = 1'b0;
-            data_fifo_en    = 1'b1;
-            mmu_load_weight_en = 1'b0;
-            weight_fifo_en  = 1'b0;
-            mm_en           = 1'b0;
-            acc_en          = 1'b0;
-        end
+        flag            = 1'b1;
+        read_ub         = 1'b1;
+        write_ub        = 1'b0;
+        read_wb         = 1'b0;
+        write_wb        = 1'b0;
+        read_acc        = 1'b0;
+        write_acc       = 1'b0;
+        data_fifo_en    = 1'b1;
+        mmu_load_weight_en = 1'b0;
+        weight_fifo_en  = 1'b0;
+        mm_en           = 1'b0;
+        acc_en          = 1'b0;
     end
-    // LOAD_WEIGHT_INST (2-cycle)
+    // LOAD_WEIGHT_INST (1-cycle)
     LOAD_WEIGHT_INST : begin
-        if (minor_state == 2'd0) begin
-            // 1. Read weight data from WB.
-            flag            = 1'b0;
-            read_ub         = 1'b0;
-            write_ub        = 1'b0;
-            read_wb         = 1'b1;
-            write_wb        = 1'b0;
-            read_acc        = 1'b0;
-            write_acc       = 1'b0;
-            data_fifo_en    = 1'b0;
-            mmu_load_weight_en = 1'b0;
-            weight_fifo_en  = 1'b0;
-            mm_en           = 1'b0;
-            acc_en          = 1'b0;
-        end else begin
-            // 2. Load weight data to WB.
-            flag            = 1'b1;
-            read_ub         = 1'b0;
-            write_ub        = 1'b0;
-            read_wb         = 1'b0;
-            write_wb        = 1'b0;
-            read_acc        = 1'b0;
-            write_acc       = 1'b0;
-            data_fifo_en    = 1'b0;
-            mmu_load_weight_en = 1'b1;
-            weight_fifo_en  = 1'b1;
-            mm_en           = 1'b0;
-            acc_en          = 1'b0;
-        end
+        flag            = 1'b1;
+        read_ub         = 1'b0;
+        write_ub        = 1'b0;
+        read_wb         = 1'b1;
+        write_wb        = 1'b0;
+        read_acc        = 1'b0;
+        write_acc       = 1'b0;
+        data_fifo_en    = 1'b0;
+        mmu_load_weight_en = 1'b1;
+        weight_fifo_en  = 1'b1;
+        mm_en           = 1'b0;
+        acc_en          = 1'b0;
     end
     // MAT_MUL_INST (1-cycle)
     MAT_MUL_INST : begin

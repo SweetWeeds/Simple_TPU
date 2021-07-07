@@ -16,17 +16,26 @@ MMU_SIZE = 16
 MMU_BITS = 8
 
 def compare(file_path: str, data: list) -> bool:
+    flag = True
     with open(file_path, "r") as fp:
         file_content = fp.read().split("\n")
         for i, l in enumerate(data):
-            if (l == file_content[i]):
+            if ('x' in file_content[i] or 'X' in file_content[i]):
+                if (l == ""):
+                    continue
+                else:
+                    print(f"[WARNING] Data mismatch in {i + 1} line.")
+                    print(f"          Data:{l}")
+                    print(f"          File:{file_content[i]}")
+                    flag = False
+            elif (l == file_content[i]):
                 continue
             else:
                 print(f"[WARNING] Data mismatch in {i + 1} line.")
                 print(f"          Data:{l}")
                 print(f"          File:{file_content[i]}")
-                return False
-        return True
+                flag = False
+        return flag
 
 def tohex(val: int, nbits: int) -> str:
     if (val < 0):
