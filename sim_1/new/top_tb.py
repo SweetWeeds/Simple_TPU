@@ -38,11 +38,11 @@ if __name__ == "__main__":
     for i in range(5):
         SA.MAT_MUL(i)
         SA.LOAD_DATA(i)
-    SA.ACC_PRINT()
+    SA.ACC_PRINT(dec=True)
 
     # 7. Matrix Multiplication with accumulation
     print ("7. Matrix Multiplication with accumulation")
     for i in range(5):
         SA.MAT_MUL_ACC(i)
         SA.LOAD_DATA(i)
-    SA.ACC_PRINT()
+    SA.ACC_PRINT(dec=True)

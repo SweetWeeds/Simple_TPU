@@ -57,13 +57,23 @@ reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 //    end
 //endgenerate
 
+wire signed [DATA_SIZE-1:0] bram_parsed [DATA_NUM-1:0];
+wire signed [DATA_SIZE-1:0] dina_parsed [DATA_NUM-1:0];
+
+generate
+    for (genvar i = DATA_NUM - 1; i >= 0; i = i - 1) begin
+        assign bram_parsed[i] = bram[addra][i * 20 + : 20];
+        assign dina_parsed[i] = dina[i * 20 + : 20];
+    end
+endgenerate
+
 always @ (negedge clk) begin : READ_WRITE_LOGIC
     integer i;
     if (wea) begin
         // Write input data (accumulate or pass-through)
         if (acc_en == 1'b1) begin
-            for (i = RAM_DEPTH - 1; i >= 0; i = i - 1) begin
-                bram[addra][i * 20 + : 20] <= bram[addra][i * 20 + : 20] + dina[i * 20 + : 20];
+            for (i = DATA_NUM - 1; i >= 0; i = i - 1) begin
+                bram[addra][i * DATA_SIZE + : DATA_SIZE] <= bram_parsed[i] + dina_parsed[i];
             end
         end else begin
             bram[addra] <= dina;
