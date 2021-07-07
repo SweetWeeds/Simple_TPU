@@ -33,20 +33,23 @@ localparam minimum_period    = clock_period / 10;
 reg reset_n = 1'b1, clk, wen = 1'b1;
 wire [INST_BITS-1:0] instruction;
 wire [319:0] dout;
+wire [DIN_BITS-1:0] din;
 reg [OPCODE_BITS-1:0] OPCODE;
 reg [ADDRA_BITS-1:0] ADDRA, ADDRB;
-reg [OPERAND_BITS-1:0] OPERAND;
+reg [DIN_BITS-1:0] INPUT_DATA;
 
 assign instruction[OPCODE_FROM:OPCODE_TO]   = OPCODE;
 assign instruction[ADDRA_FROM:ADDRA_TO]     = ADDRA;
 assign instruction[ADDRB_FROM:ADDRB_TO]     = ADDRB;
-assign instruction[OPERAND_FROM:OPERAND_TO] = OPERAND;
+//assign instruction[OPERAND_FROM:OPERAND_TO] = OPERAND;
+assign din = INPUT_DATA;
 
 // Instantiation
 SYSTOLIC_ARRAY SA0 (
     .reset_n(reset_n),
     .clk(clk),
     .instruction(instruction),
+    .din(din),
     .dout(dout)
 );
 
@@ -62,9 +65,9 @@ end
 
 initial begin: TEST_BENCH
     // Initialization with 'reset_n' (0 ~ 10000 ns)
-    # half_clock_period;
+    # minimum_period;
     reset_n = 1'b0;
-    # half_clock_period;
+    # minimum_period;
     reset_n = 1'b1;
 
     // 1. Write data to UB (10000 * 256 ns = 2560000 ns)
@@ -72,7 +75,7 @@ initial begin: TEST_BENCH
         OPCODE = WRITE_DATA_INST;
         ADDRA = i;
         for (integer j = 15; j >= 0; j = j - 1) begin
-            OPERAND[j * 8 + : 8] = i - j;
+            INPUT_DATA[j * 8 + : 8] = i - j;
         end
         # (IDLE_CYCLE * clock_period);
     end
@@ -82,7 +85,7 @@ initial begin: TEST_BENCH
         OPCODE = WRITE_WEIGHT_INST;
         ADDRA = i;
         for (integer j = 15; j >= 0; j = j - 1) begin
-            OPERAND[j * 8 + : 8] = - i + j;
+            INPUT_DATA[j * 8 + : 8] = - i + j;
         end
         # (WRITE_WEIGHT_CYCLE * clock_period);
     end
@@ -111,22 +114,39 @@ initial begin: TEST_BENCH
     for (integer i = 0; i < 5; i = i + 1) begin
         OPCODE = MAT_MUL_INST;
         ADDRA = i;
-        # (MAT_MUL_CYCLE * clock_period);
-
-        OPCODE = LOAD_DATA_INST;
         ADDRB = i;
-        # (LOAD_DATA_CYCLE * clock_period);
+        # (MAT_MUL_CYCLE * clock_period);
     end
 
-    // 7. Matrix Multiplication with accumulation.
+    // 7. Write result at UB
+    for (integer i = 0; i < 5; i = i + 1) begin
+        OPCODE = WRITE_RESULT_INST;
+        ADDRA = i;
+        ADDRB = i;
+        # (WRITE_RESULT_CYCLE * clock_period);
+    end
+
+    // 8. Matrix Multiplication with accumulation.
     for (integer i = 0; i < 5; i = i + 1) begin
         OPCODE = MAT_MUL_ACC_INST;
         ADDRA = i;
-        # (MAT_MUL_CYCLE * clock_period);
-
-        OPCODE = LOAD_DATA_INST;
         ADDRB = i;
-        # (LOAD_DATA_CYCLE * clock_period);
+        # (MAT_MUL_CYCLE * clock_period);
+    end
+
+    // 9. Write result at UB
+    for (integer i = 0; i < 5; i = i + 1) begin
+        OPCODE = WRITE_RESULT_INST;
+        ADDRA = i + 5;
+        ADDRB = i;
+        # (WRITE_RESULT_CYCLE * clock_period);
+    end
+
+    // 10. Read result at UB
+    for (integer i = 0; i < 10; i = i + 1) begin
+        OPCODE = READ_UB_INST;
+        ADDRB = i;
+        # (READ_UB_CYCLE * clock_period);
     end
 
 end

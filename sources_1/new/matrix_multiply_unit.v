@@ -33,7 +33,7 @@ wire signed [7:0] wout [0:15][0:15];            // Weight output
 wire signed [15:0] mul_result_reg [0:15][0:15]; // Multiplication results
 wire signed [319:0] aout_reg;
 
-assign aout = (mm_en == 1'b1) ? aout_reg : 320'd0;
+assign aout = aout_reg;
 
 // Instantiation of PE modules.
 generate

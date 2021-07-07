@@ -35,12 +35,12 @@ wire [INST_BITS-1:0] instruction;
 wire [319:0] dout;
 reg [OPCODE_BITS-1:0] OPCODE;
 reg [ADDRA_BITS-1:0] ADDRA, ADDRB;
-reg [OPERAND_BITS-1:0] OPERAND;
+reg [DIN_BITS-1:0] INPUT_DATA;
 
 assign instruction[OPCODE_FROM:OPCODE_TO]   = OPCODE;
 assign instruction[ADDRA_FROM:ADDRA_TO]     = ADDRA;
 assign instruction[ADDRB_FROM:ADDRB_TO]     = ADDRB;
-assign instruction[OPERAND_FROM:OPERAND_TO] = OPERAND;
+//assign instruction[OPERAND_FROM:OPERAND_TO] = OPERAND;
 
 // Instantiation
 CONTROL_UNIT CU0 (

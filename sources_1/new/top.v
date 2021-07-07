@@ -24,7 +24,8 @@ module SYSTOLIC_ARRAY (
     input reset_n,
     input clk,
     input [INST_BITS-1:0] instruction,
-    output [319:0] dout
+    input [DIN_BITS-1:0] din,
+    output [DIN_BITS-1:0] dout
 );
 
 `include "sa_share.v"
@@ -34,16 +35,20 @@ wire READ_UB_SIG, WRITE_UB_SIG, READ_WB_SIG, WRITE_WB_SIG, READ_ACC_SIG,
     WRITE_ACC_SIG, DATA_FIFO_EN_SIG, MMU_LOAD_WEIGHT_SIG, WEIGHT_FIFO_EN_SIG, MM_EN_SIG, ACC_EN_SIG;
 // Datapaths
 wire [127:0] DATA_FIFO_MMU_PATH, WEIGHT_FIFO_MMU_PATH,
-            UB_DATA_FIFO_PATH, WB_WEIGHT_FIFO_PATH, CTRL_DOUT;
+            UB_DATA_PATH, WB_WEIGHT_FIFO_PATH, CTRL_DOUT, RESLUT_DOUT;
 wire [319:0] MMU_ACC_PATH;
 wire [7:0] ADDRA, ADDRB;
 wire flag;
+
+assign dout = UB_DATA_PATH;
 
 // Controller
 CONTROL_UNIT CU (
     .reset_n(reset_n),
     .clk(clk),
     .instruction(instruction),
+    .din(din),
+    .rin(RESLUT_DOUT),
     .flag(flag),
     .read_ub(READ_UB_SIG),
     .write_ub(WRITE_UB_SIG),
@@ -78,7 +83,7 @@ BRAM_256x16x8b UB (
     .addra(ADDRA),
     .addrb(ADDRB),
     .dina(CTRL_DOUT),
-    .doutb(UB_DATA_FIFO_PATH)
+    .doutb(UB_DATA_PATH)
 );
 
 // Weight Buffer
@@ -97,7 +102,7 @@ FIFO_4x16x8b DATA_FIFO (
     .reset_n(reset_n),
     .clk(clk),
     .en(DATA_FIFO_EN_SIG),
-    .din(UB_DATA_FIFO_PATH),
+    .din(UB_DATA_PATH),
     .dout(DATA_FIFO_MMU_PATH)
 );
 
@@ -129,7 +134,7 @@ ACCUMULATOR ACC (
     .addra(ADDRA),
     .addrb(ADDRB),
     .dina(MMU_ACC_PATH),
-    .doutb(dout)
+    .doutb(RESLUT_DOUT)
 );
 
 endmodule
