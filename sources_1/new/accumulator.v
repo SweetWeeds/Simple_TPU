@@ -19,7 +19,20 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module ACCUMULATOR (
+module ACCUMULATOR #
+(
+    localparam DATA_SIZE = 20,
+    localparam OUTPUT_DATA_SIZE = 8,
+    localparam OUTPUT_DATA_MIN = - (2 ** (OUTPUT_DATA_SIZE - 1)),
+    localparam OUTPUT_DATA_MAX = (2 ** (OUTPUT_DATA_SIZE - 1)) - 1,
+    localparam DATA_NUM  = 16,
+    localparam RAM_WIDTH = DATA_NUM*DATA_SIZE,     // Specify RAM data width
+    localparam DOUT_WIDTH = DATA_NUM*OUTPUT_DATA_SIZE,
+    localparam RAM_DEPTH = 16,      // Specify RAM depth (number of entries)
+    localparam RAM_PERFORMANCE = "LOW_LATENCY", // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
+    localparam INIT_FILE = ""       // Specify name/location of RAM initialization file if using one (leave blank if not)
+)
+(
     input clk,  // Clock
     input wea,  // Write enable
     input enb,  // Read Enable, for additional power savings, disable when not in use
@@ -37,17 +50,6 @@ function integer clogb2;
         depth = depth >> 1;
 endfunction
 /** End of Functions **/
-
-localparam DATA_SIZE = 20;
-localparam OUTPUT_DATA_SIZE = 8;
-localparam OUTPUT_DATA_MIN = - (2 ** (OUTPUT_DATA_SIZE - 1));
-localparam OUTPUT_DATA_MAX = (2 ** (OUTPUT_DATA_SIZE - 1)) - 1;
-localparam DATA_NUM  = 16;
-localparam RAM_WIDTH = DATA_NUM*DATA_SIZE;     // Specify RAM data width
-localparam DOUT_WIDTH = DATA_NUM*OUTPUT_DATA_SIZE;
-localparam RAM_DEPTH = 16;      // Specify RAM depth (number of entries)
-localparam RAM_PERFORMANCE = "LOW_LATENCY"; // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
-localparam INIT_FILE = "";       // Specify name/location of RAM initialization file if using one (leave blank if not)
 
 reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 

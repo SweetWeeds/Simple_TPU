@@ -6,7 +6,14 @@
 //parameter RAM_PERFORMANCE = "LOW_LATENCY"; // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
 //parameter INIT_FILE = "";                       // Specify name/location of RAM initialization file if using one (leave blank if not)
 
-module BRAM_256x16x8b (
+module BRAM_256x16x8b #
+(
+    localparam RAM_WIDTH = 16*8,     // Specify RAM data width
+    localparam RAM_DEPTH = 256,      // Specify RAM depth (number of entries)
+    localparam RAM_PERFORMANCE = "LOW_LATENCY", // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
+    localparam INIT_FILE = ""        // Specify name/location of RAM initialization file if using one (leave blank if not)
+)
+(
     input clk,  // Clock
     input wea,  // Write enable
     input enb,  // Read Enable, for additional power savings, disable when not in use
@@ -23,11 +30,6 @@ function integer clogb2;
         depth = depth >> 1;
 endfunction
 /** End of Functions **/
-
-localparam RAM_WIDTH = 16*8;     // Specify RAM data width
-localparam RAM_DEPTH = 256;      // Specify RAM depth (number of entries)
-localparam RAM_PERFORMANCE = "LOW_LATENCY"; // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
-localparam INIT_FILE = "";       // Specify name/location of RAM initialization file if using one (leave blank if not)
 
 reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 
