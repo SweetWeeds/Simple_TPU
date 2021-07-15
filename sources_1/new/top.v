@@ -20,30 +20,91 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module SYSTOLIC_ARRAY (
+module SYSTOLIC_ARRAY # 
+(
+    parameter integer C_M00_AXI_ADDR_WIDTH	= 32,
+	parameter integer C_M00_AXI_DATA_WIDTH	= 32,
+	parameter integer C_M00_AXI_TRANSACTIONS_NUM	= 4
+)
+(
     input  wire reset_n,
     input  wire clk,
     input  wire [INST_BITS-1:0] instruction,
-    output wire [1:0] axi_sm_mode,
-    output wire init_axi_txn,
     output wire flag,
-    input  wire dvalid,
-    input  wire [DIN_BITS-1:0] din,
-    output wire [DIN_BITS-1:0] dout
+    // AXI4 Lite Master Signals
+	output wire [C_M00_AXI_ADDR_WIDTH-1 : 0] m00_axi_awaddr,
+	output wire [2 : 0] m00_axi_awprot,
+	output wire  m00_axi_awvalid,
+	input  wire  m00_axi_awready,
+	output wire [C_M00_AXI_DATA_WIDTH-1 : 0] m00_axi_wdata,
+	output wire [C_M00_AXI_DATA_WIDTH/8-1 : 0] m00_axi_wstrb,
+    output wire  m00_axi_wvalid,
+	input  wire  m00_axi_wready,
+	input  wire [1 : 0] m00_axi_bresp,
+	input  wire  m00_axi_bvalid,
+    output wire  m00_axi_bready,
+	output wire [C_M00_AXI_ADDR_WIDTH-1 : 0] m00_axi_araddr,
+	output wire [2 : 0] m00_axi_arprot,
+	output wire  m00_axi_arvalid,
+	input  wire  m00_axi_arready,
+	input  wire [C_M00_AXI_DATA_WIDTH-1 : 0] m00_axi_rdata,
+	input  wire [1 : 0] m00_axi_rresp,
+	input  wire  m00_axi_rvalid,
+	output wire  m00_axi_rready
+    // End of AXI4 Lite Master Signals
 );
 
 `include "sa_share.v"
 
 // Control signals
 wire READ_UB_SIG, WRITE_UB_SIG, READ_WB_SIG, WRITE_WB_SIG, READ_ACC_SIG,
-    WRITE_ACC_SIG, DATA_FIFO_EN_SIG, MMU_LOAD_WEIGHT_SIG, WEIGHT_FIFO_EN_SIG, MM_EN_SIG, ACC_EN_SIG;
+    WRITE_ACC_SIG, DATA_FIFO_EN_SIG, MMU_LOAD_WEIGHT_SIG, WEIGHT_FIFO_EN_SIG,
+    MM_EN_SIG, ACC_EN_SIG, TXN_DONE;
 // Datapaths
 wire [127:0] DATA_FIFO_MMU_PATH, WEIGHT_FIFO_MMU_PATH,
-            UB_DATA_PATH, WB_WEIGHT_FIFO_PATH, CTRL_DOUT, RESLUT_DOUT;
+            UB_DATA_PATH, WB_WEIGHT_FIFO_PATH, CTRL_DOUT, RESLUT_DOUT,
+            AXI_CU_LOAD_DATA_PATH, AXI_CU_WRITE_DATA_PATH;
 wire [319:0] MMU_ACC_PATH;
 wire [7:0] ADDRA, ADDRB;
+wire [1:0] axi_sm_mode;
+wire init_axi_txn;
 
 assign dout = UB_DATA_PATH;
+
+// AXI4 Lite Master
+myip_AXI4_Lite_Master_0 M00 (
+	// Users to add ports here
+	.c_m00_mode(axi_sm_mode),
+	.c_m00_off_mem_addra({24'h000000, ADDRA}),
+    .c_m00_off_mem_addrb({24'h000000, ADDRB}),
+	.c_m00_wdata(AXI_CU_WRITE_DATA_PATH),
+	.c_m00_rdata(AXI_CU_LOAD_DATA_PATH),
+    // End of user ports
+    .m00_axi_init_axi_txn(init_axi_txn),
+	.m00_axi_error(),
+	.m00_axi_txn_done(TXN_DONE),
+	.m00_axi_aclk(clk),
+	.m00_axi_aresetn(reset_n),
+	.m00_axi_awaddr(m00_axi_awaddr),
+	.m00_axi_awprot(m00_axi_awprot),
+	.m00_axi_awvalid(m00_axi_awvalid),
+	.m00_axi_awready(m00_axi_awready),
+	.m00_axi_wdata(m00_axi_wdata),
+	.m00_axi_wstrb(m00_axi_wstrb),
+    .m00_axi_wvalid(m00_axi_wvalid),
+	.m00_axi_wready(m00_axi_wready),
+	.m00_axi_bresp(m00_axi_bresp),
+	.m00_axi_bvalid(m00_axi_bvalid),
+    .m00_axi_bready(m00_axi_bready),
+	.m00_axi_araddr(m00_axi_araddr),
+	.m00_axi_arprot(m00_axi_arprot),
+	.m00_axi_arvalid(m00_axi_arvalid),
+	.m00_axi_arready(m00_axi_arready),
+	.m00_axi_rdata(m00_axi_rdata),
+	.m00_axi_rresp(m00_axi_rresp),
+	.m00_axi_rvalid(m00_axi_rvalid),
+	.m00_axi_rready(m00_axi_rready)
+);
 
 // Controller
 CONTROL_UNIT CU (
@@ -52,8 +113,8 @@ CONTROL_UNIT CU (
     .instruction(instruction),
     .axi_sm_mode(axi_sm_mode),
     .init_axi_txn(init_axi_txn),
-    .dvalid(dvalid),
-    .din(din),
+    .txn_done(TXN_DONE),
+    .din(AXI_CU_LOAD_DATA_PATH),
     .rin(RESLUT_DOUT),
     .flag(flag),
     .read_ub(READ_UB_SIG),
@@ -69,7 +130,7 @@ CONTROL_UNIT CU (
     .acc_en(ACC_EN_SIG),
     .addra(ADDRA),
     .addrb(ADDRB),
-    .dout(CTRL_DOUT)
+    .dout(AXI_CU_WRITE_DATA_PATH)
 );
 
 // Weight-FIFO

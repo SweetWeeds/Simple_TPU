@@ -25,7 +25,7 @@ module CONTROL_UNIT (
     input wire [INST_BITS-1:0] instruction,   // 16-bit instruction
     output reg [1:0] axi_sm_mode,   // axi state machine mode
     output reg init_axi_txn,
-    input wire dvalid,          // is 'din' data is valid
+    input wire txn_done,          // is 'din' data is valid
     input wire [DIN_BITS-1:0] din,   // 128-bit data input pin
     input wire [DIN_BITS-1:0] rin,   // 128-bit result data input pin
     output reg flag,            // flag to indicate whether the command is executed
@@ -136,7 +136,7 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     end
     // WRITE_DATA_INST (wait for data: n-cycle, write data to UB: 1-cycle)
     WRITE_DATA_INST : begin
-        if (dvalid == 1'b0) begin
+        if (txn_done == 1'b0) begin
             flag            = 1'b0;
             axi_sm_mode     = LOAD_OFF_MEM_DATA;
             init_axi_txn    = 1'b1;
@@ -172,7 +172,7 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     end
     // WRITE_WEIGHT_INST (n-cycle)
     WRITE_WEIGHT_INST : begin
-        if (dvalid == 1'b0) begin
+        if (txn_done == 1'b0) begin
             flag            = 1'b0;
             axi_sm_mode     = LOAD_OFF_MEM_DATA;
             init_axi_txn    = 1'b1;

@@ -1,0 +1,33 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0x0",
+      "device": "xczu9eg-ffvb1156-2-e",
+      "gen_directory": "../../../../systolic_array.gen/sources_1/bd/design_1",
+      "name": "design_1",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2020.2"
+    },
+    "design_tree": {
+      "axi_vip_0": ""
+    },
+    "components": {
+      "axi_vip_0": {
+        "vlnv": "xilinx.com:ip:axi_vip:1.1",
+        "xci_name": "design_1_axi_vip_0_0",
+        "xci_path": "ip\\design_1_axi_vip_0_0\\design_1_axi_vip_0_0.xci",
+        "inst_hier_path": "axi_vip_0",
+        "interface_ports": {
+          "S_AXI": {
+            "mode": "Slave",
+            "memory_map_ref": "S_AXI",
+            "bridges": [
+              "M_AXI"
+            ]
+          }
+        }
+      }
+    }
+  }
+}
