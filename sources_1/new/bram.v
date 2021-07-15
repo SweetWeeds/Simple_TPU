@@ -6,12 +6,10 @@
 //parameter RAM_PERFORMANCE = "LOW_LATENCY"; // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
 //parameter INIT_FILE = "";                       // Specify name/location of RAM initialization file if using one (leave blank if not)
 
-module BRAM_256x16x8b #
+module BRAM #
 (
-    localparam RAM_WIDTH = 16*8,     // Specify RAM data width
-    localparam RAM_DEPTH = 256,      // Specify RAM depth (number of entries)
-    localparam RAM_PERFORMANCE = "LOW_LATENCY", // Select "HIGH_PERFORMANCE" or "LOW_LATENCY" 
-    localparam INIT_FILE = ""        // Specify name/location of RAM initialization file if using one (leave blank if not)
+    parameter RAM_WIDTH = 16*8,     // Specify RAM data width
+    parameter RAM_DEPTH = 256       // Specify RAM depth (number of entries)
 )
 (
     input clk,  // Clock

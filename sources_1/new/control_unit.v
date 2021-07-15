@@ -20,11 +20,14 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module CONTROL_UNIT (
-    input reset_n,
-    input clk,
-    input [INST_BITS-1:0] instruction,   // 16-bit instruction
-    input [DIN_BITS-1:0] din,   // 128-bit data input pin
-    input [DIN_BITS-1:0] rin,   // 128-bit result data input pin
+    input wire reset_n,
+    input wire clk,
+    input wire [INST_BITS-1:0] instruction,   // 16-bit instruction
+    output reg [1:0] axi_sm_mode,   // axi state machine mode
+    output reg init_axi_txn,
+    input wire dvalid,          // is 'din' data is valid
+    input wire [DIN_BITS-1:0] din,   // 128-bit data input pin
+    input wire [DIN_BITS-1:0] rin,   // 128-bit result data input pin
     output reg flag,            // flag to indicate whether the command is executed
     output reg read_ub,
     output reg write_ub,
@@ -46,6 +49,16 @@ module CONTROL_UNIT (
 
 reg [OPCODE_BITS-1:0]   opcode;     // Operation Code
 reg [1:0]               minor_state;
+
+localparam [1:0] IDLE = 2'b00, // This state initiates AXI4Lite transaction
+            // after the state machine changes state to INIT_WRITE
+            // when there is 0 to 1 transition on INIT_AXI_TXN
+        LOAD_OFF_MEM_DATA   = 2'b01, // This state initializes load data instruction,
+            // 8 times of writes and reads done, the state machine
+            // changes state to IDLE state
+        WRITE_OFF_MEM_DATA  = 2'b10; // This state initializes write data instruction
+            // 8 times of writes and reads done, the state machine
+            // changes state to IDLE state
 
 always @ (posedge clk or negedge reset_n) begin : INPUT_LOGIC
     if (reset_n == 1'b0) begin
@@ -70,6 +83,8 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     // IDLE_INST (1-cycle)
     IDLE_INST : begin
         flag            = 1'b1;
+        axi_sm_mode     = IDLE;
+        init_axi_txn    = 1'b0;
         read_ub         = 1'b0;
         write_ub        = 1'b0;
         read_wb         = 1'b0;
@@ -86,6 +101,8 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     // DATA_FIFO_INST (1-cycle)
     DATA_FIFO_INST : begin
         flag            = 1'b1;
+        axi_sm_mode     = IDLE;
+        init_axi_txn    = 1'b0;
         read_ub         = 1'b0;
         write_ub        = 1'b0;
         read_wb         = 1'b0;
@@ -102,6 +119,8 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     // WEIGHT_FIFO_INST (1-cycle)
     WEIGHT_FIFO_INST : begin
         flag            = 1'b1;
+        axi_sm_mode     = IDLE;
+        init_axi_txn    = 1'b0;
         read_ub         = 1'b0;
         write_ub        = 1'b0;
         read_wb         = 1'b0;
@@ -115,41 +134,83 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
         acc_en          = 1'b0;
         dout            = 128'd0;
     end
-    // WRITE_DATA_INST (1-cycle)
+    // WRITE_DATA_INST (wait for data: n-cycle, write data to UB: 1-cycle)
     WRITE_DATA_INST : begin
-        flag            = 1'b1;
-        read_ub         = 1'b0;
-        write_ub        = 1'b1;
-        read_wb         = 1'b0;
-        write_wb        = 1'b0;
-        read_acc        = 1'b0;
-        write_acc       = 1'b0;
-        data_fifo_en    = 1'b0;
-        mmu_load_weight_en = 1'b0;
-        weight_fifo_en  = 1'b0;
-        mm_en           = 1'b0;
-        acc_en          = 1'b0;
-        dout            = din;
+        if (dvalid == 1'b0) begin
+            flag            = 1'b0;
+            axi_sm_mode     = LOAD_OFF_MEM_DATA;
+            init_axi_txn    = 1'b1;
+            read_ub         = 1'b0;
+            write_ub        = 1'b0;
+            read_wb         = 1'b0;
+            write_wb        = 1'b0;
+            read_acc        = 1'b0;
+            write_acc       = 1'b0;
+            data_fifo_en    = 1'b0;
+            mmu_load_weight_en = 1'b0;
+            weight_fifo_en  = 1'b0;
+            mm_en           = 1'b0;
+            acc_en          = 1'b0;
+            dout            = 128'd0;
+        end else begin
+            flag            = 1'b1;
+            axi_sm_mode     = IDLE;
+            init_axi_txn    = 1'b0;
+            read_ub         = 1'b0;
+            write_ub        = 1'b1;
+            read_wb         = 1'b0;
+            write_wb        = 1'b0;
+            read_acc        = 1'b0;
+            write_acc       = 1'b0;
+            data_fifo_en    = 1'b0;
+            mmu_load_weight_en = 1'b0;
+            weight_fifo_en  = 1'b0;
+            mm_en           = 1'b0;
+            acc_en          = 1'b0;
+            dout            = din;
+        end
     end
-    // WRITE_WEIGHT_INST (1-cycle)
+    // WRITE_WEIGHT_INST (n-cycle)
     WRITE_WEIGHT_INST : begin
-        flag            = 1'b1;
-        read_ub         = 1'b0;
-        write_ub        = 1'b0;
-        read_wb         = 1'b0;
-        write_wb        = 1'b1;
-        read_acc        = 1'b0;
-        write_acc       = 1'b0;
-        data_fifo_en    = 1'b0;
-        mmu_load_weight_en = 1'b0;
-        weight_fifo_en  = 1'b0;
-        mm_en           = 1'b0;
-        acc_en          = 1'b0;
-        dout            = din;
+        if (dvalid == 1'b0) begin
+            flag            = 1'b0;
+            axi_sm_mode     = LOAD_OFF_MEM_DATA;
+            init_axi_txn    = 1'b1;
+            read_ub         = 1'b0;
+            write_ub        = 1'b0;
+            read_wb         = 1'b0;
+            write_wb        = 1'b1;
+            read_acc        = 1'b0;
+            write_acc       = 1'b0;
+            data_fifo_en    = 1'b0;
+            mmu_load_weight_en = 1'b0;
+            weight_fifo_en  = 1'b0;
+            mm_en           = 1'b0;
+            acc_en          = 1'b0;
+            dout            = din;
+        end else begin
+            flag            = 1'b1;
+            axi_sm_mode     = IDLE;
+            init_axi_txn    = 1'b0;
+            read_ub         = 1'b0;
+            write_ub        = 1'b0;
+            read_wb         = 1'b0;
+            write_wb        = 1'b1;
+            read_acc        = 1'b0;
+            write_acc       = 1'b0;
+            data_fifo_en    = 1'b0;
+            mmu_load_weight_en = 1'b0;
+            weight_fifo_en  = 1'b0;
+            mm_en           = 1'b0;
+            acc_en          = 1'b0;
+            dout            = din;
+        end
     end
     // LOAD_DATA_INST (1-cycle)
     LOAD_DATA_INST : begin
         flag            = 1'b1;
+        axi_sm_mode     = IDLE;
+        init_axi_txn    = 1'b0;
         read_ub         = 1'b1;
         write_ub        = 1'b0;
         read_wb         = 1'b0;
@@ -166,6 +227,8 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     // LOAD_WEIGHT_INST (1-cycle)
     LOAD_WEIGHT_INST : begin
         flag            = 1'b1;
+        axi_sm_mode     = IDLE;
+        init_axi_txn    = 1'b0;
         read_ub         = 1'b0;
         write_ub        = 1'b0;
         read_wb         = 1'b1;
@@ -182,14 +245,14 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     // MAT_MUL_INST (1-cycle)
     MAT_MUL_INST : begin
         flag            = 1'b1;
-        //read_ub         = 1'b0;
+        axi_sm_mode     = IDLE;
+        init_axi_txn    = 1'b0;
         read_ub         = 1'b1;
         write_ub        = 1'b0;
         read_wb         = 1'b0;
         write_wb        = 1'b0;
         read_acc        = 1'b0;
         write_acc       = 1'b1;
-        //data_fifo_en    = 1'b0;
         data_fifo_en    = 1'b1;
         mmu_load_weight_en = 1'b0;
         weight_fifo_en  = 1'b0;
@@ -200,14 +263,14 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     // MAT_MUL_INST_ACC (1-cycle)
     MAT_MUL_ACC_INST : begin
         flag            = 1'b1;
-        //read_ub         = 1'b0;
+        axi_sm_mode     = IDLE;
+        init_axi_txn    = 1'b0;
         read_ub         = 1'b1;
         write_ub        = 1'b0;
         read_wb         = 1'b0;
         write_wb        = 1'b0;
         read_acc        = 1'b0;
         write_acc       = 1'b1;
-        //data_fifo_en    = 1'b0;
         data_fifo_en    = 1'b1;
         mmu_load_weight_en = 1'b0;
         weight_fifo_en  = 1'b0;
@@ -219,6 +282,8 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     WRITE_RESULT_INST : begin
         if (minor_state == 2'd0) begin
             flag            = 1'b0;
+            axi_sm_mode     = IDLE;
+            init_axi_txn    = 1'b0;
             read_ub         = 1'b0;
             write_ub        = 1'b0;
             read_wb         = 1'b0;
@@ -233,6 +298,8 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
             dout            = rin;
         end else begin
             flag            = 1'b1;
+            axi_sm_mode     = IDLE;
+            init_axi_txn    = 1'b0;
             read_ub         = 1'b0;
             write_ub        = 1'b1;
             read_wb         = 1'b0;
@@ -250,6 +317,8 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     // READ_UB_INST (1-cycle)
     READ_UB_INST : begin
         flag            = 1'b1;
+        axi_sm_mode     = IDLE;
+        init_axi_txn    = 1'b0;
         read_ub         = 1'b1;
         write_ub        = 1'b0;
         read_wb         = 1'b0;
@@ -266,6 +335,8 @@ always @ (opcode or minor_state or addra or addrb or dout) begin : OUTPUT_LOGIC
     // Exception : Not operation (1-cycle)
     default : begin
         flag            = 1'b1;
+        axi_sm_mode     = IDLE;
+        init_axi_txn    = 1'b0;
         read_ub         = 1'b0;
         write_ub        = 1'b0;
         read_wb         = 1'b0;

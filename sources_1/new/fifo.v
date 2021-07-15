@@ -5,11 +5,11 @@
 // 
 // Create Date: 2021/06/30 13:00
 // Design Name: First-in First-out Memory
-// Module Name: FIFO_16x16x20b
+// Module Name: FIFO
 // Project Name: 
 // Target Devices: 
 // Tool Versions: 
-// Description: FIFO (Width: 128-bit, depth: 256)
+// Description: FIFO
 // 
 // Dependencies:
 // 
@@ -19,32 +19,37 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module FIFO_16x16x20b (
-    input reset_n,
-    input clk,
-    input en,
-    input [319:0] din,
-    output [319:0] dout
+module FIFO #
+(
+    parameter FIFO_WIDTH = 16*8,
+    parameter FIFO_DEPTH = 4
+)
+(
+    input  reset_n,
+    input  clk,
+    input  en,
+    input  [FIFO_WIDTH-1:0] din,
+    output [FIFO_WIDTH-1:0] dout
 );
 
 integer i;
 
-reg [319:0] fifo [0:15];
+reg [FIFO_WIDTH-1:0] fifo [0:FIFO_DEPTH-1];
 
-assign dout = fifo[15];
+assign dout = fifo[FIFO_DEPTH-1];
 
-always @ (posedge clk) begin : FIFO_LOGIC
+always @ (posedge clk or negedge reset_n) begin : FIFO_LOGIC
     if (reset_n == 1'b0) begin
-        for (i = 0; i < 16; i = i + 1) begin
-            fifo[i] <= 320'd0;
+        for (i = 0; i < FIFO_DEPTH; i = i + 1) begin
+            fifo[i] <= 'd0;
         end
     end else if (en) begin
         fifo[0] <= din;
-        for (i = 0; i < 15; i = i + 1) begin
+        for (i = 0; i < FIFO_DEPTH-1; i = i + 1) begin
             fifo[i + 1] <= fifo[i];
         end
     end
 end
 
 endmodule
-// End of FIFO_16x16x20b //
+// End of FIFO //

@@ -21,11 +21,15 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module SYSTOLIC_ARRAY (
-    input reset_n,
-    input clk,
-    input [INST_BITS-1:0] instruction,
-    input [DIN_BITS-1:0] din,
-    output [DIN_BITS-1:0] dout
+    input  wire reset_n,
+    input  wire clk,
+    input  wire [INST_BITS-1:0] instruction,
+    output wire [1:0] axi_sm_mode,
+    output wire init_axi_txn,
+    output wire flag,
+    input  wire dvalid,
+    input  wire [DIN_BITS-1:0] din,
+    output wire [DIN_BITS-1:0] dout
 );
 
 `include "sa_share.v"
@@ -38,7 +42,6 @@ wire [127:0] DATA_FIFO_MMU_PATH, WEIGHT_FIFO_MMU_PATH,
             UB_DATA_PATH, WB_WEIGHT_FIFO_PATH, CTRL_DOUT, RESLUT_DOUT;
 wire [319:0] MMU_ACC_PATH;
 wire [7:0] ADDRA, ADDRB;
-wire flag;
 
 assign dout = UB_DATA_PATH;
 
@@ -47,6 +50,9 @@ CONTROL_UNIT CU (
     .reset_n(reset_n),
     .clk(clk),
     .instruction(instruction),
+    .axi_sm_mode(axi_sm_mode),
+    .init_axi_txn(init_axi_txn),
+    .dvalid(dvalid),
     .din(din),
     .rin(RESLUT_DOUT),
     .flag(flag),
@@ -67,7 +73,7 @@ CONTROL_UNIT CU (
 );
 
 // Weight-FIFO
-FIFO_4x16x8b WEIGHT_FIFO (
+FIFO #(.FIFO_WIDTH(16*8), .FIFO_DEPTH(4)) WEIGHT_FIFO (
     .reset_n(reset_n),
     .clk(clk),
     .en(WEIGHT_FIFO_EN_SIG),
@@ -76,7 +82,7 @@ FIFO_4x16x8b WEIGHT_FIFO (
 );
 
 // Unified Buffer
-BRAM_256x16x8b UB (
+BRAM #(.RAM_WIDTH(16*8), .RAM_DEPTH(256)) UB (
     .clk(clk),
     .wea(WRITE_UB_SIG),
     .enb(READ_UB_SIG),
@@ -87,7 +93,7 @@ BRAM_256x16x8b UB (
 );
 
 // Weight Buffer
-BRAM_256x16x8b WB (
+BRAM #(.RAM_WIDTH(16*8), .RAM_DEPTH(256)) WB (
     .clk(clk),
     .wea(WRITE_WB_SIG),
     .enb(READ_WB_SIG),
@@ -98,7 +104,7 @@ BRAM_256x16x8b WB (
 );
 
 // Data-FIFO
-FIFO_4x16x8b DATA_FIFO (
+FIFO #(.FIFO_WIDTH(16*8), .FIFO_DEPTH(4)) DATA_FIFO (
     .reset_n(reset_n),
     .clk(clk),
     .en(DATA_FIFO_EN_SIG),
@@ -118,14 +124,6 @@ MATRIX_MULTIPLY_UNIT MMU (
 );
 
 // Accumulator
-//FIFO_16x16x20b ACC (
-//    .reset_n(reset_n),
-//    .clk(clk),
-//    .en(ACC_SIG),
-//    .din(MMU_ACC_PATH),
-//    .dout(dout)
-//);
-
 ACCUMULATOR ACC (
     .clk(clk),
     .wea(WRITE_ACC_SIG),

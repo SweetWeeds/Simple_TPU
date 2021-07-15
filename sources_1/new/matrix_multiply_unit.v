@@ -24,8 +24,8 @@ module MATRIX_MULTIPLY_UNIT (
     input clk,
     input wen,
     input mm_en,
-    input [127:0] ain,  //input signed [7:0] ain [0:15],
-    input [127:0] win,  //input signed [7:0] win [0:15],
+    input [127:0] ain,  //input signed [7:0] ain [15:0],
+    input [127:0] win,  //input signed [7:0] win [15:0],
     output signed [319:0] aout //output signed [19:0] aout [0:15]
 );
 
