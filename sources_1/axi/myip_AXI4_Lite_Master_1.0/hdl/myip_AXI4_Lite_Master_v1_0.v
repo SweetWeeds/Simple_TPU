@@ -28,9 +28,9 @@
 
 
 		// Ports of Axi Master Bus Interface M00_AXI
-		input wire  m00_axi_init_axi_txn,
+		input wire  m00_axi_txn_en,
 		output wire  m00_axi_error,
-		output wire m00_axi_txn_done,
+		output wire m00_axi_inst_done,
 		input wire  m00_axi_aclk,
 		input wire  m00_axi_aresetn,
 		output wire [C_M00_AXI_ADDR_WIDTH-1 : 0] m00_axi_awaddr,
@@ -64,9 +64,9 @@
 		.C_M_OFF_MEM_ADDRB(c_m00_off_mem_addrb),
 		.C_M_WDATA(c_m00_wdata),
 		.C_M_RDATA(c_m00_rdata),
-		.INIT_AXI_TXN(m00_axi_init_axi_txn),
+		.AXI_TXN_EN(m00_axi_txn_en),
 		.ERROR(m00_axi_error),
-		.TXN_DONE(m00_axi_txn_done),
+		.INST_DONE(m00_axi_inst_done),
 		.M_AXI_ACLK(m00_axi_aclk),
 		.M_AXI_ARESETN(m00_axi_aresetn),
 		.M_AXI_AWADDR(m00_axi_awaddr),

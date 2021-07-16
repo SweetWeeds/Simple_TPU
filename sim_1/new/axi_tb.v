@@ -23,16 +23,47 @@
 module axi_tb;
 
 // Clock localparams
-parameter  CLOCK_PS            = 10000;      //  should be a multiple of 10
+parameter CLOCK_PS             = 10000;      //  should be a multiple of 10
 parameter clock_period         = CLOCK_PS / 1000.0;
 parameter half_clock_period    = clock_period / 2;
 parameter minimum_period       = clock_period / 10;
 parameter AXI_ADDR_WIDTH       = 32;
 parameter AXI_DATA_WIDTH       = 32;
 parameter AXI_TRANSACTIONS_NUM = 4;
+parameter [1:0] IDLE = 2'b00,
+                LOAD_DATA   = 2'b01,
+                WRITE_DATA  = 2'b10;
 
 // regs & wires
-reg reset_n = 1'b1, clk, wen = 1'b1;
+reg reset_n = 1'b1, clk;
+reg [1:0] axi_sm_mode;  // 0: IDLE, 1: LOAD_DATA, 2: WRITE_DATA
+//reg [AXI_DATA_WIDTH-1 : 0] C_M_OFF_MEM_ADDRA = 'd0;
+//reg [AXI_DATA_WIDTH-1 : 0] C_M_OFF_MEM_ADDRB = 'd0;
+reg [AXI_DATA_WIDTH*AXI_TRANSACTIONS_NUM-1 : 0] C_M_WDATA;
+reg axi_txn_en = 1'b0;
+wire INST_DONE;
+// AXI Signals
+wire [AXI_ADDR_WIDTH-1 : 0] axi_awaddr;
+wire [2 : 0] axi_awprot;
+wire axi_awvalid;
+wire axi_awready;
+wire [AXI_DATA_WIDTH-1 : 0] axi_wdata;
+wire [AXI_DATA_WIDTH/8-1 : 0] axi_wstrb;
+wire axi_wvalid;
+wire axi_wready;
+wire [1 : 0] axi_bresp;
+wire axi_bvalid;
+wire axi_bready;
+wire [AXI_ADDR_WIDTH-1 : 0] axi_araddr;
+wire [2 : 0] axi_arprot;
+wire axi_arvalid;
+wire axi_arready;
+wire [AXI_DATA_WIDTH-1 : 0] axi_rdata;
+wire [1 : 0] axi_rresp;
+wire axi_rvalid;
+wire axi_rready;
+reg [7:0] ADDRA = 8'h00, ADDRB = 8'h00;
+// End of AXI Signals
 
 // AXI4 Lite Master
 myip_AXI4_Lite_Master_0 M00 (
@@ -44,9 +75,9 @@ myip_AXI4_Lite_Master_0 M00 (
 	.c_m00_rdata(AXI_CU_LOAD_DATA_PATH),
     // End of user ports
 
-    .m00_axi_init_axi_txn(init_axi_txn),
+    .m00_axi_txn_en(axi_txn_en),
 	.m00_axi_error(),
-	.m00_axi_txn_done(TXN_DONE),
+	.m00_axi_inst_done(INST_DONE),
 	.m00_axi_aclk(clk),
 	.m00_axi_aresetn(reset_n),
 	.m00_axi_awaddr(axi_awaddr),
@@ -71,7 +102,7 @@ myip_AXI4_Lite_Master_0 M00 (
 );
 
 // Slave off memory
-OFF_MEM OM0 (
+OFF_MEM #(.INIT_FILE("C:\\Users\\DICE\\systolic_array\\systolic_array.srcs\\sim_1\\new\\hex_mem.mem")) OM0 (
     .clk(clk),
     .reset_n(reset_n),
     .s00_axi_awaddr(axi_awaddr),
@@ -113,7 +144,21 @@ initial begin : TEST_BENCH
     # clock_period;
     reset_n = 1'b1;
 
-    // 
+    // 1. Read BRAM data from slave //
+    // Write address
+    for (integer i = 0; i < 256; i = i + 4) begin
+        wait(INST_DONE == 1'b0);
+        $display("[Testbench] Instruction start.");
+        axi_txn_en = 1'b1;
+        axi_sm_mode <= LOAD_DATA;
+        ADDRB <= i;
+        wait (INST_DONE == 1'b1);
+        $display("[Testbench] Instruction done.");
+        axi_txn_en = 1'b0;
+    end
+
+    // 2. Write data to slave's BRAM //
+    
 end
 
 

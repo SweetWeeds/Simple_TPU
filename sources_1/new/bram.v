@@ -9,7 +9,8 @@
 module BRAM #
 (
     parameter RAM_WIDTH = 16*8,     // Specify RAM data width
-    parameter RAM_DEPTH = 256       // Specify RAM depth (number of entries)
+    parameter RAM_DEPTH = 256,       // Specify RAM depth (number of entries)
+    parameter INIT_FILE = ""                       // Specify name/location of RAM initialization file if using one (leave blank if not)
 )
 (
     input clk,  // Clock
@@ -34,13 +35,17 @@ reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 // The following code either initializes the memory values to a specified file or to all zeros to match hardware
 generate
     if (INIT_FILE != "") begin: use_init_file
-      initial
-        $readmemh(INIT_FILE, bram, 0, RAM_DEPTH-1);
+        initial begin
+            $display("BRAM Init with file.");
+            $readmemh(INIT_FILE, bram, 0, RAM_DEPTH-1);
+        end
     end else begin: init_bram_to_zero
-      integer ram_index;
-      initial
-        for (ram_index = 0; ram_index < RAM_DEPTH; ram_index = ram_index + 1)
-          bram[ram_index] = {RAM_WIDTH{1'b0}};
+        initial begin
+        $display("BRAM Init with index");
+        for (integer ram_index = 0; ram_index < RAM_DEPTH; ram_index = ram_index + 1)
+            //bram[ram_index] = {RAM_WIDTH{1'b0}};
+            bram[ram_index] = ram_index;
+        end
     end
 endgenerate
 

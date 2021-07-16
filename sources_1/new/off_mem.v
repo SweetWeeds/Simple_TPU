@@ -23,7 +23,8 @@
 module OFF_MEM #
 (
     parameter integer DATA_WIDTH = 4*8,
-    parameter integer RAM_DEPTH = 256
+    parameter integer RAM_DEPTH = 256,
+    parameter INIT_FILE = "hex_mem.mem"
 )
 (
     input wire  clk,
@@ -51,26 +52,26 @@ module OFF_MEM #
 
 wire wea, enb;
 wire [DATA_WIDTH-1 : 0] addra, addrb;
-wire [DATA_WIDTH-1 : 0] dina, dinb;
+wire [DATA_WIDTH-1 : 0] data_a, data_b;
 
-BRAM #(.RAM_WIDTH(DATA_WIDTH), .RAM_DEPTH(RAM_DEPTH)) OFF_MEM_BRAM
+BRAM #(.RAM_WIDTH(DATA_WIDTH), .RAM_DEPTH(RAM_DEPTH), .INIT_FILE(INIT_FILE)) OFF_MEM_BRAM
 (
     .clk(clk),
     .wea(wea),
     .enb(enb),
     .addra(addra[7:0]),
     .addrb(addrb[7:0]),
-    .dina(dina),
-    .doutb(doutb)
+    .dina(data_a),
+    .doutb(data_b)
 );
 
 myip_AXI4_Lite_Slave_0 #(.C_S00_AXI_DATA_WIDTH(DATA_WIDTH), .C_S00_AXI_ADDR_WIDTH(DATA_WIDTH)) S00
 (
     .c_s00_web(wea),
-    .c_s00_douta(dina),
+    .c_s00_douta(data_a),
     .c_s00_addra(addra),
     .c_s00_reb(enb),
-    .c_s00_dinb(doutb),
+    .c_s00_dinb(data_b),
     .c_s00_addrb(addrb),
     .s00_axi_aclk(clk),
     .s00_axi_aresetn(reset_n),

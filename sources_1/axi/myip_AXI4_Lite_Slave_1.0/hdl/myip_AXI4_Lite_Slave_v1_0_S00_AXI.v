@@ -107,7 +107,8 @@
     // ADDR_LSB is used for addressing 32/64 bit registers/memories
     // ADDR_LSB = 2 for 32 bits (n downto 2)
     // ADDR_LSB = 3 for 64 bits (n downto 3)
-    localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH/32) + 1;
+    //localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH/32) + 1;
+    localparam integer ADDR_LSB = 0;
     localparam integer OPT_MEM_ADDR_BITS = 2;
     //----------------------------------------------
     //-- Signals for user logic register space example
@@ -151,32 +152,23 @@
     assign C_S_ADDRA = slv_reg3;
     assign C_S_ADDRB = slv_reg1;
 
-    always @( posedge S_AXI_ACLK )
-    begin
-      if ( S_AXI_ARESETN == 1'b0 )
-        begin
-          axi_awready <= 1'b0;
-          aw_en <= 1'b1;
-        end 
-      else
-        begin    
-          if (~axi_awready && S_AXI_AWVALID && S_AXI_WVALID && aw_en)
-            begin
-              // slave is ready to accept write address when 
-              // there is a valid write address and write data
-              // on the write address and data bus. This design 
-              // expects no outstanding transactions. 
-              axi_awready <= 1'b1;
-              aw_en <= 1'b0;
-            end
-            else if (S_AXI_BREADY && axi_bvalid)
-                begin
-                  aw_en <= 1'b1;
-                  axi_awready <= 1'b0;
-                end
-          else           
-            begin
-              axi_awready <= 1'b0;
+    always @( posedge S_AXI_ACLK ) begin
+        if ( S_AXI_ARESETN == 1'b0 ) begin
+            axi_awready <= 1'b0;
+            aw_en <= 1'b1;
+        end else begin    
+            if (~axi_awready && S_AXI_AWVALID && S_AXI_WVALID && aw_en) begin
+                // slave is ready to accept write address when 
+                // there is a valid write address and write data
+                // on the write address and data bus. This design 
+                // expects no outstanding transactions. 
+                axi_awready <= 1'b1;
+                aw_en <= 1'b0;
+            end else if (S_AXI_BREADY && axi_bvalid) begin
+                aw_en <= 1'b1;
+                axi_awready <= 1'b0;
+            end else begin
+                axi_awready <= 1'b0;
             end
         end 
     end       
@@ -185,20 +177,15 @@
     // This process is used to latch the address when both 
     // S_AXI_AWVALID and S_AXI_WVALID are valid. 
 
-    always @( posedge S_AXI_ACLK )
-    begin
-      if ( S_AXI_ARESETN == 1'b0 )
-        begin
-          axi_awaddr <= 0;
-        end 
-      else
-        begin    
-          if (~axi_awready && S_AXI_AWVALID && S_AXI_WVALID && aw_en)
-            begin
-              // Write Address latching 
-              axi_awaddr <= S_AXI_AWADDR;
+    always @( posedge S_AXI_ACLK ) begin
+        if ( S_AXI_ARESETN == 1'b0 ) begin
+            axi_awaddr <= 0;
+        end else begin    
+            if (~axi_awready && S_AXI_AWVALID && S_AXI_WVALID && aw_en) begin
+                // Write Address latching 
+                axi_awaddr <= S_AXI_AWADDR;
             end
-        end 
+        end
     end       
 
     // Implement axi_wready generation
@@ -206,25 +193,18 @@
     // S_AXI_AWVALID and S_AXI_WVALID are asserted. axi_wready is 
     // de-asserted when reset is low. 
 
-    always @( posedge S_AXI_ACLK )
-    begin
-      if ( S_AXI_ARESETN == 1'b0 )
-        begin
-          axi_wready <= 1'b0;
-        end 
-      else
-        begin    
-          if (~axi_wready && S_AXI_WVALID && S_AXI_AWVALID && aw_en )
-            begin
-              // slave is ready to accept write data when 
-              // there is a valid write address and write data
-              // on the write address and data bus. This design 
-              // expects no outstanding transactions. 
-              axi_wready <= 1'b1;
-            end
-          else
-            begin
-              axi_wready <= 1'b0;
+    always @( posedge S_AXI_ACLK ) begin
+        if ( S_AXI_ARESETN == 1'b0 ) begin
+            axi_wready <= 1'b0;
+        end else begin   
+            if (~axi_wready && S_AXI_WVALID && S_AXI_AWVALID && aw_en ) begin
+                // slave is ready to accept write data when 
+                // there is a valid write address and write data
+                // on the write address and data bus. This design 
+                // expects no outstanding transactions. 
+                axi_wready <= 1'b1;
+            end else begin
+                axi_wready <= 1'b0;
             end
         end 
     end       
@@ -238,64 +218,65 @@
     // and the slave is ready to accept the write address and write data.
     assign slv_reg_wren = axi_wready && S_AXI_WVALID && axi_awready && S_AXI_AWVALID;
 
-    always @( posedge S_AXI_ACLK )
-    begin
-      if ( S_AXI_ARESETN == 1'b0 )
-        begin
-          slv_reg0 <= 0;
-          slv_reg1 <= 0;
-          slv_reg2 <= 0;
-          slv_reg3 <= 0;
-          slv_reg4 <= 0;
-        end 
-      else begin
-        if (slv_reg_wren)
-          begin
+    always @( posedge S_AXI_ACLK ) begin
+        if ( S_AXI_ARESETN == 1'b0 ) begin
+            slv_reg0 <= 0;
+            slv_reg1 <= 0;
+            slv_reg2 <= 0;
+            slv_reg3 <= 0;
+            slv_reg4 <= 0;
+        end else begin
+            if (slv_reg_wren) begin
             case ( axi_awaddr[ADDR_LSB+OPT_MEM_ADDR_BITS:ADDR_LSB] )
-              3'h0:
+            3'h0:
                 for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
-                  if ( S_AXI_WSTRB[byte_index] == 1 ) begin
-                    // Respective byte enables are asserted as per write strobes 
-                    // Slave register 0
-                    slv_reg0[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-                  end  
-              3'h1:
+                    if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+                        // Respective byte enables are asserted as per write strobes 
+                        // Slave register 0
+                        $display("[AXI4_Lite_Slave] Write on slv_reg0");
+                        slv_reg0[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+                    end  
+            3'h1:
                 for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
-                  if ( S_AXI_WSTRB[byte_index] == 1 ) begin
-                    // Respective byte enables are asserted as per write strobes 
-                    // Slave register 1
-                    slv_reg1[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-                    read_off_mem_start <= 1'b1;
-                  end  
-              3'h2:
+                    if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+                        // Respective byte enables are asserted as per write strobes 
+                        // Slave register 1
+                        $display("[AXI4_Lite_Slave] Write on slv_reg1");
+                        slv_reg1[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+                        read_off_mem_start <= 1'b1;
+                    end  
+            3'h2:
                 for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
-                  if ( S_AXI_WSTRB[byte_index] == 1 ) begin
-                    // Respective byte enables are asserted as per write strobes 
-                    // Slave register 2
-                    slv_reg2[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-                  end  
-              3'h3:
+                    if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+                        // Respective byte enables are asserted as per write strobes 
+                        // Slave register 2
+                        $display("[AXI4_Lite_Slave] Write on slv_reg2");
+                        slv_reg2[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+                    end  
+            3'h3:
                 for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
-                  if ( S_AXI_WSTRB[byte_index] == 1 ) begin
-                    // Respective byte enables are asserted as per write strobes 
-                    // Slave register 3
-                    slv_reg3[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-                    write_off_mem_start <= 1'b1;
-                  end  
-              3'h4:
+                    if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+                        // Respective byte enables are asserted as per write strobes 
+                        // Slave register 3
+                        $display("[AXI4_Lite_Slave] Write on slv_reg3");
+                        slv_reg3[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+                        write_off_mem_start <= 1'b1;
+                    end  
+            3'h4:
                 for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
-                  if ( S_AXI_WSTRB[byte_index] == 1 ) begin
-                    // Respective byte enables are asserted as per write strobes 
-                    // Slave register 4
-                    slv_reg4[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
-                  end  
-              default : begin
-                          slv_reg0 <= slv_reg0;
-                          slv_reg1 <= slv_reg1;
-                          slv_reg2 <= slv_reg2;
-                          slv_reg3 <= slv_reg3;
-                          slv_reg4 <= slv_reg4;
-                        end
+                    if ( S_AXI_WSTRB[byte_index] == 1 ) begin
+                        $display("[AXI4_Lite_Slave] Write on slv_reg4");
+                        // Respective byte enables are asserted as per write strobes 
+                        // Slave register 4
+                        slv_reg4[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+                    end  
+            default : begin
+                slv_reg0 <= slv_reg0;
+                slv_reg1 <= slv_reg1;
+                slv_reg2 <= slv_reg2;
+                slv_reg3 <= slv_reg3;
+                slv_reg4 <= slv_reg4;
+            end
             endcase
           end
       end
@@ -380,6 +361,7 @@
                         // Valid read data is available at the read data bus
                         axi_rvalid <= 1'b1;
                         axi_rresp  <= 2'b0; // 'OKAY' response
+                        read_off_mem_done <= 1'b0;
                     end
                 end else begin
                     // Valid read data is available at the read data bus

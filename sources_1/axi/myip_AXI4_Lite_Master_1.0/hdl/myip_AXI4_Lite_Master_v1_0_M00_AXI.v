@@ -30,12 +30,14 @@
         // User ports ends
         // Do not modify the ports beyond this line
 
-        // Initiate AXI transactions
-        input wire  INIT_AXI_TXN,
+        // Enable AXI transactions
+        input wire  AXI_TXN_EN,
         // Asserts when ERROR is detected
         output reg  ERROR,
         // Asserts when AXI transactions is complete
-        output wire  TXN_DONE,
+        //output wire  TXN_DONE,
+        // Asserts when instruction (batch of AXI transactions) is complete
+        output wire INST_DONE,
         // AXI clock signal
         input wire  M_AXI_ACLK,
         // AXI active low reset signal
@@ -116,15 +118,13 @@
     // Example State machine to initialize counter, initialize write transactions,
     // initialize read transactions and comparison of read data with the
     // written data words.
-    parameter [1:0] IDLE = 2'b00, // This state initiates AXI4Lite transaction
-            // after the state machine changes state to INIT_WRITE
-            // when there is 0 to 1 transition on INIT_AXI_TXN
-        LOAD_DATA   = 2'b01, // This state initializes load data instruction,
-            // 8 times of writes and reads done, the state machine
-            // changes state to IDLE state
-        WRITE_DATA  = 2'b10; // This state initializes write data instruction
-            // 8 times of writes and reads done, the state machine
-            // changes state to IDLE state
+    parameter [1:0] IDLE = 2'b00,
+                    LOAD_DATA   = 2'b01, // This state initializes load data instruction,
+                    // 8 times of writes and reads done, the state machine
+                    // changes state to IDLE state
+                    WRITE_DATA  = 2'b10; // This state initializes write data instruction
+                    // 8 times of writes and reads done, the state machine
+                    // changes state to IDLE state
 
     reg [3:0] mst_exec_state;
 
@@ -153,34 +153,15 @@
     reg  	start_single_write;
     //A pulse to initiate a read transaction
     reg  	start_single_read;
-    //Asserts when a single beat write transaction is issued and remains asserted till the completion of write trasaction.
-    reg  	write_issued;
-    //Asserts when a single beat read transaction is issued and remains asserted till the completion of read trasaction.
-    reg  	read_issued;
-    //flag that marks the completion of write trasactions. The number of write transaction is user selected by the parameter C_M_TRANSACTIONS_NUM.
-    reg  	writes_done;
-    //flag that marks the completion of read trasactions. The number of read transaction is user selected by the parameter C_M_TRANSACTIONS_NUM
-    reg  	reads_done;
-    //The error register is asserted when any of the write response error, read response error or the data mismatch flags are asserted.
-    reg  	error_reg;
     //index counter to track the number of write transaction issued
     reg [TRANS_NUM_BITS : 0] 	write_index;
     //index counter to track the number of read transaction issued
     reg [TRANS_NUM_BITS : 0] 	read_index;
-    //This flag is asserted when there is a mismatch of the read data with the expected read data.
-    reg  	read_mismatch;
-    //Flag is asserted when the write index reaches the last write transction number
-    reg  	last_write;
-    //Flag is asserted when the read index reaches the last read transction number
-    reg  	last_read;
-    reg  	init_txn_ff;
-    reg  	init_txn_ff2;
-    reg  	init_txn_edge;
-    wire  	init_txn_pulse;
-    reg txn_done;
     reg [3:0] minor_state;
     reg [C_M_AXI_DATA_WIDTH-1 : 0] C_M_RDATA_PARSED [C_M_TRANSACTIONS_NUM-1 : 0];
     wire [C_M_AXI_DATA_WIDTH-1 : 0] C_M_WDATA_PARSED [C_M_TRANSACTIONS_NUM-1 : 0];
+    reg inst_done;
+    reg txn_done;
 
 
     // I/O Connections assignments
@@ -204,28 +185,12 @@
     //Read and Read Response (R)
     assign M_AXI_RREADY	= axi_rready;
     //Example design I/O
-    assign init_txn_pulse	= (!init_txn_ff2) && init_txn_ff;
-    assign TXN_DONE         = txn_done;
+    //assign TXN_DONE         = txn_done;
     assign C_M_RDATA = {C_M_RDATA_PARSED[3], C_M_RDATA_PARSED[2], C_M_RDATA_PARSED[1], C_M_RDATA_PARSED[0]};
     for (genvar i = 0; i < C_M_TRANSACTIONS_NUM; i = i + 1) begin
         assign C_M_WDATA_PARSED[i] = C_M_WDATA[i * C_M_AXI_DATA_WIDTH + : C_M_AXI_DATA_WIDTH];
     end
-
-    //Generate a pulse to initiate AXI transaction.
-    always @(posedge M_AXI_ACLK)
-      begin
-        // Initiates AXI transaction delay
-        if (M_AXI_ARESETN == 0 )
-          begin
-            init_txn_ff <= 1'b0;
-            init_txn_ff2 <= 1'b0;
-          end
-        else
-          begin
-            init_txn_ff <= INIT_AXI_TXN;
-            init_txn_ff2 <= init_txn_ff;
-          end
-      end
+    assign INST_DONE = inst_done;
 
 
     //--------------------
@@ -252,47 +217,39 @@
     // there will not be a collision between a new request and an accepted
     // request on the same clock cycle.
 
-      always @(posedge M_AXI_ACLK)
-      begin
+    always @(posedge M_AXI_ACLK) begin
         //Only VALID signals must be deasserted during reset per AXI spec
         //Consider inverting then registering active-low reset for higher fmax
-        if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1)
-          begin
+        if (M_AXI_ARESETN == 0 || txn_done == 1'b1) begin
             axi_awvalid <= 1'b0;
-          end
-          //Signal a new address/data command is available by user logic
-        else
-          begin
-            if (start_single_write)
-              begin
+        end
+        //Signal a new address/data command is available by user logic
+        else begin
+            if (start_single_write) begin
                 axi_awvalid <= 1'b1;
-              end
-         //Address accepted by interconnect/slave (issue of M_AXI_AWREADY by slave)
-            else if (M_AXI_AWREADY && axi_awvalid)
-              begin
+            end
+            //Address accepted by interconnect/slave (issue of M_AXI_AWREADY by slave)
+            else if (M_AXI_AWREADY && axi_awvalid) begin
                 axi_awvalid <= 1'b0;
-              end
-          end
-      end
+            end
+        end
+    end
 
 
-      // start_single_write triggers a new write
-      // transaction. write_index is a counter to
-      // keep track with number of write transaction
-      // issued/initiated
-      always @(posedge M_AXI_ACLK)
-      begin
-        if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1)
-          begin
+    // start_single_write triggers a new write
+    // transaction. write_index is a counter to
+    // keep track with number of write transaction
+    // issued/initiated
+    always @(posedge M_AXI_ACLK) begin
+        if (M_AXI_ARESETN == 0 || txn_done == 1'b1) begin
             write_index <= 0;
-          end
-          // Signals a new write address/ write data is
-          // available by user logic
-        else if (start_single_write)
-          begin
+        end
+        // Signals a new write address/ write data is
+        // available by user logic
+        else if (start_single_write) begin
             write_index <= write_index + 1;
-          end
-      end
+        end
+    end
 
 
     //--------------------
@@ -303,23 +260,20 @@
     //The data generation is speific to the example design, and
     //so only the WVALID/WREADY handshake is shown here
 
-       always @(posedge M_AXI_ACLK)
-       begin
-         if (M_AXI_ARESETN == 0  || init_txn_pulse == 1'b1)
-           begin
-             axi_wvalid <= 1'b0;
-           end
-         //Signal a new address/data command is available by user logic
-         else if (start_single_write)
-           begin
-             axi_wvalid <= 1'b1;
-           end
-         //Data accepted by interconnect/slave (issue of M_AXI_WREADY by slave)
-         else if (M_AXI_WREADY && axi_wvalid)
-           begin
+    always @(posedge M_AXI_ACLK) begin
+        if (M_AXI_ARESETN == 0 || txn_done == 1'b1) begin
+            $display("[AXI4_Lite_Master:Write_Data_Channel] Reset or Init");
             axi_wvalid <= 1'b0;
-           end
-       end
+        end
+        //Signal a new address/data command is available by user logic
+        else if (start_single_write) begin
+            axi_wvalid <= 1'b1;
+        end
+        //Data accepted by interconnect/slave (issue of M_AXI_WREADY by slave)
+        else if (M_AXI_WREADY && axi_wvalid) begin
+            axi_wvalid <= 1'b0;
+        end
+    end
 
 
     //----------------------------
@@ -337,27 +291,23 @@
     //While not necessary per spec, it is advisable to reset READY signals in
     //case of differing reset latencies between master/slave.
 
-      always @(posedge M_AXI_ACLK)
-      begin
-        if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1)
-          begin
+    always @(posedge M_AXI_ACLK) begin
+        if (M_AXI_ARESETN == 0 || txn_done == 1'b1) begin
             axi_bready <= 1'b0;
-          end
+        end
         // accept/acknowledge bresp with axi_bready by the master
         // when M_AXI_BVALID is asserted by slave
-        else if (M_AXI_BVALID && ~axi_bready)
-          begin
+        else if (M_AXI_BVALID && ~axi_bready) begin
             axi_bready <= 1'b1;
-          end
+        end
         // deassert after one clock cycle
-        else if (axi_bready)
-          begin
+        else if (axi_bready) begin
             axi_bready <= 1'b0;
-          end
+        end
         // retain the previous value
         else
-          axi_bready <= axi_bready;
-      end
+            axi_bready <= axi_bready;
+    end
 
     //Flag write errors
     assign write_resp_error = (axi_bready & M_AXI_BVALID & M_AXI_BRESP[1]);
@@ -370,41 +320,34 @@
     //start_single_read triggers a new read transaction. read_index is a counter to
     //keep track with number of read transaction issued/initiated
 
-      always @(posedge M_AXI_ACLK)
-      begin
-        if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1)
-          begin
+    always @(posedge M_AXI_ACLK) begin
+        if (M_AXI_ARESETN == 0 || txn_done == 1'b1) begin
             read_index <= 0;
-          end
+        end
         // Signals a new read address is
         // available by user logic
-        else if (start_single_read)
-          begin
+        else if (start_single_read) begin
             read_index <= read_index + 1;
-          end
-      end
+        end
+    end
 
-      // A new axi_arvalid is asserted when there is a valid read address
-      // available by the master. start_single_read triggers a new read
-      // transaction
-      always @(posedge M_AXI_ACLK)
-      begin
-        if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1)
-          begin
+    // A new axi_arvalid is asserted when there is a valid read address
+    // available by the master. start_single_read triggers a new read
+    // transaction
+    always @(posedge M_AXI_ACLK) begin
+        if (M_AXI_ARESETN == 0 || txn_done == 1'b1) begin
             axi_arvalid <= 1'b0;
-          end
+        end
         //Signal a new read address command is available by user logic
-        else if (start_single_read)
-          begin
+        else if (start_single_read) begin
             axi_arvalid <= 1'b1;
-          end
+        end
         //RAddress accepted by interconnect/slave (issue of M_AXI_ARREADY by slave)
-        else if (M_AXI_ARREADY && axi_arvalid)
-          begin
+        else if (M_AXI_ARREADY && axi_arvalid) begin
             axi_arvalid <= 1'b0;
-          end
+        end
         // retain the previous value
-      end
+    end
 
 
     //--------------------------------
@@ -418,7 +361,7 @@
     //case of differing reset latencies between master/slave.
 
     always @(posedge M_AXI_ACLK) begin
-        if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1) begin
+        if (M_AXI_ARESETN == 0 || txn_done == 1'b1) begin
             axi_rready <= 1'b0;
         end
         // accept/acknowledge rdata/rresp with axi_rready by the master
@@ -440,83 +383,89 @@
     //--------------------------------
     //User Logic
 
+    // Transaction done check
+    always @ (posedge M_AXI_ACLK) begin : TXN_DONE_CHECK
+        if (M_AXI_ARESETN == 1'b0 || txn_done == 1'b1) begin
+            txn_done <= 1'b0;
+        end else if ((M_AXI_BVALID && axi_bready) || (M_AXI_BVALID && axi_bready)) begin
+            txn_done <= 1'b1;
+        end
+    end
+
     // State machine
     always @ (posedge M_AXI_ACLK) begin : STATE_MACHINE
-        if (M_AXI_ARESETN == 1'b0 || txn_done == 1'b1) begin
+        if (M_AXI_ARESETN == 1'b0 || inst_done == 1'b1) begin
+            $display("[AXI4_Lite_Master:STATE_MACHINE] Reset");
             // Reset condition
             // All the signals are assigned default values under reset condition
-            mst_exec_state  <= IDLE;
-            minor_state <= 'd0;
-            axi_awaddr <= 32'h00000000;
-            C_M_RDATA_PARSED[0]  <= 32'h00000000;
-            C_M_RDATA_PARSED[1]  <= 32'h00000000;
-            C_M_RDATA_PARSED[2]  <= 32'h00000000;
-            C_M_RDATA_PARSED[3]  <= 32'h00000000;
-            axi_araddr <= 32'h00000000;
-            start_single_write <= 1'b0;
-            write_issued  <= 1'b0;
-            start_single_read  <= 1'b0;
-            read_issued   <= 1'b0;
-            ERROR <= 1'b0;
-            txn_done <= 1'b0;
-        end else begin
+            mst_exec_state      <= IDLE;
+            minor_state         <= 'd0;
+            axi_awaddr          <= 32'h00000000;
+            C_M_RDATA_PARSED[0] <= 32'h00000000;
+            C_M_RDATA_PARSED[1] <= 32'h00000000;
+            C_M_RDATA_PARSED[2] <= 32'h00000000;
+            C_M_RDATA_PARSED[3] <= 32'h00000000;
+            axi_araddr          <= 32'h00000000;
+            start_single_write  <= 1'b0;
+            start_single_read   <= 1'b0;
+            ERROR               <= 1'b0;
+            inst_done           <= 1'b0;
+        end else if (AXI_TXN_EN) begin
             // State logic
             case (mst_exec_state)
             IDLE : begin
+                $display("[AXI4_Lite_Master:STATE_MACHINE] IDLE");
                 // This state is responsible to initiate
-                // AXI transaction when init_txn_pulse is asserted
-                if (init_txn_pulse == 1'b1) begin
-                    mst_exec_state  <= C_M_MODE;
-                    ERROR <= 1'b0;
-                end else begin
-                    mst_exec_state  <= IDLE;
-                end
+                mst_exec_state  <= C_M_MODE;
+                ERROR <= 1'b0;
             end
-
             LOAD_DATA  : begin
+                $display("[AXI4_Lite_Master:STATE_MACHINE] LOAD_DATA");
                 case (minor_state)
-                LOAD_DATA_DONE : begin  // Write data to UB (txn_done <= 1'b1)
+                LOAD_DATA_DONE : begin  // Write data to UB (inst_done <= 1'b1)
                     mst_exec_state  <= IDLE;
                     minor_state     <= 'd0;
                     axi_awaddr      <= 'd0;
-                    txn_done        <= 1'b1;
+                    inst_done       <= 1'b1;
                 end
 
                 0, 2, 4, 6 : begin  // Write off-mem read addr (ADDRB)
+                    $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem read addr(ADDRB)");
                     axi_awaddr <= 1;    // Write addr (slv_reg1)
                     // Write and state control logic
                     if (M_AXI_BVALID && axi_bready) begin
                         // Write addr(slv_reg1) valid & ready : Write done normally.
-                        minor_state <= minor_state + 1;
+                        $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem done(0)");
+                        minor_state     <= minor_state + 1;
                     end else begin
-                        if (~axi_awvalid && ~axi_wvalid && ~M_AXI_BVALID && ~start_single_write && ~write_issued) begin
-                            axi_wdata <= C_M_OFF_MEM_ADDRB;
-                            start_single_write <= 1'b1;
-                            write_issued  <= 1'b1;
-                        end else if (axi_bready) begin
-                            // Write Resopnse (axi_bready) is True.
-                            write_issued  <= 1'b0;
+                        if (~axi_awvalid && ~axi_wvalid && ~M_AXI_BVALID && ~start_single_write) begin
+                            $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem init(0)");
+                            if (minor_state == 0)
+                                axi_wdata <= C_M_OFF_MEM_ADDRB;
+                            else
+                                axi_wdata <= axi_wdata + 32'h00000001;
+                            start_single_write  <= 1'b1;
                         end else begin
-                            start_single_write <= 1'b0; //Negate to generate a pulse
+                            $display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(0)");
+                            start_single_write  <= 1'b0; //Negate to generate a pulse
                         end
                     end
                 end
 
                 1, 3, 5, 7 : begin  // Read data from off-mem (slv_reg2)
+                    $display("[AXI4_Lite_Master:STATE_MACHINE] Read data from off-mem (slv_reg2)");
                     axi_araddr <= 2;
                     // Read and state control logic
                     if (M_AXI_RVALID && axi_rready) begin
                         // Read data(slv_reg2) valid & ready : Read done Normaly
                         C_M_RDATA_PARSED[minor_state >> 1] = M_AXI_RDATA;
-                        minor_state <= minor_state + 1;
+                        minor_state     <= minor_state + 1;
                     end else begin
-                        if (~axi_arvalid && ~M_AXI_RVALID && ~start_single_read && ~read_issued) begin
+                        if (~axi_arvalid && ~M_AXI_RVALID && ~start_single_read) begin
+                            $display("[AXI4_Lite_Master:STATE_MACHINE] Read off-mem init(0)");
                             start_single_read <= 1'b1;
-                            read_issued  <= 1'b1;
-                        end else if (axi_rready) begin
-
-                            read_issued  <= 1'b0;
                         end else begin
+                            $display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(1)");
                             start_single_read <= 1'b0; //Negate to generate a pulse
                         end
                     end
@@ -525,42 +474,52 @@
             end
 
             WRITE_DATA : begin
+                $display("[AXI4_Lite_Master:STATE_MACHINE] WRITE_DATA");
                 case (minor_state)
+                WRITE_DATA_DONE : begin
+                    mst_exec_state  <= IDLE;
+                    minor_state     <= 'd0;
+                    axi_awaddr      <= 'd0;
+                    inst_done       <= 1'b1;
+                end
 
                 0, 2, 4, 6 : begin  // Write off-mem write addr (ADDRA)
+                    $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem write addr (ADDRA)");
                     axi_awaddr <= 3;
                     // Write and state control logic
                     if (M_AXI_BVALID && axi_bready) begin
                         // Write addr(slv_reg1) valid & ready : Write done normally.
-                        minor_state <= minor_state + 1;
+                        $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem done(2)");
+                        minor_state     <= minor_state + 1;
                     end else begin
-                        if (~axi_awvalid && ~axi_wvalid && ~M_AXI_BVALID && ~start_single_write && ~write_issued) begin
-                            axi_wdata <= C_M_OFF_MEM_ADDRA;
-                            start_single_write <= 1'b1;
-                            write_issued  <= 1'b1;
-                        end else if (axi_bready) begin
-                            // Write Resopnse (axi_bready) is True.
-                            write_issued  <= 1'b0;
+                        if (~axi_awvalid && ~axi_wvalid && ~M_AXI_BVALID && ~start_single_write) begin
+                            $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem init(2)");
+                            if (minor_state == 0)
+                                axi_wdata <= C_M_OFF_MEM_ADDRA;
+                            else
+                                axi_wdata <= axi_wdata + 32'h00000001;
+                            start_single_write  <= 1'b1;
                         end else begin
+                            $display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(2)");
                             start_single_write <= 1'b0; //Negate to generate a pulse
                         end
                     end
                 end
                 1, 3, 5, 7 : begin  // Write off-mem data (slv_reg4)
+                    $display("[AXI4_Lite_MasterSTATE_MACHINE] Write off-mem data (slv_reg4)");
                     axi_awaddr <= 4;
                     // Write and state control logic
                     if (M_AXI_BVALID && axi_bready) begin
                         // Write addr(slv_reg1) valid & ready : Write done normally.
-                        minor_state <= minor_state + 1;
+                        $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem done(3)");
+                        minor_state     <= minor_state + 1;
                     end else begin
-                        if (~axi_awvalid && ~axi_wvalid && ~M_AXI_BVALID && ~start_single_write && ~write_issued) begin
-                            axi_wdata <= C_M_WDATA_PARSED[minor_state >> 1];
-                            start_single_write <= 1'b1;
-                            write_issued  <= 1'b1;
-                        end else if (axi_bready) begin
-                            // Write Resopnse (axi_bready) is True.
-                            write_issued  <= 1'b0;
+                        if (~axi_awvalid && ~axi_wvalid && ~M_AXI_BVALID && ~start_single_write) begin
+                            $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem init(3)");
+                            axi_wdata           <= C_M_WDATA_PARSED[minor_state >> 1];
+                            start_single_write  <= 1'b1;
                         end else begin
+                            $display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(3)");
                             start_single_write <= 1'b0; //Negate to generate a pulse
                         end
                     end
@@ -571,6 +530,8 @@
                 mst_exec_state <= IDLE;
             end
             endcase
+        end else begin
+            mst_exec_state <= IDLE;
         end
     end
 
