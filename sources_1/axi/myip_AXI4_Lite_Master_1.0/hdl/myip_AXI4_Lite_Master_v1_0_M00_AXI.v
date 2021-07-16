@@ -162,7 +162,8 @@
     wire [C_M_AXI_DATA_WIDTH-1 : 0] C_M_WDATA_PARSED [C_M_TRANSACTIONS_NUM-1 : 0];
     reg inst_done;
     reg txn_done;
-
+    reg [C_M_AXI_DATA_WIDTH-1 : 0] 	c_m_off_mem_addra_reg;
+    reg [C_M_AXI_DATA_WIDTH-1 : 0] 	c_m_off_mem_addrb_reg;
 
     // I/O Connections assignments
 
@@ -440,10 +441,13 @@
                     end else begin
                         if (~axi_awvalid && ~axi_wvalid && ~M_AXI_BVALID && ~start_single_write) begin
                             $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem init(0)");
-                            if (minor_state == 0)
+                            if (minor_state == 0) begin
+                                c_m_off_mem_addrb_reg <= C_M_OFF_MEM_ADDRB + 1;
                                 axi_wdata <= C_M_OFF_MEM_ADDRB;
-                            else
-                                axi_wdata <= axi_wdata + 32'h00000001;
+                            end else begin
+                                c_m_off_mem_addrb_reg <= c_m_off_mem_addrb_reg + 1;
+                                axi_wdata <= c_m_off_mem_addrb_reg;
+                            end
                             start_single_write  <= 1'b1;
                         end else begin
                             $display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(0)");
@@ -494,10 +498,13 @@
                     end else begin
                         if (~axi_awvalid && ~axi_wvalid && ~M_AXI_BVALID && ~start_single_write) begin
                             $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem init(2)");
-                            if (minor_state == 0)
+                            if (minor_state == 0) begin
+                                c_m_off_mem_addra_reg <= C_M_OFF_MEM_ADDRA + 1;
                                 axi_wdata <= C_M_OFF_MEM_ADDRA;
-                            else
-                                axi_wdata <= axi_wdata + 32'h00000001;
+                            end else begin
+                                c_m_off_mem_addra_reg <= c_m_off_mem_addra_reg + 1;
+                                axi_wdata <= c_m_off_mem_addra_reg;
+                            end
                             start_single_write  <= 1'b1;
                         end else begin
                             $display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(2)");

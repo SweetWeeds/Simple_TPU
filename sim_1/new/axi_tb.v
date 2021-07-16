@@ -19,6 +19,8 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
+//`define READ_TB
+`define WRITE_TB
 
 module axi_tb;
 
@@ -63,6 +65,8 @@ wire [1 : 0] axi_rresp;
 wire axi_rvalid;
 wire axi_rready;
 reg [7:0] ADDRA = 8'h00, ADDRB = 8'h00;
+reg [AXI_DATA_WIDTH*AXI_TRANSACTIONS_NUM-1 : 0] AXI_CU_WRITE_DATA_PATH;
+wire [AXI_DATA_WIDTH*AXI_TRANSACTIONS_NUM-1 : 0] AXI_CU_LOAD_DATA_PATH;
 // End of AXI Signals
 
 // AXI4 Lite Master
@@ -145,20 +149,33 @@ initial begin : TEST_BENCH
     reset_n = 1'b1;
 
     // 1. Read BRAM data from slave //
-    // Write address
+    `ifdef READ_TB
     for (integer i = 0; i < 256; i = i + 4) begin
         wait(INST_DONE == 1'b0);
         $display("[Testbench] Instruction start.");
-        axi_txn_en = 1'b1;
+        axi_txn_en  <= 1'b1;
         axi_sm_mode <= LOAD_DATA;
         ADDRB <= i;
         wait (INST_DONE == 1'b1);
         $display("[Testbench] Instruction done.");
         axi_txn_en = 1'b0;
     end
+    `endif
 
     // 2. Write data to slave's BRAM //
-    
+    `ifdef WRITE_TB
+    for (integer i = 0; i < 256; i = i + 4) begin
+        wait(INST_DONE == 1'b0);
+        $display("[Testbench] Instruction start.");
+        AXI_CU_WRITE_DATA_PATH <= i * i;
+        axi_txn_en  <= 1'b1;
+        axi_sm_mode <= WRITE_DATA;
+        ADDRA <= i;
+        wait (INST_DONE == 1'b1);
+        $display("[Testbench] Instruction done.");
+        axi_txn_en = 1'b0;
+    end
+    `endif
 end
 
 
