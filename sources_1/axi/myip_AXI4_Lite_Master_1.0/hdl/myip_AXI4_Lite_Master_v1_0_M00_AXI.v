@@ -263,7 +263,7 @@
 
     always @(posedge M_AXI_ACLK) begin
         if (M_AXI_ARESETN == 0 || txn_done == 1'b1) begin
-            $display("[AXI4_Lite_Master:Write_Data_Channel] Reset or Init");
+            $display("[AXI4_Lite_Master:AXI_TO_UB_Channel] Reset or Init");
             axi_wvalid <= 1'b0;
         end
         //Signal a new address/data command is available by user logic

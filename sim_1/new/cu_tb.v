@@ -82,7 +82,7 @@ initial begin: TEST_BENCH
 
     // 1. Write data to UB (10000 * 256 ns = 2560000 ns)
     for (integer i = 0; i < 256; i = i + 1) begin
-        OPCODE = WRITE_DATA_INST;
+        OPCODE = AXI_TO_UB_INST;
         ADDRA = i;
         for (integer j = 15; j >= 0; j = j - 1) begin
             OPERAND[j * 8 + : 8] = i - j;
@@ -92,12 +92,12 @@ initial begin: TEST_BENCH
 
     // 2. Write weight to WB (2560000 + 10000 * 256 ns = 5120000 ns)
     for (integer i = 0; i < 256; i = i + 1) begin
-        OPCODE = WRITE_WEIGHT_INST;
+        OPCODE = AXI_TO_WB_INST;
         ADDRA = i;
         for (integer j = 15; j >= 0; j = j - 1) begin
             OPERAND[j * 8 + : 8] = - i + j;
         end
-        # (WRITE_WEIGHT_CYCLE * clock_period);
+        # (AXI_TO_WB_CYCLE * clock_period);
     end
     
     // 3. IDLE
@@ -108,16 +108,16 @@ initial begin: TEST_BENCH
 
     // 4. Load Data
     for (integer i = 0; i < 5; i = i + 1) begin
-        OPCODE = LOAD_DATA_INST;
+        OPCODE = UB_TO_DATA_FIFO_INST;
         ADDRB = i;
-        # (LOAD_DATA_CYCLE * clock_period);
+        # (UB_TO_DATA_FIFO_CYCLE * clock_period);
     end
 
     // 5. Load Weight
     for (integer i = 0; i < 21; i = i + 1) begin
-        OPCODE = LOAD_WEIGHT_INST;
+        OPCODE = UB_TO_WEIGHT_FIFO_INST;
         ADDRB = i;
-        # (LOAD_WEIGHT_CYCLE * clock_period);
+        # (UB_TO_WEIGHT_FIFO_CYCLE * clock_period);
     end
 
     // 6. Matrix Multiplication
@@ -126,9 +126,9 @@ initial begin: TEST_BENCH
         ADDRA = i;
         # (MAT_MUL_CYCLE * clock_period);
 
-        OPCODE = LOAD_DATA_INST;
+        OPCODE = UB_TO_DATA_FIFO_INST;
         ADDRB = i;
-        # (LOAD_DATA_CYCLE * clock_period);
+        # (UB_TO_DATA_FIFO_CYCLE * clock_period);
     end
 
     // 7. Matrix Multiplication with accumulation.
@@ -137,9 +137,9 @@ initial begin: TEST_BENCH
         ADDRA = i;
         # (MAT_MUL_CYCLE * clock_period);
 
-        OPCODE = LOAD_DATA_INST;
+        OPCODE = UB_TO_DATA_FIFO_INST;
         ADDRB = i;
-        # (LOAD_DATA_CYCLE * clock_period);
+        # (UB_TO_DATA_FIFO_CYCLE * clock_period);
     end
 
 end

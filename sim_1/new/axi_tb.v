@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
+// Company: POSTECH DICE Lab.
 // Engineer: 
 // 
 // Create Date: 2021/07/15 15:11:56
@@ -65,8 +65,8 @@ wire [1 : 0] axi_rresp;
 wire axi_rvalid;
 wire axi_rready;
 reg [7:0] ADDRA = 8'h00, ADDRB = 8'h00;
-reg [AXI_DATA_WIDTH*AXI_TRANSACTIONS_NUM-1 : 0] AXI_CU_WRITE_DATA_PATH;
-wire [AXI_DATA_WIDTH*AXI_TRANSACTIONS_NUM-1 : 0] AXI_CU_LOAD_DATA_PATH;
+reg [AXI_DATA_WIDTH*AXI_TRANSACTIONS_NUM-1 : 0] AXI_CU_AXI_TO_UB_PATH;
+wire [AXI_DATA_WIDTH*AXI_TRANSACTIONS_NUM-1 : 0] AXI_CU_UB_TO_DATA_FIFO_PATH;
 // End of AXI Signals
 
 // AXI4 Lite Master
@@ -75,8 +75,8 @@ myip_AXI4_Lite_Master_0 M00 (
 	.c_m00_mode(axi_sm_mode),
 	.c_m00_off_mem_addra({24'h000000, ADDRA}),
     .c_m00_off_mem_addrb({24'h000000, ADDRB}),
-	.c_m00_wdata(AXI_CU_WRITE_DATA_PATH),
-	.c_m00_rdata(AXI_CU_LOAD_DATA_PATH),
+	.c_m00_wdata(AXI_CU_AXI_TO_UB_PATH),
+	.c_m00_rdata(AXI_CU_UB_TO_DATA_FIFO_PATH),
     // End of user ports
 
     .m00_axi_txn_en(axi_txn_en),
@@ -152,12 +152,12 @@ initial begin : TEST_BENCH
     `ifdef READ_TB
     for (integer i = 0; i < 256; i = i + 4) begin
         wait(INST_DONE == 1'b0);
-        $display("[Testbench] Instruction start.");
+        $display("[Testbench:READ_TB:%d] Instruction start.", i);
         axi_txn_en  <= 1'b1;
         axi_sm_mode <= LOAD_DATA;
         ADDRB <= i;
         wait (INST_DONE == 1'b1);
-        $display("[Testbench] Instruction done.");
+        $display("[Testbench:READ_TB:%d] Instruction done.", i);
         axi_txn_en = 1'b0;
     end
     `endif
@@ -166,13 +166,13 @@ initial begin : TEST_BENCH
     `ifdef WRITE_TB
     for (integer i = 0; i < 256; i = i + 4) begin
         wait(INST_DONE == 1'b0);
-        $display("[Testbench] Instruction start.");
-        AXI_CU_WRITE_DATA_PATH <= i * i;
+        $display("[Testbench:WRITE_TB:%d] Instruction start.", i);
+        AXI_CU_AXI_TO_UB_PATH <= i * i;
         axi_txn_en  <= 1'b1;
         axi_sm_mode <= WRITE_DATA;
         ADDRA <= i;
         wait (INST_DONE == 1'b1);
-        $display("[Testbench] Instruction done.");
+        $display("[Testbench:WRITE_TB:%d] Instruction done.", i);
         axi_txn_en = 1'b0;
     end
     `endif

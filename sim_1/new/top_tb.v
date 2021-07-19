@@ -34,6 +34,7 @@ localparam AXI_TRANSACTIONS_NUM = 4;
 
 // regs & wires
 reg reset_n = 1'b1, clk, wen = 1'b1;
+wire flag;
 wire [INST_BITS-1:0] instruction;
 wire [319:0] dout;
 wire [DIN_BITS-1:0] din;
@@ -58,9 +59,9 @@ wire [1 : 0] axi_rresp;
 wire axi_rvalid;
 wire axi_rready;
 // End of AXI Signals
-reg [OPCODE_BITS-1:0] OPCODE;
-reg [ADDRA_BITS-1:0] ADDRA, ADDRB;
-reg [DIN_BITS-1:0] INPUT_DATA;
+reg [OPCODE_BITS-1:0] OPCODE = 'd0;
+reg [ADDRA_BITS-1:0] ADDRA = 'd0, ADDRB = 'd0;
+reg [DIN_BITS-1:0] INPUT_DATA = 'd0;
 
 assign instruction[OPCODE_FROM:OPCODE_TO]   = OPCODE;
 assign instruction[ADDRA_FROM:ADDRA_TO]     = ADDRA;
@@ -73,7 +74,7 @@ SYSTOLIC_ARRAY SA0 (
     .reset_n(reset_n),
     .clk(clk),
     .instruction(instruction),
-    .flag(),
+    .flag(flag),
     .m00_axi_awaddr(axi_awaddr),
     .m00_axi_awprot(axi_awprot),
     .m00_axi_awvalid(axi_awvalid),
@@ -95,7 +96,8 @@ SYSTOLIC_ARRAY SA0 (
     .m00_axi_rready(axi_rready)
 );
 
-OFF_MEM OM0 (
+
+OFF_MEM #(.INIT_FILE("C:\\Users\\DICE\\systolic_array\\systolic_array.srcs\\sim_1\\new\\hex_mem.mem")) OM0 (
     .clk(clk),
     .reset_n(reset_n),
     .s00_axi_awaddr(axi_awaddr),
@@ -119,6 +121,7 @@ OFF_MEM OM0 (
     .s00_axi_rready(axi_rready)
 );
 
+
 /**
  *  Clock signal generation.
  *  Clock is assumed to be initialized to 1'b0 at time 0.
@@ -130,89 +133,100 @@ initial begin : CLOCK_GENERATOR
 end
 
 initial begin: TEST_BENCH
-    // Initialization with 'reset_n' (0 ~ 10000 ns)
-    # minimum_period;
-    reset_n = 1'b0;
-    # minimum_period;
-    reset_n = 1'b1;
+    // Initialization with 'reset_n'
+    # clock_period;
+    reset_n <= 1'b0;
+    # clock_period;
+    reset_n <= 1'b1;
+    # clock_period;
 
-    // 1. Write data to UB (10000 * 256 ns = 2560000 ns)
-    for (integer i = 0; i < 256; i = i + 1) begin
-        OPCODE = WRITE_DATA_INST;
-        ADDRA = i;
-        # (IDLE_CYCLE * clock_period);
+
+    // 1. Write data to UB
+    for (integer i = 0; i < 256; i = i + 4) begin
+        $display("[%0t:TOP_TB:TEST_BENCH] Write data to UB(%d)", $time, i);
+        OPCODE <= AXI_TO_UB_INST;
+        ADDRA <= i/4;  // Write addr (UB)
+        ADDRB <= i;  // Read addr (off-mem)
+        wait(flag == 1'b0);
+        wait(flag == 1'b1);
     end
 
-`ifdef 0
-    // 2. Write weight to WB (2560000 + 10000 * 256 ns = 5120000 ns)
-    for (integer i = 0; i < 256; i = i + 1) begin
-        OPCODE = WRITE_WEIGHT_INST;
-        ADDRA = i;
-        for (integer j = 15; j >= 0; j = j - 1) begin
-            INPUT_DATA[j * 8 + : 8] = - i + j;
-        end
-        # (WRITE_WEIGHT_CYCLE * clock_period);
+    // 2. Write weight to WB
+    for (integer i = 0; i < 256; i = i + 4) begin
+        $display("[%0t:TOP_TB:TEST_BENCH] Write data to WB(%d)", $time, i);
+        OPCODE <= AXI_TO_WB_INST;
+        ADDRA <= i/4;      // Write addr (WB)
+        ADDRB <= (255-i);  // Read addr (off-mem)
+        wait(flag == 1'b0);
+        wait(flag == 1'b1);
     end
-    
+
     // 3. IDLE
     for (integer i = 0; i < 256; i = i + 1) begin
-        OPCODE = IDLE_INST;
+        $display("[%0t:TOP_TB:TEST_BENCH] IDLE(%d)", $time, i);
+        OPCODE <= IDLE_INST;
         # (IDLE_CYCLE * clock_period);
     end
 
     // 4. Load Data
     for (integer i = 0; i < 5; i = i + 1) begin
-        OPCODE = LOAD_DATA_INST;
-        ADDRB = i;
-        # (LOAD_DATA_CYCLE * clock_period);
+        $display("[%0t:TOP_TB:TEST_BENCH] Load data(%d)", $time, i);
+        OPCODE <= UB_TO_DATA_FIFO_INST;
+        ADDRB <= i;
+        # (UB_TO_DATA_FIFO_CYCLE * clock_period);
     end
 
     // 5. Load Weight
     for (integer i = 0; i < 21; i = i + 1) begin
-        OPCODE = LOAD_WEIGHT_INST;
-        ADDRB = i;
-        # (LOAD_WEIGHT_CYCLE * clock_period);
+        $display("[%0t:TOP_TB:TEST_BENCH] Load weight(%d)", $time, i);
+        OPCODE <= UB_TO_WEIGHT_FIFO_INST;
+        ADDRB <= i;
+        # (UB_TO_WEIGHT_FIFO_CYCLE * clock_period);
     end
 
     // 6. Matrix Multiplication
     for (integer i = 0; i < 5; i = i + 1) begin
-        OPCODE = MAT_MUL_INST;
-        ADDRA = i;
-        ADDRB = i;
+        OPCODE <= MAT_MUL_INST;
+        ADDRA <= i;
+        ADDRB <= i;
         # (MAT_MUL_CYCLE * clock_period);
     end
 
     // 7. Write result at UB
     for (integer i = 0; i < 5; i = i + 1) begin
-        OPCODE = WRITE_RESULT_INST;
-        ADDRA = i;
-        ADDRB = i;
-        # (WRITE_RESULT_CYCLE * clock_period);
+        OPCODE <= ACC_TO_UB_INST;
+        ADDRA <= i;
+        ADDRB <= i;
+        # (ACC_TO_UB_CYCLE * clock_period);
     end
 
-    // 8. Matrix Multiplication with accumulation.
+    // 8. Write UB's results at OFF-MEM
     for (integer i = 0; i < 5; i = i + 1) begin
-        OPCODE = MAT_MUL_ACC_INST;
-        ADDRA = i;
-        ADDRB = i;
+        OPCODE <= 
+    end
+
+    // 9. Matrix Multiplication with accumulation.
+    for (integer i = 0; i < 5; i = i + 1) begin
+        OPCODE <= MAT_MUL_ACC_INST;
+        ADDRA <= i;
+        ADDRB <= i;
         # (MAT_MUL_CYCLE * clock_period);
     end
 
-    // 9. Write result at UB
+    // 10. Write result at UB
     for (integer i = 0; i < 5; i = i + 1) begin
-        OPCODE = WRITE_RESULT_INST;
-        ADDRA = i + 5;
-        ADDRB = i;
-        # (WRITE_RESULT_CYCLE * clock_period);
+        OPCODE <= ACC_TO_UB_INST;
+        ADDRA <= i + 5;
+        ADDRB <= i;
+        # (ACC_TO_UB_CYCLE * clock_period);
     end
 
-    // 10. Read result at UB
+    // 11. Read result at UB
     for (integer i = 0; i < 10; i = i + 1) begin
-        OPCODE = READ_UB_INST;
-        ADDRB = i;
+        OPCODE <= READ_UB_INST;
+        ADDRB <= i;
         # (READ_UB_CYCLE * clock_period);
     end
-`endif
 end
 
 endmodule

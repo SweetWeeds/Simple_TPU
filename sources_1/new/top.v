@@ -58,8 +58,8 @@ module SYSTOLIC_ARRAY #
 
 // Control signals
 wire READ_UB_SIG, WRITE_UB_SIG, READ_WB_SIG, WRITE_WB_SIG, READ_ACC_SIG,
-    WRITE_ACC_SIG, DATA_FIFO_EN_SIG, MMU_LOAD_WEIGHT_SIG, WEIGHT_FIFO_EN_SIG,
-    MM_EN_SIG, ACC_EN_SIG, TXN_DONE;
+    WRITE_ACC_SIG, DATA_FIFO_EN_SIG, MMU_UB_TO_WEIGHT_FIFO_SIG, WEIGHT_FIFO_EN_SIG,
+    MM_EN_SIG, ACC_EN_SIG, INST_DONE;
 // Datapaths
 wire [127:0] DATA_FIFO_MMU_PATH, WEIGHT_FIFO_MMU_PATH,
             UB_DATA_PATH, WB_WEIGHT_FIFO_PATH, CTRL_DOUT, RESLUT_DOUT,
@@ -67,7 +67,7 @@ wire [127:0] DATA_FIFO_MMU_PATH, WEIGHT_FIFO_MMU_PATH,
 wire [319:0] MMU_ACC_PATH;
 wire [7:0] ADDRA, ADDRB;
 wire [1:0] axi_sm_mode;
-wire init_axi_txn;
+wire axi_txn_en;
 
 assign dout = UB_DATA_PATH;
 
@@ -80,9 +80,9 @@ myip_AXI4_Lite_Master_0 M00 (
 	.c_m00_wdata(AXI_CU_WRITE_DATA_PATH),
 	.c_m00_rdata(AXI_CU_LOAD_DATA_PATH),
     // End of user ports
-    .m00_axi_init_axi_txn(init_axi_txn),
+    .m00_axi_txn_en(axi_txn_en),
 	.m00_axi_error(),
-	.m00_axi_txn_done(TXN_DONE),
+	.m00_axi_inst_done(INST_DONE),
 	.m00_axi_aclk(clk),
 	.m00_axi_aresetn(reset_n),
 	.m00_axi_awaddr(m00_axi_awaddr),
@@ -112,8 +112,8 @@ CONTROL_UNIT CU (
     .clk(clk),
     .instruction(instruction),
     .axi_sm_mode(axi_sm_mode),
-    .init_axi_txn(init_axi_txn),
-    .txn_done(TXN_DONE),
+    .axi_txn_en(axi_txn_en),
+    .inst_done(INST_DONE),
     .din(AXI_CU_LOAD_DATA_PATH),
     .rin(RESLUT_DOUT),
     .flag(flag),
@@ -130,7 +130,7 @@ CONTROL_UNIT CU (
     .acc_en(ACC_EN_SIG),
     .addra(ADDRA),
     .addrb(ADDRB),
-    .dout(AXI_CU_WRITE_DATA_PATH)
+    .dout(CTRL_DOUT)
 );
 
 // Weight-FIFO

@@ -30,19 +30,19 @@ localparam [OPCODE_BITS-1:0]    // Do nothing (1-cycyle)
                                 // Weight-FIFO Enable (1-cycle)
                                 WEIGHT_FIFO_INST        = 4'h2,
                                 // Write data into UB (1-cycle)
-                                WRITE_DATA_INST         = 4'h3,
+                                AXI_TO_UB_INST         = 4'h3,
                                 // Write weight into WB (1-cycle)
-                                WRITE_WEIGHT_INST       = 4'h4,
+                                AXI_TO_WB_INST       = 4'h4,
                                 // Load data from UB to data-FIFO (1-cycle)
-                                LOAD_DATA_INST          = 4'h5,
+                                UB_TO_DATA_FIFO_INST          = 4'h5,
                                 // Load Weight from WB to weight-FIFO (1-cycle)
-                                LOAD_WEIGHT_INST        = 4'h6,
+                                UB_TO_WEIGHT_FIFO_INST        = 4'h6,
                                 // Execute Matrix Multiplication (1-cycle)
                                 MAT_MUL_INST            = 4'h7,
                                 // Execute Matrix Multiplication with accumulation (1-cycle)
                                 MAT_MUL_ACC_INST        = 4'h8,
                                 // Write result data from ACC to UB (1-cycle)
-                                WRITE_RESULT_INST       = 4'h9,
+                                ACC_TO_UB_INST       = 4'h9,
                                 // Read UB data (1-cycle)
                                 READ_UB_INST            = 4'ha;
 
@@ -51,13 +51,13 @@ localparam [OPCODE_BITS-1:0]    // Do nothing (1-cycyle)
 localparam [1:0]    IDLE_CYCLE          = 1,
                     DATA_FIFO_CYCLE     = 1,
                     WEIGHT_FIFO_CYCLE   = 1,
-                    WRITE_DATA_CYCLE    = 1,
-                    WRITE_WEIGHT_CYCLE  = 1,
-                    LOAD_DATA_CYCLE     = 1,
-                    LOAD_WEIGHT_CYCLE   = 1,
+                    AXI_TO_UB_CYCLE    = 1,
+                    AXI_TO_WB_CYCLE  = 1,
+                    UB_TO_DATA_FIFO_CYCLE     = 1,
+                    UB_TO_WEIGHT_FIFO_CYCLE   = 1,
                     MAT_MUL_CYCLE       = 1,
                     MAT_MUL_ACC_CYCLE   = 1,
-                    WRITE_RESULT_CYCLE  = 2,
+                    ACC_TO_UB_CYCLE  = 2,
                     READ_UB_CYCLE       = 1;
 
 // M1_MAT_MUL_STATE's minor mode (M2)
