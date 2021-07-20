@@ -69,7 +69,6 @@ wire [7:0] ADDRA, ADDRB;
 wire [1:0] axi_sm_mode;
 wire axi_txn_en;
 
-assign dout = UB_DATA_PATH;
 
 // AXI4 Lite Master
 myip_AXI4_Lite_Master_0 M00 (
@@ -77,7 +76,7 @@ myip_AXI4_Lite_Master_0 M00 (
 	.c_m00_mode(axi_sm_mode),
 	.c_m00_off_mem_addra({24'h000000, ADDRA}),
     .c_m00_off_mem_addrb({24'h000000, ADDRB}),
-	.c_m00_wdata(AXI_CU_WRITE_DATA_PATH),
+	.c_m00_wdata(CTRL_DOUT),
 	.c_m00_rdata(AXI_CU_LOAD_DATA_PATH),
     // End of user ports
     .m00_axi_txn_en(axi_txn_en),
@@ -116,6 +115,7 @@ CONTROL_UNIT CU (
     .inst_done(INST_DONE),
     .din(AXI_CU_LOAD_DATA_PATH),
     .rin(RESLUT_DOUT),
+    .uin(UB_DATA_PATH),
     .flag(flag),
     .read_ub(READ_UB_SIG),
     .write_ub(WRITE_UB_SIG),

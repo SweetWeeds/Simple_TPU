@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module TOP_test;
+module TOP_testbench;
 
 `include "tb_share.v"
 
@@ -195,14 +195,18 @@ initial begin: TEST_BENCH
     // 7. Write result at UB
     for (integer i = 0; i < 5; i = i + 1) begin
         OPCODE <= ACC_TO_UB_INST;
-        ADDRA <= i;
+        ADDRA <= 64 + i;
         ADDRB <= i;
         # (ACC_TO_UB_CYCLE * clock_period);
     end
 
     // 8. Write UB's results at OFF-MEM
     for (integer i = 0; i < 5; i = i + 1) begin
-        OPCODE <= 
+        OPCODE <= UB_TO_AXI_INST;
+        ADDRA  <= i * 4;
+        ADDRB  <= 64 + i;
+        wait(flag == 1'b0);
+        wait(flag == 1'b1);
     end
 
     // 9. Matrix Multiplication with accumulation.
@@ -221,12 +225,6 @@ initial begin: TEST_BENCH
         # (ACC_TO_UB_CYCLE * clock_period);
     end
 
-    // 11. Read result at UB
-    for (integer i = 0; i < 10; i = i + 1) begin
-        OPCODE <= READ_UB_INST;
-        ADDRB <= i;
-        # (READ_UB_CYCLE * clock_period);
-    end
 end
 
 endmodule

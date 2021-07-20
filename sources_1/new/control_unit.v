@@ -28,6 +28,7 @@ module CONTROL_UNIT (
     input wire inst_done,          // is 'din' data is valid
     input wire [DIN_BITS-1:0] din,   // 128-bit data input pin
     input wire [DIN_BITS-1:0] rin,   // 128-bit result data input pin
+    input wire [DIN_BITS-1:0] uin,   // 128-bit UB's data input pin
     output reg flag,            // flag to indicate whether the command is executed
     output reg read_ub,
     output reg write_ub,
@@ -49,32 +50,38 @@ module CONTROL_UNIT (
 
 reg [OPCODE_BITS-1:0]   opcode;     // Operation Code
 reg [1:0]               minor_state;
+reg minor_state_mode;               // 0: For exact-cycle inst, 1: For n-cycle inst
 
-localparam [1:0] IDLE = 2'b00, // This state initiates AXI4Lite transaction
-            // after the state machine changes state to INIT_WRITE
-            // when there is 0 to 1 transition on INIT_AXI_TXN
-        LOAD_OFF_MEM_DATA   = 2'b01, // This state initializes load data instruction,
-            // 8 times of writes and reads done, the state machine
-            // changes state to IDLE state
-        WRITE_OFF_MEM_DATA  = 2'b10; // This state initializes write data instruction
-            // 8 times of writes and reads done, the state machine
-            // changes state to IDLE state
+localparam [1:0] IDLE = 2'b00,
+                LOAD_OFF_MEM_DATA   = 2'b01,
+                WRITE_OFF_MEM_DATA  = 2'b10;
 
 always @ (posedge clk or negedge reset_n) begin : INPUT_LOGIC
     if (reset_n == 1'b0) begin
         // Asynchronous reset
         opcode      <= IDLE_INST;
         minor_state <= 0;
+        minor_state_mode <= 1'b0;
     end else if (flag == 1'b1) begin
         // Get next instruction
         opcode  <= instruction[OPCODE_FROM:OPCODE_TO];
         addra   <= instruction[ADDRA_FROM:ADDRA_TO];
         addrb   <= instruction[ADDRB_FROM:ADDRB_TO];
-        //dout    <= din;
         minor_state <= 0;
+        case (instruction[OPCODE_FROM:OPCODE_TO])
+        AXI_TO_UB_CYCLE, AXI_TO_WB_CYCLE, UB_TO_AXI_INST : begin
+            minor_state_mode <= 1'b1;
+        end
+        default : begin
+            minor_state_mode <= 1'b0;
+        end
+        endcase
     end else begin
         // Next-state logic
-        minor_state <= minor_state + 1;
+        // Exception: AXI-Interface instructions -> These insts need n-cycles.
+        // Therefore AXI insts use 'inst_done' flag for indicating that struction is done.
+        if ((!minor_state_mode) || (minor_state_mode && minor_state == 'd0))
+            minor_state <= minor_state + 1;
     end
 end
 
@@ -325,6 +332,67 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
             mm_en           = 1'b0;
             acc_en          = 1'b0;
             dout            = rin;
+        end
+    end
+    // UB_TO_AXI_INST (n-cycles) : Unsigned-Buffer's data to AXI I/F
+    UB_TO_AXI_INST : begin
+        // Use 'minor_state' as sub-flag. (Did logic read UB's data?)
+        if (minor_state == 1'b0) begin
+            // Read UB data.
+            $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_AXI_INST(0)", $time);
+            flag            = 1'b0;
+            axi_sm_mode     = IDLE;
+            axi_txn_en      = 1'b0;
+            read_ub         = 1'b1;
+            write_ub        = 1'b0;
+            read_wb         = 1'b0;
+            write_wb        = 1'b0;
+            read_acc        = 1'b0;
+            write_acc       = 1'b0;
+            data_fifo_en    = 1'b0;
+            mmu_load_weight_en = 1'b0;
+            weight_fifo_en  = 1'b0;
+            mm_en           = 1'b0;
+            acc_en          = 1'b0;
+            dout            = 128'd0;
+        end else begin
+            if (inst_done == 1'b0) begin
+                // Write off-mem through AXI I/F.
+                $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_AXI_INST(1)", $time);
+                flag            = 1'b0;
+                axi_sm_mode     = WRITE_OFF_MEM_DATA;
+                axi_txn_en      = 1'b1;
+                read_ub         = 1'b0;
+                write_ub        = 1'b0;
+                read_wb         = 1'b0;
+                write_wb        = 1'b0;
+                read_acc        = 1'b0;
+                write_acc       = 1'b0;
+                data_fifo_en    = 1'b0;
+                mmu_load_weight_en = 1'b0;
+                weight_fifo_en  = 1'b0;
+                mm_en           = 1'b0;
+                acc_en          = 1'b0;
+                dout            = uin;
+            end else begin
+                // Write off-mem done.
+                $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_AXI_INST(2)", $time);
+                flag            = 1'b1;
+                axi_sm_mode     = IDLE;
+                axi_txn_en      = 1'b0;
+                read_ub         = 1'b0;
+                write_ub        = 1'b0;
+                read_wb         = 1'b0;
+                write_wb        = 1'b0;
+                read_acc        = 1'b0;
+                write_acc       = 1'b0;
+                data_fifo_en    = 1'b0;
+                mmu_load_weight_en = 1'b0;
+                weight_fifo_en  = 1'b0;
+                mm_en           = 1'b0;
+                acc_en          = 1'b0;
+                dout            = 128'd0;
+            end
         end
     end
     // Exception : Not operation (1-cycle)

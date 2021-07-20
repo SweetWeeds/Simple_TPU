@@ -48,18 +48,18 @@ localparam [OPCODE_BITS-1:0]    // Do nothing (1-cycyle)
 
 
 
-// Minor states
+// Minor states' num of cycles ('0' means n-cycles)
 localparam [1:0]    IDLE_CYCLE              = 1,
                     DATA_FIFO_CYCLE         = 1,
                     WEIGHT_FIFO_CYCLE       = 1,
-                    AXI_TO_UB_CYCLE         = 1,
-                    AXI_TO_WB_CYCLE         = 1,
+                    AXI_TO_UB_CYCLE         = 0,
+                    AXI_TO_WB_CYCLE         = 0,
                     UB_TO_DATA_FIFO_CYCLE   = 1,
                     UB_TO_WEIGHT_FIFO_CYCLE = 1,
                     MAT_MUL_CYCLE           = 1,
                     MAT_MUL_ACC_CYCLE       = 1,
                     ACC_TO_UB_CYCLE         = 2,
-                    UB_TO_AXI_INST_CYCLE    = 1;
+                    UB_TO_AXI_INST_CYCLE    = 0;
 
 // M1_MAT_MUL_STATE's minor mode (M2)
 localparam MODE1_NUM = 7;
