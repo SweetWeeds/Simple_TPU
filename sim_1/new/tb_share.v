@@ -9,7 +9,7 @@ endfunction
 
 // Instruction Set
 // ISA(140-bit) = OPCODE_BITS(4-bit) + ADDRA_BITS(8-bit) + ADDRB_BITS(8-bit) + OPERAND_BITS(128-bit)
-parameter OPCODE_BITS  = 4,
+parameter  OPCODE_BITS  = 4,
            ADDRA_BITS   = 8,
            ADDRB_BITS   = 8,
            //OPERAND_BITS = 128,
@@ -17,7 +17,7 @@ parameter OPCODE_BITS  = 4,
            DIN_BITS     = 128;
 
 // Parsing range
-parameter OPCODE_FROM  = INST_BITS-1,                  // 148-1=147
+parameter  OPCODE_FROM  = INST_BITS-1,                  // 148-1=147
            OPCODE_TO    = OPCODE_FROM-OPCODE_BITS+1,    // 147-4+1=144
            ADDRA_FROM   = OPCODE_TO-1,                  // 144-1=143
            ADDRA_TO     = ADDRA_FROM-ADDRA_BITS+1,      // 143-8+1=136
@@ -25,7 +25,7 @@ parameter OPCODE_FROM  = INST_BITS-1,                  // 148-1=147
            ADDRB_TO     = ADDRB_FROM-ADDRB_BITS+1;      // 135-8+1=128
 
 // OPCODE
-parameter [OPCODE_BITS-1:0]    // Do nothing (1-cycyle)
+parameter [OPCODE_BITS-1:0]     // Do nothing (1-cycyle)
                                 IDLE_INST               = 4'h0,
                                 // Data-FIFO Enable (1-cycle)
                                 DATA_FIFO_INST          = 4'h1,
@@ -49,17 +49,16 @@ parameter [OPCODE_BITS-1:0]    // Do nothing (1-cycyle)
                                 UB_TO_AXI_INST          = 4'ha;
 
 
-
 // Minor states' num of cycles ('0' means n-cycles)
-parameter [1:0]    IDLE_CYCLE              = 1,
+parameter [1:0]     IDLE_CYCLE              = 1,
                     DATA_FIFO_CYCLE         = 1,
                     WEIGHT_FIFO_CYCLE       = 1,
                     AXI_TO_UB_CYCLE         = 0,
                     AXI_TO_WB_CYCLE         = 0,
                     UB_TO_DATA_FIFO_CYCLE   = 1,
                     UB_TO_WEIGHT_FIFO_CYCLE = 1,
-                    MAT_MUL_CYCLE           = 1,
-                    MAT_MUL_ACC_CYCLE       = 1,
+                    MAT_MUL_CYCLE           = 2,
+                    MAT_MUL_ACC_CYCLE       = 2,
                     ACC_TO_UB_CYCLE         = 2,
                     UB_TO_AXI_INST_CYCLE    = 0;
 
@@ -68,4 +67,4 @@ parameter MODE1_NUM = 7;
 parameter MODE2_NUM = 4;
 
 parameter  ADDR_READ  = 0,
-            ADDR_WRITE = 1;
+           ADDR_WRITE = 1;

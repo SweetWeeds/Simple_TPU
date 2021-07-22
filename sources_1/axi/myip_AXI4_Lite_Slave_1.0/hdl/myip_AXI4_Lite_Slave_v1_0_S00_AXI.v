@@ -132,6 +132,7 @@
     reg [C_S_AXI_DATA_WIDTH-1:0]	 reg_data_out;
     integer	 byte_index;
     reg	 aw_en;
+    reg  c_s_write_data_valid;
 
     // I/O Connections assignments
 
@@ -269,6 +270,7 @@
                         // Respective byte enables are asserted as per write strobes 
                         // Slave register 4
                         slv_reg4[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
+                        c_s_write_data_valid <= 1'b1;
                     end  
             default : begin
                 slv_reg0 <= slv_reg0;
@@ -299,16 +301,14 @@
                     // indicates a valid write response is available
                     axi_bvalid <= 1'b1;
                     axi_bresp  <= 2'b0; // 'OKAY' response 
-                end else if (axi_awaddr == 3'h4) begin
-                    if (write_off_mem_done) begin
-                        // Write Data (slv_reg4)
-                        axi_bvalid <= 1'b1;
-                        axi_bresp  <= 2'b0; // 'OKAY' response
-                        write_off_mem_done <= 1'b0;
-                    end
                 end
             end                   // work error responses in future
-            else begin
+            else if (axi_awaddr == 3'h4 && write_off_mem_done == 1'b1) begin
+                // Write Data (slv_reg4)
+                axi_bvalid <= 1'b1;
+                axi_bresp  <= 2'b0; // 'OKAY' response
+                write_off_mem_done <= 1'b0;
+            end else begin
                 if (S_AXI_BREADY && axi_bvalid) 
                 //check if bready is asserted while bvalid is high) 
                 //(there is a possibility that bready is always asserted high)   
@@ -413,6 +413,7 @@
             $display("[AXI4_Lite_Slave] Off-mem write reset");
             write_off_mem_start <= 1'b0;
             write_off_mem_done <= 1'b0;
+            c_s_write_data_valid <= 1'b0;
             C_S_WEB <= 1'b0;
         end else if (write_off_mem_start) begin
             if (C_S_WEB == 1'b1) begin
@@ -420,10 +421,11 @@
                 write_off_mem_start <= 1'b0;
                 write_off_mem_done <= 1'b1;
                 C_S_WEB <= 1'b0;
-            end else begin
+            end else if (c_s_write_data_valid) begin
                 $display("[AXI4_Lite_Slave] Off-mem write start");
                 C_S_WEB <= 1'b1;
                 C_S_DOUTA <= slv_reg4;
+                c_s_write_data_valid <= 1'b0;
             end
         end
     end

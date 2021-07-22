@@ -30,6 +30,7 @@ module SYSTOLIC_ARRAY #
     input  wire reset_n,
     input  wire clk,
     input  wire [INST_BITS-1:0] instruction,
+    output wire idle_flag,
     output wire flag,
     // AXI4 Lite Master Signals
 	output wire [C_M00_AXI_ADDR_WIDTH-1 : 0] m00_axi_awaddr,
@@ -116,6 +117,7 @@ CONTROL_UNIT CU (
     .din(AXI_CU_LOAD_DATA_PATH),
     .rin(RESLUT_DOUT),
     .uin(UB_DATA_PATH),
+    .idle_flag(idle_flag),
     .flag(flag),
     .read_ub(READ_UB_SIG),
     .write_ub(WRITE_UB_SIG),

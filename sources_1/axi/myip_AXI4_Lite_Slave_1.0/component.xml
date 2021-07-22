@@ -266,7 +266,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>639c3cbf</spirit:value>
+            <spirit:value>ffcfb8b2</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -282,7 +282,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>639c3cbf</spirit:value>
+            <spirit:value>ffcfb8b2</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -904,8 +904,8 @@
         <xilinx:taxonomy>AXI_Peripheral</xilinx:taxonomy>
       </xilinx:taxonomies>
       <xilinx:displayName>myip_AXI4_Lite_Slave_v1.0</xilinx:displayName>
-      <xilinx:coreRevision>6</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2021-07-16T08:22:37Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>12</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2021-07-20T09:29:35Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@9668d8_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@3bdafdaf_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
@@ -949,13 +949,59 @@
         <xilinx:tag xilinx:name="ui.data.coregen.dd@1cbc7300_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@4f7a12df_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@6ee36d8d_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@42466bde_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@587e357_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@45afa11c_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1f02d43a_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@38d133bf_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@79fca36b_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@71a9803_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7058e385_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@c7d7634_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4c99f1f3_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4de5f7e1_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4b6373e7_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@21a65f91_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6ee6d66b_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@18f1d748_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6a9a57bd_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@42fa1c7_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@19a303d_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1fe408d1_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@12c694a6_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7bced95a_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@57fe9867_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@ff30d15_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@43ec5565_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@266135f_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@47564dca_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@75a805d5_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@30d80608_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2459ccf8_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@28f2bc3d_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@20c51594_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6d6677ae_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5a6b26bd_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@73490b8e_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7dcd0e30_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1d6adb46_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7e64ef09_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6c038c1b_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1ca19484_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@283c4dc8_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6ba6e39f_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@13354891_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@71ffc296_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@230f52b0_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7ab83cb2_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@21d6cb_ARCHIVE_LOCATION">c:/Users/DICE/ip_repo/myip_AXI4_Lite_Slave_1.0</xilinx:tag>
       </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2020.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="77e219dd"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="ed1368d5"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="9d61a20a"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="3aaff7e1"/>
       <xilinx:checksum xilinx:scope="ports" xilinx:value="6f2f988b"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="2e811c89"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="d83ce91d"/>

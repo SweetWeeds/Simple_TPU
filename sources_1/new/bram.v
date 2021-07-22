@@ -22,13 +22,7 @@ module BRAM #
     output reg [RAM_WIDTH-1:0] doutb   // RAM output data
 );
 
-/** Functions **/
-function integer clogb2;
-    input integer depth;
-        for (clogb2=0; depth>0; clogb2=clogb2+1)
-        depth = depth >> 1;
-endfunction
-/** End of Functions **/
+`include "sa_share.v"
 
 reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 
@@ -44,8 +38,8 @@ generate
         initial begin
         $display("BRAM Init with index");
         for (integer ram_index = 0; ram_index < RAM_DEPTH; ram_index = ram_index + 1)
-            //bram[ram_index] = {RAM_WIDTH{1'b0}};
-            bram[ram_index] = ram_index;
+            bram[ram_index] = {RAM_WIDTH{1'b0}};
+            //bram[ram_index] = ram_index;
         end
     end
 endgenerate
