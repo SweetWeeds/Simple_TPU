@@ -234,7 +234,7 @@
                     if ( S_AXI_WSTRB[byte_index] == 1 ) begin
                         // Respective byte enables are asserted as per write strobes 
                         // Slave register 0
-                        $display("[AXI4_Lite_Slave] Write on slv_reg0");
+                        //$display("[AXI4_Lite_Slave] Write on slv_reg0");
                         slv_reg0[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
                     end  
             3'h1:
@@ -242,7 +242,7 @@
                     if ( S_AXI_WSTRB[byte_index] == 1 ) begin
                         // Respective byte enables are asserted as per write strobes 
                         // Slave register 1
-                        $display("[AXI4_Lite_Slave] Write on slv_reg1");
+                        //$display("[AXI4_Lite_Slave] Write on slv_reg1");
                         slv_reg1[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
                         read_off_mem_start <= 1'b1;
                     end  
@@ -251,7 +251,7 @@
                     if ( S_AXI_WSTRB[byte_index] == 1 ) begin
                         // Respective byte enables are asserted as per write strobes 
                         // Slave register 2
-                        $display("[AXI4_Lite_Slave] Write on slv_reg2");
+                        //$display("[AXI4_Lite_Slave] Write on slv_reg2");
                         slv_reg2[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
                     end  
             3'h3:
@@ -259,14 +259,14 @@
                     if ( S_AXI_WSTRB[byte_index] == 1 ) begin
                         // Respective byte enables are asserted as per write strobes 
                         // Slave register 3
-                        $display("[AXI4_Lite_Slave] Write on slv_reg3");
+                        //$display("[AXI4_Lite_Slave] Write on slv_reg3");
                         slv_reg3[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
                         write_off_mem_start <= 1'b1;
                     end  
             3'h4:
                 for ( byte_index = 0; byte_index <= (C_S_AXI_DATA_WIDTH/8)-1; byte_index = byte_index+1 )
                     if ( S_AXI_WSTRB[byte_index] == 1 ) begin
-                        $display("[AXI4_Lite_Slave] Write on slv_reg4");
+                        //$display("[AXI4_Lite_Slave] Write on slv_reg4");
                         // Respective byte enables are asserted as per write strobes 
                         // Slave register 4
                         slv_reg4[(byte_index*8) +: 8] <= S_AXI_WDATA[(byte_index*8) +: 8];
@@ -410,19 +410,19 @@
 
     always @ (posedge S_AXI_ACLK) begin : WRITE_OFF_MEM_DATA_LOGIC
         if (S_AXI_ARESETN == 1'b0) begin
-            $display("[AXI4_Lite_Slave] Off-mem write reset");
+            //$display("[AXI4_Lite_Slave] Off-mem write reset");
             write_off_mem_start <= 1'b0;
             write_off_mem_done <= 1'b0;
             c_s_write_data_valid <= 1'b0;
             C_S_WEB <= 1'b0;
         end else if (write_off_mem_start) begin
             if (C_S_WEB == 1'b1) begin
-                $display("[AXI4_Lite_Slave] Off-mem write end");
+                //$display("[AXI4_Lite_Slave] Off-mem write end");
                 write_off_mem_start <= 1'b0;
                 write_off_mem_done <= 1'b1;
                 C_S_WEB <= 1'b0;
             end else if (c_s_write_data_valid) begin
-                $display("[AXI4_Lite_Slave] Off-mem write start");
+                //$display("[AXI4_Lite_Slave] Off-mem write start");
                 C_S_WEB <= 1'b1;
                 C_S_DOUTA <= slv_reg4;
                 c_s_write_data_valid <= 1'b0;
@@ -432,19 +432,19 @@
 
     always @ (posedge S_AXI_ACLK) begin : READ_OFF_MEM_DATA_LOGIC
         if (S_AXI_ARESETN == 1'b0) begin
-            $display("[AXI4_Lite_Slave] Off-mem read reset");
+            //$display("[AXI4_Lite_Slave] Off-mem read reset");
             read_off_mem_start <= 1'b0;
             read_off_mem_done <= 1'b0;
             C_S_REB <= 1'b0;
         end else if (read_off_mem_start) begin
             if (C_S_REB == 1'b1) begin
-                $display("[AXI4_Lite_Slave] Off-mem read end");
+                //$display("[AXI4_Lite_Slave] Off-mem read end");
                 read_off_mem_start <= 1'b0;
                 read_off_mem_done <= 1'b1;
                 C_S_REB <= 1'b0;
                 slv_reg2 <= C_S_DINB;
             end else begin
-                $display("[AXI4_Lite_Slave] off-mem read start");
+                //$display("[AXI4_Lite_Slave] off-mem read start");
                 C_S_REB <= 1'b1;
             end
         end

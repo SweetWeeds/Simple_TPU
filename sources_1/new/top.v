@@ -28,8 +28,6 @@ module SYSTOLIC_ARRAY #
     
     // Instruction Set
     // ISA(140-bit) = OPCODE_BITS(4-bit) + ADDRA_BITS(8-bit) + ADDRB_BITS(8-bit) + OPERAND_BITS(128-bit)
-    `ifndef ISA_DEF
-    `define ISA_DEF
     parameter   OPCODE_BITS  = 4,
                 UB_ADDRA_BITS        = 8,
                 UB_ADDRB_BITS        = 8,
@@ -49,7 +47,6 @@ module SYSTOLIC_ARRAY #
                 ADDRA_TO     = ADDRA_FROM-OFFMEM_ADDRA_BITS+1,       // 143-8+1=136
                 ADDRB_FROM   = ADDRA_TO-1,                   // 136-1=135
                 ADDRB_TO     = ADDRB_FROM-OFFMEM_ADDRB_BITS+1        // 135-8+1=128
-    `endif
 )
 (
     input  wire reset_n,

@@ -151,9 +151,9 @@ initial begin: TEST_BENCH
     @ (flag == 1'b0);
 
     // 1. Write data to UB
-    $display("[%0t:TOP_TB:TEST_BENCH] 1. Write data to UB", $time);
+    //$display("[%0t:TOP_TB:TEST_BENCH] 1. Write data to UB", $time);
     for (integer i = 0; i < 256; i = i + 4) begin
-        $display("[%0t:TOP_TB:TEST_BENCH] Write data to UB(%d)", $time, i);
+        //$display("[%0t:TOP_TB:TEST_BENCH] Write data to UB(%d)", $time, i);
         OPCODE <= AXI_TO_UB_INST;
         ADDRA <= i/4;  // Write addr (UB)
         ADDRB <= i;  // Read addr (off-mem)
@@ -168,9 +168,9 @@ initial begin: TEST_BENCH
     $stop();
 
     // 2. Write weight to WB
-    $display("[%0t:TOP_TB:TEST_BENCH] 2. Write data to WB", $time);
+    //$display("[%0t:TOP_TB:TEST_BENCH] 2. Write data to WB", $time);
     for (integer i = 0; i < 256; i = i + 4) begin
-        $display("[%0t:TOP_TB:TEST_BENCH] Write data to WB(%d)", $time, i);
+        //$display("[%0t:TOP_TB:TEST_BENCH] Write data to WB(%d)", $time, i);
         OPCODE <= AXI_TO_WB_INST;
         ADDRA <= i/4;      // Write addr (WB)
         ADDRB <= (251-i);  // Read addr (off-mem)
@@ -183,9 +183,9 @@ initial begin: TEST_BENCH
     $stop();
 
     // 3. IDLE
-    $display("[%0t:TOP_TB:TEST_BENCH] 3. IDLE", $time);
+    //$display("[%0t:TOP_TB:TEST_BENCH] 3. IDLE", $time);
     for (integer i = 0; i < 256; i = i + 1) begin
-        $display("[%0t:TOP_TB:TEST_BENCH] IDLE(%d)", $time, i);
+        //$display("[%0t:TOP_TB:TEST_BENCH] IDLE(%d)", $time, i);
         OPCODE <= IDLE_INST;
         @ (flag == 1'b1);
         @ (flag == 1'b0);
@@ -196,9 +196,9 @@ initial begin: TEST_BENCH
     $stop();
 
     // 4. Load Data
-    $display("[%0t:TOP_TB:TEST_BENCH] 4. Load data", $time);
+    //$display("[%0t:TOP_TB:TEST_BENCH] 4. Load data", $time);
     for (integer i = 0; i < 5; i = i + 1) begin
-        $display("[%0t:TOP_TB:TEST_BENCH] Load data(%d)", $time, i);
+        //$display("[%0t:TOP_TB:TEST_BENCH] Load data(%d)", $time, i);
         OPCODE <= UB_TO_DATA_FIFO_INST;
         ADDRB <= i;
         @ (flag == 1'b1);
@@ -211,9 +211,9 @@ initial begin: TEST_BENCH
     $stop();
 
     // 5. Load Weight
-    $display("[%0t:TOP_TB:TEST_BENCH] 5. Load Weight", $time);
+    //$display("[%0t:TOP_TB:TEST_BENCH] 5. Load Weight", $time);
     for (integer i = 0; i < 21; i = i + 1) begin
-        $display("[%0t:TOP_TB:TEST_BENCH] Load weight(%d)", $time, i);
+        //$display("[%0t:TOP_TB:TEST_BENCH] Load weight(%d)", $time, i);
         OPCODE <= UB_TO_WEIGHT_FIFO_INST;
         ADDRB <= i;
         @ (flag == 1'b1);
@@ -225,7 +225,7 @@ initial begin: TEST_BENCH
     $stop();
 
     // 6. Matrix Multiplication
-    $display("[%0t:TOP_TB:TEST_BENCH] 6. Matrix Multiplication", $time);
+    //$display("[%0t:TOP_TB:TEST_BENCH] 6. Matrix Multiplication", $time);
     for (integer i = 0; i < 16; i = i + 1) begin
         OPCODE <= MAT_MUL_INST;
         ADDRA <= i;
@@ -239,7 +239,7 @@ initial begin: TEST_BENCH
     $stop();
 
     // 7. Write result at UB
-    $display("[%0t:TOP_TB:TEST_BENCH] 7. Write result at UB", $time);
+    //$display("[%0t:TOP_TB:TEST_BENCH] 7. Write result at UB", $time);
     for (integer i = 0; i < 16; i = i + 1) begin
         OPCODE <= ACC_TO_UB_INST;
         ADDRA <= 64 + i;
@@ -253,7 +253,7 @@ initial begin: TEST_BENCH
     $stop();
 
     // 8. Write UB's results at OFF-MEM
-    $display("[%0t:TOP_TB:TEST_BENCH] 8. Write UB's results at OFF-MEM", $time);
+    //$display("[%0t:TOP_TB:TEST_BENCH] 8. Write UB's results at OFF-MEM", $time);
     for (integer i = 0; i < 16; i = i + 1) begin
         OPCODE <= UB_TO_AXI_INST;
         ADDRA  <= i * 4;
@@ -267,7 +267,7 @@ initial begin: TEST_BENCH
     $stop();
 
     // 9. Matrix Multiplication with accumulation.
-    $display("[%0t:TOP_TB:TEST_BENCH] 9. Matrix Multiplication with accumulation", $time);
+    //$display("[%0t:TOP_TB:TEST_BENCH] 9. Matrix Multiplication with accumulation", $time);
     for (integer i = 0; i < 16; i = i + 1) begin
         OPCODE <= MAT_MUL_ACC_INST;
         ADDRA <= i;
@@ -281,7 +281,7 @@ initial begin: TEST_BENCH
     $stop();
 
     // 10. Write result at UB
-    $display("[%0t:TOP_TB:TEST_BENCH] 10. Write result at UB", $time);
+    //$display("[%0t:TOP_TB:TEST_BENCH] 10. Write result at UB", $time);
     for (integer i = 0; i < 16; i = i + 1) begin
         OPCODE <= ACC_TO_UB_INST;
         ADDRA <= 64 + 16 + i;
@@ -295,7 +295,7 @@ initial begin: TEST_BENCH
     $stop();
 
     // 11. Write UB's results at OFF-MEM
-    $display("[%0t:TOP_TB:TEST_BENCH] 11. Write UB's results at OFF-MEM", $time);
+    //$display("[%0t:TOP_TB:TEST_BENCH] 11. Write UB's results at OFF-MEM", $time);
     for (integer i = 16; i < 33; i = i + 1) begin
         OPCODE  <= UB_TO_AXI_INST;
         ADDRA   <= i * 4;

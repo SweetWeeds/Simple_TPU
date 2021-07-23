@@ -35,12 +35,12 @@ reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 generate
     if (INIT_FILE != "") begin: use_init_file
         initial begin
-            $display("BRAM Init with file.");
+            //$display("BRAM Init with file.");
             $readmemh(INIT_FILE, bram, 0, RAM_DEPTH-1);
         end
     end else begin: init_bram_to_zero
         initial begin
-        $display("BRAM Init with index");
+        //$display("BRAM Init with index");
         for (integer ram_index = 0; ram_index < RAM_DEPTH; ram_index = ram_index + 1)
             bram[ram_index] = {RAM_WIDTH{1'b0}};
             //bram[ram_index] = ram_index;

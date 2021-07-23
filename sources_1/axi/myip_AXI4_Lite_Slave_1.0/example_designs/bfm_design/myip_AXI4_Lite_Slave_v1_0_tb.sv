@@ -41,17 +41,17 @@ task automatic COMPARE_DATA;
   input [(LC_AXI_BURST_LENGTH * LC_AXI_DATA_WIDTH)-1:0]actual; 
   begin 
     if (expected === 'hx || actual === 'hx) begin 
-      $display("TESTBENCH ERROR! COMPARE_DATA cannot be performed with an expected or actual vector that is all 'x'!"); 
+      //$display("TESTBENCH ERROR! COMPARE_DATA cannot be performed with an expected or actual vector that is all 'x'!"); 
  result_slave = 0;    $stop; 
   end 
   if (actual != expected) begin 
-    $display("TESTBENCH ERROR! Data expected is not equal to actual.",     " expected = 0x%h",expected,     " actual   = 0x%h",actual); 
+    //$display("TESTBENCH ERROR! Data expected is not equal to actual.",     " expected = 0x%h",expected,     " actual   = 0x%h",actual); 
     result_slave = 0; 
     $stop; 
   end 
   else  
     begin 
-     $display("TESTBENCH Passed! Data expected is equal to actual.", 
+     //$display("TESTBENCH Passed! Data expected is equal to actual.", 
               " expected = 0x%h",expected,               " actual   = 0x%h",actual); 
     end 
   end 
@@ -135,7 +135,7 @@ initial begin
 task automatic S_AXI_TEST;  
 begin   
 #1; 
-   $display("Sequential write transfers example similar to  AXI BFM WRITE_BURST method starts"); 
+   //$display("Sequential write transfers example similar to  AXI BFM WRITE_BURST method starts"); 
    mtestID = 0; 
    mtestADDR = 64'h00000000; 
    mtestBurstLength = 0; 
@@ -159,8 +159,8 @@ begin
   mtestWDataL[31:0] = mtestWDataL[31:0] + 1; 
   mtestADDR = mtestADDR + 64'h4; 
   end 
-     $display("Sequential write transfers example similar to  AXI BFM WRITE_BURST method completes"); 
-     $display("Sequential read transfers example similar to  AXI BFM READ_BURST method starts"); 
+     //$display("Sequential write transfers example similar to  AXI BFM WRITE_BURST method completes"); 
+     //$display("Sequential read transfers example similar to  AXI BFM READ_BURST method starts"); 
      mtestID = 0; 
      mtestADDR = 64'h00000000; 
      mtestBurstLength = 0; 
@@ -181,16 +181,16 @@ begin
    mtestADDR = mtestADDR + 64'h4; 
    COMPARE_DATA(S00_AXI_test_data[i],mtestRDataL); 
  end 
-     $display("Sequential read transfers example similar to  AXI BFM READ_BURST method completes"); 
-     $display("Sequential read transfers example similar to  AXI VIP READ_BURST method completes"); 
-     $display("---------------------------------------------------------"); 
-     $display("EXAMPLE TEST S00_AXI: PTGEN_TEST_FINISHED!"); 
+     //$display("Sequential read transfers example similar to  AXI BFM READ_BURST method completes"); 
+     //$display("Sequential read transfers example similar to  AXI VIP READ_BURST method completes"); 
+     //$display("---------------------------------------------------------"); 
+     //$display("EXAMPLE TEST S00_AXI: PTGEN_TEST_FINISHED!"); 
      if ( result_slave ) begin                    
-       $display("PTGEN_TEST: PASSED!");                  
+       //$display("PTGEN_TEST: PASSED!");                  
      end    else begin                                       
-       $display("PTGEN_TEST: FAILED!");                  
+       //$display("PTGEN_TEST: FAILED!");                  
      end                                
-     $display("---------------------------------------------------------"); 
+     //$display("---------------------------------------------------------"); 
   end 
 endtask  
 

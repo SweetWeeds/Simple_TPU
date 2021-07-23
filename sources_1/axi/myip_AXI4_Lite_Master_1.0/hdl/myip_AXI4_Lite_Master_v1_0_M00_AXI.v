@@ -266,7 +266,7 @@
 
     always @(posedge M_AXI_ACLK) begin
         if (M_AXI_ARESETN == 0 || txn_done == 1'b1) begin
-            $display("[AXI4_Lite_Master:Write_Data_Channel] Reset or Init");
+            //$display("[AXI4_Lite_Master:Write_Data_Channel] Reset or Init");
             axi_wvalid <= 1'b0;
         end
         //Signal a new address/data command is available by user logic
@@ -399,7 +399,7 @@
     // State machine
     always @ (posedge M_AXI_ACLK) begin : STATE_MACHINE
         if (M_AXI_ARESETN == 1'b0 || inst_done == 1'b1) begin
-            $display("[AXI4_Lite_Master:STATE_MACHINE] Reset");
+            //$display("[AXI4_Lite_Master:STATE_MACHINE] Reset");
             // Reset condition
             // All the signals are assigned default values under reset condition
             mst_exec_state          <= IDLE;
@@ -420,13 +420,13 @@
             // State logic
             case (mst_exec_state)
             IDLE : begin
-                $display("[AXI4_Lite_Master:STATE_MACHINE] IDLE");
+                //$display("[AXI4_Lite_Master:STATE_MACHINE] IDLE");
                 // This state is responsible to initiate
                 mst_exec_state  <= C_M_MODE;
                 ERROR <= 1'b0;
             end
             LOAD_DATA  : begin
-                $display("[AXI4_Lite_Master:STATE_MACHINE] LOAD_DATA");
+                //$display("[AXI4_Lite_Master:STATE_MACHINE] LOAD_DATA");
                 case (minor_state)
                 LOAD_DATA_DONE : begin  // Write data to UB (inst_done <= 1'b1)
                     mst_exec_state  <= IDLE;
@@ -436,17 +436,17 @@
                 end
 
                 0, 2, 4, 6 : begin  // Write off-mem read addr (ADDRB)
-                    $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem read addr(ADDRB)");
+                    //$display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem read addr(ADDRB)");
                     axi_awaddr <= 1;    // Write addr (slv_reg1)
                     // Write and state control logic
                     if (M_AXI_BVALID && axi_bready) begin
                         // Write addr(slv_reg1) valid & ready : Write done normally.
-                        $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem done(0)");
+                        //$display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem done(0)");
                         minor_state     <= minor_state + 1;
                         executing_single_read <= 1'b0;
                     end else begin
                         if (~axi_awvalid && ~axi_wvalid && ~M_AXI_BVALID && ~start_single_write && ~executing_single_write) begin
-                            $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem init(0)");
+                            //$display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem init(0)");
                             if (minor_state == 0) begin
                                 c_m_off_mem_addrb_reg <= C_M_OFF_MEM_ADDRB + 1;
                                 axi_wdata <= C_M_OFF_MEM_ADDRB;
@@ -457,14 +457,14 @@
                             start_single_write  <= 1'b1;
                             executing_single_read <= 1'b1;
                         end else begin
-                            $display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(0)");
+                            //$display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(0)");
                             start_single_write  <= 1'b0; //Negate to generate a pulse
                         end
                     end
                 end
 
                 1, 3, 5, 7 : begin  // Read data from off-mem (slv_reg2)
-                    $display("[AXI4_Lite_Master:STATE_MACHINE] Read data from off-mem (slv_reg2)");
+                    //$display("[AXI4_Lite_Master:STATE_MACHINE] Read data from off-mem (slv_reg2)");
                     axi_araddr <= 2;
                     // Read and state control logic
                     if (M_AXI_RVALID && axi_rready) begin
@@ -474,11 +474,11 @@
                         executing_single_read <= 1'b0;
                     end else begin
                         if (~axi_arvalid && ~M_AXI_RVALID && ~start_single_read && ~executing_single_read) begin
-                            $display("[AXI4_Lite_Master:STATE_MACHINE] Read off-mem init(0)");
+                            //$display("[AXI4_Lite_Master:STATE_MACHINE] Read off-mem init(0)");
                             start_single_read <= 1'b1;
                             executing_single_read <= 1'b1;
                         end else begin
-                            $display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(1)");
+                            //$display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(1)");
                             start_single_read <= 1'b0; //Negate to generate a pulse
                         end
                     end
@@ -487,7 +487,7 @@
             end
 
             WRITE_DATA : begin
-                $display("[AXI4_Lite_Master:STATE_MACHINE] WRITE_DATA");
+                //$display("[AXI4_Lite_Master:STATE_MACHINE] WRITE_DATA");
                 case (minor_state)
                 WRITE_DATA_DONE : begin
                     mst_exec_state  <= IDLE;
@@ -497,17 +497,17 @@
                 end
 
                 0, 2, 4, 6 : begin  // Write off-mem write addr (ADDRA)
-                    $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem write addr (ADDRA)");
+                    //$display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem write addr (ADDRA)");
                     axi_awaddr <= 3;
                     // Write and state control logic
                     if (M_AXI_BVALID && axi_bready) begin
                         // Write addr(slv_reg1) valid & ready : Write done normally.
-                        $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem done(2)");
+                        //$display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem done(2)");
                         minor_state     <= minor_state + 1;
                         executing_single_write <= 1'b0;
                     end else begin
                         if (~axi_awvalid && ~axi_wvalid && ~M_AXI_BVALID && ~start_single_write && ~executing_single_write) begin
-                            $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem init(2)");
+                            //$display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem init(2)");
                             if (minor_state == 0) begin
                                 c_m_off_mem_addra_reg <= C_M_OFF_MEM_ADDRA + 1;
                                 axi_wdata <= C_M_OFF_MEM_ADDRA;
@@ -518,28 +518,28 @@
                             start_single_write  <= 1'b1;
                             executing_single_write <= 1'b1;
                         end else begin
-                            $display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(2)");
+                            //$display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(2)");
                             start_single_write <= 1'b0; //Negate to generate a pulse
                         end
                     end
                 end
                 1, 3, 5, 7 : begin  // Write off-mem data (slv_reg4)
-                    $display("[AXI4_Lite_MasterSTATE_MACHINE] Write off-mem data (slv_reg4)");
+                    //$display("[AXI4_Lite_MasterSTATE_MACHINE] Write off-mem data (slv_reg4)");
                     axi_awaddr <= 4;
                     // Write and state control logic
                     if (M_AXI_BVALID && axi_bready) begin
                         // Write addr(slv_reg1) valid & ready : Write done normally.
-                        $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem done(3)");
+                        //$display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem done(3)");
                         minor_state     <= minor_state + 1;
                         executing_single_write <= 1'b0;
                     end else begin
                         if (~axi_awvalid && ~axi_wvalid && ~M_AXI_BVALID && ~start_single_write && ~executing_single_write) begin
-                            $display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem init(3)");
+                            //$display("[AXI4_Lite_Master:STATE_MACHINE] Write off-mem init(3)");
                             axi_wdata           <= C_M_WDATA_PARSED[minor_state >> 1];
                             start_single_write  <= 1'b1;
                             executing_single_write <= 1'b1;
                         end else begin
-                            $display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(3)");
+                            //$display("[AXI4_Lite_Master:STATE_MACHINE] Negate to generate a pulse(3)");
                             start_single_write <= 1'b0; //Negate to generate a pulse
                         end
                     end

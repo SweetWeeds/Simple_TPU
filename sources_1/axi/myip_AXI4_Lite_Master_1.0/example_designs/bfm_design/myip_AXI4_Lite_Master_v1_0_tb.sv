@@ -71,13 +71,13 @@ initial begin
     init_0 =1'b1;
     #20ns;
     init_0 = 1'b0;
-    $display("EXAMPLE TEST M00_AXI:");
+    //$display("EXAMPLE TEST M00_AXI:");
       wait( done_0 == 1'b1);
-      $display("M00_AXI: PTGEN_TEST_FINISHED!");
+      //$display("M00_AXI: PTGEN_TEST_FINISHED!");
       if ( error_0 ) begin
-        $display("PTGEN_TEST: FAILED!");
+        //$display("PTGEN_TEST: FAILED!");
       end else begin
-        $display("PTGEN_TEST: PASSED!");
+        //$display("PTGEN_TEST: PASSED!");
       end
       #1ns;
       $finish;

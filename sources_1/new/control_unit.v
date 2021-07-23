@@ -99,12 +99,13 @@ localparam [1:0] IDLE = 2'b00,
 
 assign idle_flag = (opcode == IDLE_INST) ? 1'b1 : 1'b0;
 
-always @ (posedge clk or negedge reset_n) begin : INPUT_LOGIC
+always @ (posedge clk) begin : INPUT_LOGIC
     if (reset_n == 1'b0) begin
         // Asynchronous reset
         opcode      <= IDLE_INST;
         minor_state <= 0;
         minor_state_mode <= 1'b0;
+        flag    <= 1'b0;
     end else if (flag == 1'b1) begin
         // Get next instruction
         flag    <= 1'b0;
@@ -129,39 +130,35 @@ always @ (posedge clk or negedge reset_n) begin : INPUT_LOGIC
     end
 end
 
-always @ (negedge clk or negedge reset_n) begin : COMPLETE_FLAG
-    if (reset_n == 1'b0) begin
-        flag <= 1'b0;
-    end else begin
-        case (opcode)
-        ACC_TO_UB_INST, MAT_MUL_INST, MAT_MUL_ACC_INST : begin
-            // 2-cycles
-            if (minor_state == 1) begin
-                $display("[%0t:CU:COMPLETE_FLAG] 2-cycles instruction copmlete.", $time);
-                flag <= 1'b1;
-            end
+always @ (negedge clk) begin : COMPLETE_FLAG
+    case (opcode)
+    ACC_TO_UB_INST, MAT_MUL_INST, MAT_MUL_ACC_INST : begin
+        // 2-cycles
+        if (minor_state == 1) begin
+            $display("[%0t:CU:COMPLETE_FLAG] 2-cycles instruction copmlete.", $time);
+            flag <= 1'b1;
         end
-        IDLE_INST, DATA_FIFO_INST, WEIGHT_FIFO_INST, UB_TO_DATA_FIFO_INST,
-        UB_TO_WEIGHT_FIFO_INST : begin
-            // 1-cycle
-            if (minor_state == 0) begin
-                $display("[%0t:CU:COMPLETE_FLAG] 1-cycles instruction copmlete.", $time);
-                flag <= 1'b1;
-            end
-        end
-        AXI_TO_UB_INST, AXI_TO_WB_INST, UB_TO_AXI_INST : begin
-            // n-cycles
-            if (inst_done == 1'b1) begin
-                $display("[%0t:CU:COMPLETE_FLAG] n-cycles instruction copmlete.", $time);
-                flag <= 1'b1;
-            end
-        end
-        endcase
     end
+    IDLE_INST, DATA_FIFO_INST, WEIGHT_FIFO_INST, UB_TO_DATA_FIFO_INST,
+    UB_TO_WEIGHT_FIFO_INST : begin
+        // 1-cycle
+        if (minor_state == 0) begin
+            $display("[%0t:CU:COMPLETE_FLAG] 1-cycles instruction copmlete.", $time);
+            flag <= 1'b1;
+        end
+    end
+    AXI_TO_UB_INST, AXI_TO_WB_INST, UB_TO_AXI_INST : begin
+        // n-cycles
+        if (inst_done == 1'b1) begin
+            $display("[%0t:CU:COMPLETE_FLAG] n-cycles instruction copmlete.", $time);
+            flag <= 1'b1;
+        end
+    end
+    endcase
 end
 
 
-always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : OUTPUT_LOGIC
+always @ (opcode or minor_state or addra or addrb or dout or inst_done or din or uin or rin) begin : OUTPUT_LOGIC
     case (opcode)
     // IDLE_INST (1-cycle)
     IDLE_INST : begin

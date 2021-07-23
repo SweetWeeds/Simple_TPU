@@ -65,7 +65,7 @@ BRAM #(.RAM_WIDTH(DATA_WIDTH), .RAM_DEPTH(RAM_DEPTH), .INIT_FILE(INIT_FILE)) OFF
     .doutb(data_b)
 );
 
-myip_AXI4_Lite_Slave_0 #(.C_S00_AXI_DATA_WIDTH(DATA_WIDTH), .C_S00_AXI_ADDR_WIDTH(DATA_WIDTH)) S00
+myip_AXI4_Lite_Slave_0 S00
 (
     .c_s00_web(wea),
     .c_s00_douta(data_a),

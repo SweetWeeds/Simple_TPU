@@ -152,12 +152,12 @@ initial begin : TEST_BENCH
     `ifdef READ_TB
     for (integer i = 0; i < 256; i = i + 4) begin
         wait(INST_DONE == 1'b0);
-        $display("[Testbench:READ_TB:%d] Instruction start.", i);
+        //$display("[Testbench:READ_TB:%d] Instruction start.", i);
         axi_txn_en  <= 1'b1;
         axi_sm_mode <= LOAD_DATA;
         ADDRB <= i;
         wait (INST_DONE == 1'b1);
-        $display("[Testbench:READ_TB:%d] Instruction done.", i);
+        //$display("[Testbench:READ_TB:%d] Instruction done.", i);
         axi_txn_en = 1'b0;
     end
     `endif
@@ -166,13 +166,13 @@ initial begin : TEST_BENCH
     `ifdef WRITE_TB
     for (integer i = 0; i < 256; i = i + 4) begin
         wait(INST_DONE == 1'b0);
-        $display("[Testbench:WRITE_TB:%d] Instruction start.", i);
+        //$display("[Testbench:WRITE_TB:%d] Instruction start.", i);
         AXI_CU_AXI_TO_UB_PATH <= i * i;
         axi_txn_en  <= 1'b1;
         axi_sm_mode <= WRITE_DATA;
         ADDRA <= i;
         wait (INST_DONE == 1'b1);
-        $display("[Testbench:WRITE_TB:%d] Instruction done.", i);
+        //$display("[Testbench:WRITE_TB:%d] Instruction done.", i);
         axi_txn_en = 1'b0;
     end
     `endif
