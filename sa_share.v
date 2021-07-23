@@ -9,7 +9,7 @@ function integer clogb2;
 endfunction
 
 // OPCODE
-localparam [OPCODE_BITS-1:0]     // Do nothing (1-cycyle)
+localparam [OPCODE_BITS-1:0]    // Do nothing (1-cycyle)
                                 IDLE_INST               = 4'h0,
                                 // Data-FIFO Enable (1-cycle)
                                 DATA_FIFO_INST          = 4'h1,
@@ -35,7 +35,7 @@ localparam [OPCODE_BITS-1:0]     // Do nothing (1-cycyle)
 
 
 // Minor states' num of cycles ('0' means n-cycles)
-localparam [1:0]     IDLE_CYCLE              = 1,
+localparam [1:0]    IDLE_CYCLE              = 1,
                     DATA_FIFO_CYCLE         = 1,
                     WEIGHT_FIFO_CYCLE       = 1,
                     AXI_TO_UB_CYCLE         = 0,
