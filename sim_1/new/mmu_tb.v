@@ -21,7 +21,7 @@
 
 module MMU_test;
 
-`include "sa_share.v"
+`include "../../sa_share.v"
 
 // Parameters
 integer i = 0, j = 0;

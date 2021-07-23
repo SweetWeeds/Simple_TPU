@@ -24,7 +24,32 @@ module SYSTOLIC_ARRAY #
 (
     parameter integer C_M00_AXI_ADDR_WIDTH	= 32,
 	parameter integer C_M00_AXI_DATA_WIDTH	= 32,
-	parameter integer C_M00_AXI_TRANSACTIONS_NUM	= 4
+	parameter integer C_M00_AXI_TRANSACTIONS_NUM	= 4,
+    
+    // Instruction Set
+    // ISA(140-bit) = OPCODE_BITS(4-bit) + ADDRA_BITS(8-bit) + ADDRB_BITS(8-bit) + OPERAND_BITS(128-bit)
+    `ifndef ISA_DEF
+    `define ISA_DEF
+    parameter   OPCODE_BITS  = 4,
+                UB_ADDRA_BITS        = 8,
+                UB_ADDRB_BITS        = 8,
+                WB_ADDRA_BITS        = 8,
+                WB_ADDRB_BITS        = 8,
+                ACC_ADDRA_BITS       = 6,
+                ACC_ADDRB_BITS       = 6,
+                OFFMEM_ADDRA_BITS    = 32,
+                OFFMEM_ADDRB_BITS    = 32,
+                INST_BITS    = OPCODE_BITS + OFFMEM_ADDRA_BITS + OFFMEM_ADDRB_BITS,   // 4+32+32=68-bit
+                DIN_BITS     = 128,
+    
+    // Parsing range
+    parameter   OPCODE_FROM  = INST_BITS-1,                          // 148-1=147
+                OPCODE_TO    = OPCODE_FROM-OPCODE_BITS+1,            // 147-4+1=144
+                ADDRA_FROM   = OPCODE_TO-1,                          // 144-1=143
+                ADDRA_TO     = ADDRA_FROM-OFFMEM_ADDRA_BITS+1,       // 143-8+1=136
+                ADDRB_FROM   = ADDRA_TO-1,                   // 136-1=135
+                ADDRB_TO     = ADDRB_FROM-OFFMEM_ADDRB_BITS+1        // 135-8+1=128
+    `endif
 )
 (
     input  wire reset_n,
@@ -55,7 +80,7 @@ module SYSTOLIC_ARRAY #
     // End of AXI4 Lite Master Signals
 );
 
-`include "sa_share.v"
+`include "../../sa_share.v"
 
 // Control signals
 wire READ_UB_SIG, WRITE_UB_SIG, READ_WB_SIG, WRITE_WB_SIG, READ_ACC_SIG,
@@ -114,7 +139,38 @@ myip_AXI4_Lite_Master_0 M00 (
 );
 
 // Controller
-CONTROL_UNIT CU (
+CONTROL_UNIT # (
+    .OPCODE_BITS(OPCODE_BITS),
+    .UB_ADDRA_BITS(UB_ADDRA_BITS),
+    .UB_ADDRB_BITS(UB_ADDRB_BITS),
+    .WB_ADDRA_BITS(WB_ADDRA_BITS),
+    .WB_ADDRB_BITS(WB_ADDRB_BITS),
+    .ACC_ADDRA_BITS(ACC_ADDRA_BITS),
+    .ACC_ADDRB_BITS(ACC_ADDRB_BITS),
+    .OFFMEM_ADDRA_BITS(OFFMEM_ADDRA_BITS),
+    .OFFMEM_ADDRB_BITS(OFFMEM_ADDRB_BITS),
+    .INST_BITS(INST_BITS),
+    .DIN_BITS(DIN_BITS),
+
+    .OPCODE_FROM(OPCODE_FROM),
+    .OPCODE_TO(OPCODE_TO),
+    .ADDRA_FROM(ADDRA_FROM),
+    .ADDRA_TO(ADDRA_TO),
+    .ADDRB_FROM(ADDRB_FROM),
+    .ADDRB_TO(ADDRB_TO),
+
+    .IDLE_INST(IDLE_INST),
+    .DATA_FIFO_INST(DATA_FIFO_INST),
+    .WEIGHT_FIFO_INST(WEIGHT_FIFO_INST),
+    .AXI_TO_UB_INST(AXI_TO_UB_INST),
+    .AXI_TO_WB_INST(AXI_TO_WB_INST),
+    .UB_TO_DATA_FIFO_INST(UB_TO_DATA_FIFO_INST),
+    .UB_TO_WEIGHT_FIFO_INST(UB_TO_WEIGHT_FIFO_INST),
+    .MAT_MUL_INST(MAT_MUL_INST),
+    .MAT_MUL_ACC_INST(MAT_MUL_ACC_INST),
+    .ACC_TO_UB_INST(ACC_TO_UB_INST),
+    .UB_TO_AXI_INST(UB_TO_AXI_INST)
+) CU (
     .reset_n(reset_n),
     .clk(clk),
     .instruction(instruction),
@@ -149,7 +205,10 @@ CONTROL_UNIT CU (
 );
 
 // Weight-FIFO
-FIFO #(.FIFO_WIDTH(16*8), .FIFO_DEPTH(4)) WEIGHT_FIFO (
+FIFO # (
+    .FIFO_WIDTH(16*8),
+    .FIFO_DEPTH(4)
+) WEIGHT_FIFO (
     .reset_n(reset_n),
     .clk(clk),
     .en(WEIGHT_FIFO_EN_SIG),
@@ -158,7 +217,10 @@ FIFO #(.FIFO_WIDTH(16*8), .FIFO_DEPTH(4)) WEIGHT_FIFO (
 );
 
 // Unified Buffer
-BRAM #(.RAM_WIDTH(16*8), .RAM_DEPTH(256)) UB (
+BRAM # (
+    .RAM_WIDTH(16*8),
+    .RAM_DEPTH(256)
+) UB (
     .clk(clk),
     .wea(WRITE_UB_SIG),
     .enb(READ_UB_SIG),
@@ -169,7 +231,10 @@ BRAM #(.RAM_WIDTH(16*8), .RAM_DEPTH(256)) UB (
 );
 
 // Weight Buffer
-BRAM #(.RAM_WIDTH(16*8), .RAM_DEPTH(256)) WB (
+BRAM # (
+    .RAM_WIDTH(16*8),
+    .RAM_DEPTH(256)
+) WB (
     .clk(clk),
     .wea(WRITE_WB_SIG),
     .enb(READ_WB_SIG),
@@ -180,7 +245,10 @@ BRAM #(.RAM_WIDTH(16*8), .RAM_DEPTH(256)) WB (
 );
 
 // Data-FIFO
-FIFO #(.FIFO_WIDTH(16*8), .FIFO_DEPTH(4)) DATA_FIFO (
+FIFO #(
+    .FIFO_WIDTH(16*8),
+    .FIFO_DEPTH(4)
+) DATA_FIFO (
     .reset_n(reset_n),
     .clk(clk),
     .en(DATA_FIFO_EN_SIG),
@@ -200,8 +268,12 @@ MATRIX_MULTIPLY_UNIT MMU (
 );
 
 // Accumulator
-ACCUMULATOR #(.DATA_SIZE(20), .OUTPUT_DATA_SIZE(8), .DATA_NUM(16), .RAM_DEPTH(64)) ACC
-(
+ACCUMULATOR # (
+    .DATA_SIZE(20),
+    .OUTPUT_DATA_SIZE(8),
+    .DATA_NUM(16),
+    .RAM_DEPTH(64)
+) ACC (
     .clk(clk),
     .wea(WRITE_ACC_SIG),
     .enb(READ_ACC_SIG),

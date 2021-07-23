@@ -22,7 +22,11 @@ module BRAM #
     output reg [RAM_WIDTH-1:0] doutb   // RAM output data
 );
 
-`include "sa_share.v"
+function integer clogb2;
+    input integer depth;
+        for (clogb2=0; depth>0; clogb2=clogb2+1)
+        depth = depth >> 1;
+endfunction
 
 reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 

@@ -21,7 +21,7 @@
 
 module PE_test;
 
-`include "sa_share.v"
+`include "../../sa_share.v"
 
 parameter i = 0;
 

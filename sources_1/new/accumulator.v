@@ -42,7 +42,11 @@ module ACCUMULATOR #
     output [DOUT_WIDTH-1:0] doutb   // RAM output data
 );
 
-`include "sa_share.v"
+function integer clogb2;
+    input integer depth;
+        for (clogb2=0; depth>0; clogb2=clogb2+1)
+        depth = depth >> 1;
+endfunction
 
 reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 
@@ -63,10 +67,10 @@ reg signed [OUTPUT_DATA_SIZE-1:0] dout_parsed [DATA_NUM-1:0];
 
 generate
     for (genvar i = DATA_NUM - 1; i >= 0; i = i - 1) begin
-        assign brama_parsed[i] = bram[addra][i * DATA_SIZE + : DATA_SIZE];
-        assign bramb_parsed[i] = bram[addrb][i * DATA_SIZE + : DATA_SIZE];
-        assign dina_parsed[i] = dina[i * DATA_SIZE + : DATA_SIZE];
-        assign doutb[i * OUTPUT_DATA_SIZE + : OUTPUT_DATA_SIZE] = dout_parsed[i];
+        assign brama_parsed[i] = bram[addra][i*DATA_SIZE+:DATA_SIZE];
+        assign bramb_parsed[i] = bram[addrb][i*DATA_SIZE+:DATA_SIZE];
+        assign dina_parsed[i] = dina[i*DATA_SIZE+:DATA_SIZE];
+        assign doutb[i*OUTPUT_DATA_SIZE+:OUTPUT_DATA_SIZE] = dout_parsed[i];
     end
 endgenerate
 
@@ -76,7 +80,7 @@ always @ (posedge clk) begin : READ_WRITE_LOGIC
         // Write input data (accumulate or pass-through)
         if (acc_en == 1'b1) begin
             for (i = DATA_NUM - 1; i >= 0; i = i - 1) begin
-                bram[addra][i * DATA_SIZE + : DATA_SIZE] <= brama_parsed[i] + dina_parsed[i];
+                bram[addra][i*DATA_SIZE+:DATA_SIZE] <= brama_parsed[i] + dina_parsed[i];
             end
         end else begin
             bram[addra] <= dina;

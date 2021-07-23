@@ -21,7 +21,7 @@
 
 module CU_test;
 
-`include "tb_share.v"
+`include "../../sa_share.v"
 
 // Clock localparams
 localparam  CLOCK_PS          = 10000;      //  should be a multiple of 10

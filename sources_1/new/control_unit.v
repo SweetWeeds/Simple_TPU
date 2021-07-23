@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: Postech DICE.
+// Company: POSTECH DICE Lab.
 // Engineer: Hankyul Kwon
 // 
 // Create Date: 2021/07/01 15:54:00
@@ -9,9 +9,9 @@
 // Project Name: Systolic Array
 // Target Devices: ZCU102
 // Tool Versions: Vivado 2020.2
-// Description: 
+// Description: Control unit of systolic array.
 // 
-// Dependencies: 
+// Dependencies: sa_share.v
 // 
 // Revision:
 // Revision 0.01 - File Created
@@ -19,7 +19,40 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module CONTROL_UNIT (
+module CONTROL_UNIT #
+(
+    parameter OPCODE_BITS          = 4,
+    parameter UB_ADDRA_BITS        = 8,
+    parameter UB_ADDRB_BITS        = 8,
+    parameter WB_ADDRA_BITS        = 8,
+    parameter WB_ADDRB_BITS        = 8,
+    parameter ACC_ADDRA_BITS       = 6,
+    parameter ACC_ADDRB_BITS       = 6,
+    parameter OFFMEM_ADDRA_BITS    = 32,
+    parameter OFFMEM_ADDRB_BITS    = 32,
+    parameter INST_BITS    = OPCODE_BITS + OFFMEM_ADDRA_BITS + OFFMEM_ADDRB_BITS,
+    parameter DIN_BITS     = 128,
+
+    parameter OPCODE_FROM  = INST_BITS-1,                          // 148-1=147
+    parameter OPCODE_TO    = OPCODE_FROM-OPCODE_BITS+1,            // 147-4+1=144
+    parameter ADDRA_FROM   = OPCODE_TO-1,                          // 144-1=143
+    parameter ADDRA_TO     = ADDRA_FROM-OFFMEM_ADDRA_BITS+1,       // 143-8+1=136
+    parameter ADDRB_FROM   = ADDRA_TO-1,                   // 136-1=135
+    parameter ADDRB_TO     = ADDRB_FROM-OFFMEM_ADDRB_BITS+1,      // 135-8+1=128
+
+    parameter IDLE_INST               = 4'h0,
+    parameter DATA_FIFO_INST          = 4'h1,
+    parameter WEIGHT_FIFO_INST        = 4'h2,
+    parameter AXI_TO_UB_INST          = 4'h3,
+    parameter AXI_TO_WB_INST          = 4'h4,
+    parameter UB_TO_DATA_FIFO_INST    = 4'h5,
+    parameter UB_TO_WEIGHT_FIFO_INST  = 4'h6,
+    parameter MAT_MUL_INST            = 4'h7,
+    parameter MAT_MUL_ACC_INST        = 4'h8,
+    parameter ACC_TO_UB_INST          = 4'h9,
+    parameter UB_TO_AXI_INST          = 4'ha
+)
+(
     input  wire reset_n,
     input  wire clk,
     input  wire [INST_BITS-1:0] instruction,    // 68-bit instruction
@@ -53,17 +86,16 @@ module CONTROL_UNIT (
     output reg  [DIN_BITS-1:0] dout
 );
 
-`include "sa_share.v"
-
 reg [OPCODE_BITS-1:0]   opcode;     // Operation Code
 reg [1:0]               minor_state;
 reg minor_state_mode;               // 0: For exact-cycle inst, 1: For n-cycle inst
 reg [OFFMEM_ADDRA_BITS-1:0] addra;  // Write address buffer
 reg [OFFMEM_ADDRA_BITS-1:0] addrb;  // Read address buffer
+reg flag_buffer;
 
 localparam [1:0] IDLE = 2'b00,
-                LOAD_OFF_MEM_DATA   = 2'b01,
-                WRITE_OFF_MEM_DATA  = 2'b10;
+                 LOAD_OFF_MEM_DATA   = 2'b01,
+                 WRITE_OFF_MEM_DATA  = 2'b10;
 
 assign idle_flag = (opcode == IDLE_INST) ? 1'b1 : 1'b0;
 
@@ -75,12 +107,13 @@ always @ (posedge clk or negedge reset_n) begin : INPUT_LOGIC
         minor_state_mode <= 1'b0;
     end else if (flag == 1'b1) begin
         // Get next instruction
+        flag    <= 1'b0;
         opcode  <= instruction[OPCODE_FROM:OPCODE_TO];
         addra   <= instruction[ADDRA_FROM:ADDRA_TO];
         addrb   <= instruction[ADDRB_FROM:ADDRB_TO];
         minor_state <= 0;
         case (instruction[OPCODE_FROM:OPCODE_TO])
-        AXI_TO_UB_CYCLE, AXI_TO_WB_CYCLE, UB_TO_AXI_INST : begin
+        AXI_TO_UB_INST, AXI_TO_WB_INST, UB_TO_AXI_INST : begin
             minor_state_mode <= 1'b1;
         end
         default : begin
@@ -96,18 +129,10 @@ always @ (posedge clk or negedge reset_n) begin : INPUT_LOGIC
     end
 end
 
-always @ (posedge clk or negedge clk or negedge reset_n) begin : FLAG_LOGIC
+always @ (negedge clk or negedge reset_n) begin : COMPLETE_FLAG
     if (reset_n == 1'b0) begin
-        // Async reset
         flag <= 1'b0;
-    end else if (clk == 1'b1) begin
-        // posedge clk
-        if (flag == 1'b1) begin
-            // Negate flag to generate half-cycle pulse signal
-            flag <= 1'b0;
-        end
-    end else if (clk == 1'b0) begin
-        // negedge clk
+    end else begin
         case (opcode)
         ACC_TO_UB_INST, MAT_MUL_INST, MAT_MUL_ACC_INST : begin
             // 2-cycles
@@ -134,6 +159,7 @@ always @ (posedge clk or negedge clk or negedge reset_n) begin : FLAG_LOGIC
         endcase
     end
 end
+
 
 always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : OUTPUT_LOGIC
     case (opcode)

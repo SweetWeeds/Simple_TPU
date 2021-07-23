@@ -21,7 +21,7 @@
 
 module TOP_TB;
 
-`include "tb_share.v"
+`include "../../sa_share.v"
 
 // Clock localparams
 localparam  CLOCK_PS            = 10000;      //  should be a multiple of 10
@@ -71,7 +71,12 @@ assign instruction[ADDRB_FROM:ADDRB_TO]     = ADDRB;
 assign din = INPUT_DATA;
 
 // Instantiation
-SYSTOLIC_ARRAY SA0 (
+SYSTOLIC_ARRAY # (
+    .C_M00_AXI_ADDR_WIDTH(32),
+    .C_M00_AXI_DATA_WIDTH(32),
+    .C_M00_AXI_TRANSACTIONS_NUM(4),
+    .INST_BITS(INST_BITS)
+) SA0 (
     .reset_n(reset_n),
     .clk(clk),
     .instruction(instruction),
