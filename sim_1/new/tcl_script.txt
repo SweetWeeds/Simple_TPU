@@ -1,0 +1,73 @@
+// 1_UB_TB.txt
+set fp [open 1_UB_TB.txt w]
+for {set i 0} {$i < 256} {incr i} {
+    puts $fp [get_value -radix hex "/SA0/UB/bram[$i]"]
+}
+close $fp
+
+// 2_WB_TB.txt
+set fp [open 2_WB_TB.txt w]
+for {set i 0} {$i < 256} {incr i} {
+    puts $fp [get_value -radix hex "/SA0/WB/bram[$i]"]
+}
+close $fp
+
+// 4_DATA_FIFO_TB.txt
+set fp [open 4_DATA_FIFO_TB.txt w]
+for {set i 0} {$i < 4} {incr i} {
+    puts $fp [get_value -radix hex "/SA0/DATA_FIFO/fifo[$i]"]
+}
+close $fp
+
+// 5_MMU_TB.txt
+set fp [open 5_MMU_TB.txt w]
+for {set i 0} {$i < 16} {incr i} {
+    set result ""
+    for {set j 15} {$j >= 0} {incr j -1} {
+	    append result [get_value -radix hex "/SA0/MMU/\\genblk1[$i]\.genblk1[$j]\.genblk1\.PE0 /weight"]
+    }
+	puts $fp "$result"
+}
+close $fp
+
+// 5_WEIGHT_FIFO.txt
+set fp [open 5_WEIGHT_FIFO_TB.txt w]
+for {set i 0} {$i < 4} {incr i} {
+    puts $fp [get_value -radix hex "/SA0/WEIGHT_FIFO/fifo[$i]"]
+}
+close $fp
+
+// 6_ACC_TB.txt
+set fp [open 6_ACC_TB.txt w]
+for {set i 0} {$i < 16} {incr i} {
+    puts $fp [get_value -radix hex "/SA0/ACC/bram[$i]"]
+}
+close $fp
+
+// 8_OFF_MEM_TB.txt
+set fp [open 8_OFF_MEM_TB.txt w]
+for {set i 0} {$i < 256} {incr i} {
+    puts $fp [get_value -radix hex "/OM0/OFF_MEM_BRAM/bram[$i]"]
+}
+close $fp
+
+// 9_ACC.txt
+set fp [open 9_ACC_TB.txt w]
+for {set i 0} {$i < 16} {incr i} {
+    puts $fp [get_value -radix hex "/SA0/ACC/bram[$i]"]
+}
+close $fp
+
+// 10_UB.txt
+set fp [open 10_UB_TB.txt w]
+for {set i 0} {$i < 256} {incr i} {
+    puts $fp [get_value -radix hex "/SA0/UB/bram[$i]"]
+}
+close $fp
+
+// 11_OFF_MEM.txt
+set fp [open 11_OFF_MEM_TB.txt w]
+for {set i 0} {$i < 256} {incr i} {
+    puts $fp [get_value -radix hex "/OM0/OFF_MEM_BRAM/bram[$i]"]
+}
+close $fp
