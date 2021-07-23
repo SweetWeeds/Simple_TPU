@@ -1,11 +1,11 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
-// Company: 
-// Engineer: 
+// Company: Postech DICE.
+// Engineer: Hankyul Kwon
 // 
 // Create Date: 2021/07/01 15:54:00
-// Design Name: 
-// Module Name: controller
+// Design Name: Control Unit
+// Module Name: CONTROL_UNIT
 // Project Name: Systolic Array
 // Target Devices: ZCU102
 // Tool Versions: Vivado 2020.2
@@ -22,15 +22,15 @@
 module CONTROL_UNIT (
     input  wire reset_n,
     input  wire clk,
-    input  wire [INST_BITS-1:0] instruction,   // 16-bit instruction
-    output reg  [1:0] axi_sm_mode,   // axi state machine mode
+    input  wire [INST_BITS-1:0] instruction,    // 68-bit instruction
+    output reg  [1:0] axi_sm_mode,  // axi state machine mode
     output reg  axi_txn_en,
-    input  wire inst_done,          // is 'din' data is valid
-    input  wire [DIN_BITS-1:0] din,   // 128-bit data input pin
-    input  wire [DIN_BITS-1:0] rin,   // 128-bit result data input pin
-    input  wire [DIN_BITS-1:0] uin,   // 128-bit UB's data input pin
-    output wire idle_flag,       // flag for idle status (0: Working, 1: Idling)
-    output reg  flag,            // flag to indicate whether the command is executed
+    input  wire inst_done,  // is 'din' data is valid
+    input  wire [DIN_BITS-1:0] din, // 128-bit data input pin
+    input  wire [DIN_BITS-1:0] rin, // 128-bit result data input pin
+    input  wire [DIN_BITS-1:0] uin, // 128-bit UB's data input pin
+    output wire idle_flag,  // flag for idle status (0: Working, 1: Idling)
+    output reg  flag,   // flag to indicate whether the command is executed
     output reg  read_ub,
     output reg  write_ub,
     output reg  read_wb,
@@ -42,8 +42,14 @@ module CONTROL_UNIT (
     output reg  weight_fifo_en,
     output reg  mm_en,
     output reg  acc_en,
-    output reg  [ADDRA_BITS-1:0] addra,    // Unified/Weight Buffer Write Address
-    output reg  [ADDRB_BITS-1:0] addrb,    // Unfiied/Weight Buffer Read Address
+    output reg  [UB_ADDRA_BITS-1:0]     ub_addra,   // Unified Buffer Write Address
+    output reg  [UB_ADDRB_BITS-1:0]     ub_addrb,   // Unfiied Buffer Read Address
+    output reg  [WB_ADDRA_BITS-1:0]     wb_addra,   // Weight Buffer Write Address
+    output reg  [WB_ADDRB_BITS-1:0]     wb_addrb,   // Weight Buffer Read Address
+    output reg  [ACC_ADDRA_BITS-1:0]    acc_addra,  // Accumulator Write Address
+    output reg  [ACC_ADDRB_BITS-1:0]    acc_addrb,  // Accumulator Read Address
+    output reg  [OFFMEM_ADDRA_BITS-1:0] offmem_addra,   // OFF-RAM Write Address
+    output reg  [OFFMEM_ADDRB_BITS-1:0] offmem_addrb,   // OFF-RAM Read Address
     output reg  [DIN_BITS-1:0] dout
 );
 
@@ -52,6 +58,8 @@ module CONTROL_UNIT (
 reg [OPCODE_BITS-1:0]   opcode;     // Operation Code
 reg [1:0]               minor_state;
 reg minor_state_mode;               // 0: For exact-cycle inst, 1: For n-cycle inst
+reg [OFFMEM_ADDRA_BITS-1:0] addra;  // Write address buffer
+reg [OFFMEM_ADDRA_BITS-1:0] addrb;  // Read address buffer
 
 localparam [1:0] IDLE = 2'b00,
                 LOAD_OFF_MEM_DATA   = 2'b01,
@@ -62,13 +70,11 @@ assign idle_flag = (opcode == IDLE_INST) ? 1'b1 : 1'b0;
 always @ (posedge clk or negedge reset_n) begin : INPUT_LOGIC
     if (reset_n == 1'b0) begin
         // Asynchronous reset
-        flag        <= 1'b0;
         opcode      <= IDLE_INST;
         minor_state <= 0;
         minor_state_mode <= 1'b0;
     end else if (flag == 1'b1) begin
         // Get next instruction
-        flag    <= 1'b0;
         opcode  <= instruction[OPCODE_FROM:OPCODE_TO];
         addra   <= instruction[ADDRA_FROM:ADDRA_TO];
         addrb   <= instruction[ADDRB_FROM:ADDRB_TO];
@@ -90,31 +96,43 @@ always @ (posedge clk or negedge reset_n) begin : INPUT_LOGIC
     end
 end
 
-always @ (negedge clk) begin : COMPLETE_FLAG
-    case (opcode)
-    ACC_TO_UB_INST, MAT_MUL_INST, MAT_MUL_ACC_INST : begin
-        // 2-cycles
-        if (minor_state == 1) begin
-            $display("[%0t:CU:COMPLETE_FLAG] 2-cycles instruction copmlete.", $time);
-            flag <= 1'b1;
+always @ (posedge clk or negedge clk or negedge reset_n) begin : FLAG_LOGIC
+    if (reset_n == 1'b0) begin
+        // Async reset
+        flag <= 1'b0;
+    end else if (clk == 1'b1) begin
+        // posedge clk
+        if (flag == 1'b1) begin
+            // Negate flag to generate half-cycle pulse signal
+            flag <= 1'b0;
         end
-    end
-    IDLE_INST, DATA_FIFO_INST, WEIGHT_FIFO_INST, UB_TO_DATA_FIFO_INST,
-    UB_TO_WEIGHT_FIFO_INST : begin
-        // 1-cycle
-        if (minor_state == 0) begin
-            $display("[%0t:CU:COMPLETE_FLAG] 1-cycles instruction copmlete.", $time);
-            flag <= 1'b1;
+    end else if (clk == 1'b0) begin
+        // negedge clk
+        case (opcode)
+        ACC_TO_UB_INST, MAT_MUL_INST, MAT_MUL_ACC_INST : begin
+            // 2-cycles
+            if (minor_state == 1) begin
+                $display("[%0t:CU:COMPLETE_FLAG] 2-cycles instruction copmlete.", $time);
+                flag <= 1'b1;
+            end
         end
-    end
-    AXI_TO_UB_INST, AXI_TO_WB_INST, UB_TO_AXI_INST : begin
-        // n-cycles
-        if (inst_done == 1'b1) begin
-            $display("[%0t:CU:COMPLETE_FLAG] n-cycles instruction copmlete.", $time);
-            flag <= 1'b1;
+        IDLE_INST, DATA_FIFO_INST, WEIGHT_FIFO_INST, UB_TO_DATA_FIFO_INST,
+        UB_TO_WEIGHT_FIFO_INST : begin
+            // 1-cycle
+            if (minor_state == 0) begin
+                $display("[%0t:CU:COMPLETE_FLAG] 1-cycles instruction copmlete.", $time);
+                flag <= 1'b1;
+            end
         end
+        AXI_TO_UB_INST, AXI_TO_WB_INST, UB_TO_AXI_INST : begin
+            // n-cycles
+            if (inst_done == 1'b1) begin
+                $display("[%0t:CU:COMPLETE_FLAG] n-cycles instruction copmlete.", $time);
+                flag <= 1'b1;
+            end
+        end
+        endcase
     end
-    endcase
 end
 
 always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : OUTPUT_LOGIC
@@ -135,6 +153,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
         weight_fifo_en  = 1'b0;
         mm_en           = 1'b0;
         acc_en          = 1'b0;
+        ub_addra        = 8'b0;
+        ub_addrb        = 8'b0;
+        wb_addra        = 8'b0;
+        wb_addrb        = 8'b0;
+        acc_addra       = 6'b0;
+        acc_addrb       = 6'b0;
+        offmem_addra    = 32'h00000000;
+        offmem_addrb    = 32'h00000000;
         dout            = 128'd0;
     end
     // DATA_FIFO_INST (1-cycle)
@@ -153,6 +179,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
         weight_fifo_en  = 1'b0;
         mm_en           = 1'b0;
         acc_en          = 1'b0;
+        ub_addra        = 8'b0;
+        ub_addrb        = 8'b0;
+        wb_addra        = 8'b0;
+        wb_addrb        = 8'b0;
+        acc_addra       = 6'b0;
+        acc_addrb       = 6'b0;
+        offmem_addra    = 32'h00000000;
+        offmem_addrb    = 32'h00000000;
         dout            = 128'd0;
     end
     // WEIGHT_FIFO_INST (1-cycle)
@@ -171,6 +205,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
         weight_fifo_en  = 1'b1;
         mm_en           = 1'b0;
         acc_en          = 1'b0;
+        ub_addra        = 8'b0;
+        ub_addrb        = 8'b0;
+        wb_addra        = 8'b0;
+        wb_addrb        = 8'b0;
+        acc_addra       = 6'b0;
+        acc_addrb       = 6'b0;
+        offmem_addra    = 32'h00000000;
+        offmem_addrb    = 32'h00000000;
         dout            = 128'd0;
     end
     // AXI_TO_UB_INST (wait for data: n-cycles, write data to UB: 1-cycle)
@@ -190,6 +232,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
             weight_fifo_en  = 1'b0;
             mm_en           = 1'b0;
             acc_en          = 1'b0;
+            ub_addra        = 8'h00;
+            ub_addrb        = 8'h00;
+            wb_addra        = 8'h00;
+            wb_addrb        = 8'h00;
+            acc_addra       = 6'b0;
+            acc_addrb       = 6'b0;
+            offmem_addra    = 32'h00000000;
+            offmem_addrb    = addrb;
             dout            = 128'd0;
         end else begin
             $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_UB_INST(1)", $time);
@@ -206,6 +256,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
             weight_fifo_en  = 1'b0;
             mm_en           = 1'b0;
             acc_en          = 1'b0;
+            ub_addra        = addra[UB_ADDRA_BITS-1:0];
+            ub_addrb        = 8'h0;
+            wb_addra        = 8'h0;
+            wb_addrb        = 8'h0;
+            acc_addra       = 6'b0;
+            acc_addrb       = 6'b0;
+            offmem_addra    = 32'h00000000;
+            offmem_addrb    = 32'h00000000;
             dout            = din;
         end
     end
@@ -226,6 +284,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
             weight_fifo_en  = 1'b0;
             mm_en           = 1'b0;
             acc_en          = 1'b0;
+            ub_addra        = 8'h00;
+            ub_addrb        = 8'h00;
+            wb_addra        = 8'h00;
+            wb_addrb        = 8'h00;
+            acc_addra       = 6'b0;
+            acc_addrb       = 6'b0;
+            offmem_addra    = 32'h00000000;
+            offmem_addrb    = addrb;
             dout            = 128'd0;
         end else begin
             $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_WB_INST(1)", $time);
@@ -242,6 +308,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
             weight_fifo_en  = 1'b0;
             mm_en           = 1'b0;
             acc_en          = 1'b0;
+            ub_addra        = 8'b0;
+            ub_addrb        = 8'b0;
+            wb_addra        = addra[WB_ADDRA_BITS-1:0];
+            wb_addrb        = 8'b0;
+            acc_addra       = 6'b0;
+            acc_addrb       = 6'b0;
+            offmem_addra    = 32'h00000000;
+            offmem_addrb    = 32'h00000000;
             dout            = din;
         end
     end
@@ -261,6 +335,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
         weight_fifo_en  = 1'b0;
         mm_en           = 1'b0;
         acc_en          = 1'b0;
+        ub_addra        = 8'b0;
+        ub_addrb        = addrb[UB_ADDRB_BITS-1:0];
+        wb_addra        = 8'b0;
+        wb_addrb        = 8'b0;
+        acc_addra       = 6'b0;
+        acc_addrb       = 6'b0;
+        offmem_addra    = 32'h00000000;
+        offmem_addrb    = 32'h00000000;
         dout            = 128'd0;
     end
     // UB_TO_WEIGHT_FIFO_INST (1-cycle)
@@ -279,6 +361,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
         weight_fifo_en  = 1'b1;
         mm_en           = 1'b0;
         acc_en          = 1'b0;
+        ub_addra        = 8'b0;
+        ub_addrb        = 8'b0;
+        wb_addra        = 8'b0;
+        wb_addrb        = addrb[UB_ADDRB_BITS-1:0];
+        acc_addra       = 6'b0;
+        acc_addrb       = 6'b0;
+        offmem_addra    = 32'h00000000;
+        offmem_addrb    = 32'h00000000;
         dout            = 128'd0;
     end
     // MAT_MUL_INST (1-cycle)
@@ -298,6 +388,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
             weight_fifo_en  = 1'b0;
             mm_en           = 1'b0;
             acc_en          = 1'b0;
+            ub_addra        = 8'b0;
+            ub_addrb        = addrb[UB_ADDRB_BITS-1:0];
+            wb_addra        = 8'b0;
+            wb_addrb        = 8'b0;
+            acc_addra       = 6'b0;
+            acc_addrb       = 6'b0;
+            offmem_addra    = 32'h00000000;
+            offmem_addrb    = 32'h00000000;
             dout            = 128'd0;
         end else begin
             $display("[%0t:CU:OUTPUT_LOGIC] MAT_MUL_INST(1)", $time);
@@ -314,6 +412,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
             weight_fifo_en  = 1'b0;
             mm_en           = 1'b1;
             acc_en          = 1'b0;
+            ub_addra        = 8'b0;
+            ub_addrb        = 8'b0;
+            wb_addra        = 8'b0;
+            wb_addrb        = 8'b0;
+            acc_addra       = addra[ACC_ADDRA_BITS-1:0];
+            acc_addrb       = 6'b0;
+            offmem_addra    = 32'h00000000;
+            offmem_addrb    = 32'h00000000;
             dout            = 128'd0;
         end
     end
@@ -334,6 +440,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
             weight_fifo_en  = 1'b0;
             mm_en           = 1'b0;
             acc_en          = 1'b1;
+            ub_addra        = 8'b0;
+            ub_addrb        = addrb[UB_ADDRB_BITS-1:0];
+            wb_addra        = 8'b0;
+            wb_addrb        = 8'b0;
+            acc_addra       = 6'b0;
+            acc_addrb       = 6'b0;
+            offmem_addra    = 32'h00000000;
+            offmem_addrb    = 32'h00000000;
             dout            = 128'd0;
         end else begin
             $display("[%0t:CU:OUTPUT_LOGIC] MAT_MUL_ACC_INST(1)", $time);
@@ -350,6 +464,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
             weight_fifo_en  = 1'b0;
             mm_en           = 1'b1;
             acc_en          = 1'b1;
+            ub_addra        = 8'b0;
+            ub_addrb        = 8'b0;
+            wb_addra        = 8'b0;
+            wb_addrb        = 8'b0;
+            acc_addra       = addra[ACC_ADDRA_BITS-1:0];
+            acc_addrb       = 6'b0;
+            offmem_addra    = 32'h00000000;
+            offmem_addrb    = 32'h00000000;
             dout            = 128'd0;
         end
     end
@@ -370,6 +492,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
             weight_fifo_en  = 1'b0;
             mm_en           = 1'b0;
             acc_en          = 1'b0;
+            ub_addra        = 8'b0;
+            ub_addrb        = 8'b0;
+            wb_addra        = 8'b0;
+            wb_addrb        = 8'b0;
+            acc_addra       = 6'b0;
+            acc_addrb       = addrb[ACC_ADDRB_BITS-1:0];
+            offmem_addra    = 32'h00000000;
+            offmem_addrb    = 32'h00000000;
             dout            = 128'd0;
         end else begin
             $display("[%0t:CU:OUTPUT_LOGIC] ACC_TO_UB_INST(1)", $time);
@@ -386,6 +516,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
             weight_fifo_en  = 1'b0;
             mm_en           = 1'b0;
             acc_en          = 1'b0;
+            ub_addra        = addra[UB_ADDRA_BITS-1:0];
+            ub_addrb        = 8'b0;
+            wb_addra        = 8'b0;
+            wb_addrb        = 8'b0;
+            acc_addra       = 6'b0;
+            acc_addrb       = 6'b0;
+            offmem_addra    = 32'h00000000;
+            offmem_addrb    = 32'h00000000;
             dout            = rin;
         end
     end
@@ -407,6 +545,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
             weight_fifo_en  = 1'b0;
             mm_en           = 1'b0;
             acc_en          = 1'b0;
+            ub_addra        = 8'b0;
+            ub_addrb        = addrb[UB_ADDRB_BITS-1:0];
+            wb_addra        = 8'b0;
+            wb_addrb        = 8'b0;
+            acc_addra       = 6'b0;
+            acc_addrb       = 6'b0;
+            offmem_addra    = 32'h00000000;
+            offmem_addrb    = 32'h00000000;
             dout            = 128'd0;
         end else begin
             if (inst_done == 1'b0) begin
@@ -425,6 +571,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
                 weight_fifo_en  = 1'b0;
                 mm_en           = 1'b0;
                 acc_en          = 1'b0;
+                ub_addra        = 8'b0;
+                ub_addrb        = 8'b0;
+                wb_addra        = 8'b0;
+                wb_addrb        = 8'b0;
+                acc_addra       = 6'b0;
+                acc_addrb       = 6'b0;
+                offmem_addra    = addra;
+                offmem_addrb    = 32'h00000000;
                 dout            = uin;
             end else begin
                 // Write off-mem done.
@@ -442,6 +596,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
                 weight_fifo_en  = 1'b0;
                 mm_en           = 1'b0;
                 acc_en          = 1'b0;
+                ub_addra        = 8'b0;
+                ub_addrb        = 8'b0;
+                wb_addra        = 8'b0;
+                wb_addrb        = 8'b0;
+                acc_addra       = 6'b0;
+                acc_addrb       = 6'b0;
+                offmem_addra    = 32'h00000000;
+                offmem_addrb    = 32'h00000000;
                 dout            = 128'd0;
             end
         end
@@ -462,6 +624,14 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done) begin : 
         weight_fifo_en  = 1'b0;
         mm_en           = 1'b0;
         acc_en          = 1'b0;
+        ub_addra        = 8'b0;
+        ub_addrb        = 8'b0;
+        wb_addra        = 8'b0;
+        wb_addrb        = 8'b0;
+        acc_addra       = 6'b0;
+        acc_addrb       = 6'b0;
+        offmem_addra    = 32'h00000000;
+        offmem_addrb    = 32'h00000000;
         dout            = 128'd0;
     end
     endcase

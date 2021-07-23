@@ -10,19 +10,25 @@ endfunction
 // Instruction Set
 // ISA(140-bit) = OPCODE_BITS(4-bit) + ADDRA_BITS(8-bit) + ADDRB_BITS(8-bit) + OPERAND_BITS(128-bit)
 parameter  OPCODE_BITS  = 4,
-           ADDRA_BITS   = 8,
-           ADDRB_BITS   = 8,
+           UB_ADDRA_BITS        = 8,
+           UB_ADDRB_BITS        = 8,
+           WB_ADDRA_BITS        = 8,
+           WB_ADDRB_BITS        = 8,
+           ACC_ADDRA_BITS       = 6,
+           ACC_ADDRB_BITS       = 6,
+           OFFMEM_ADDRA_BITS    = 32,
+           OFFMEM_ADDRB_BITS    = 32,
            //OPERAND_BITS = 128,
-           INST_BITS    = OPCODE_BITS + ADDRA_BITS + ADDRB_BITS,   // 20-bit
+           INST_BITS    = OPCODE_BITS + OFFMEM_ADDRA_BITS + OFFMEM_ADDRB_BITS,   // 4+32+32=68-bit
            DIN_BITS     = 128;
 
 // Parsing range
-parameter  OPCODE_FROM  = INST_BITS-1,                  // 148-1=147
-           OPCODE_TO    = OPCODE_FROM-OPCODE_BITS+1,    // 147-4+1=144
-           ADDRA_FROM   = OPCODE_TO-1,                  // 144-1=143
-           ADDRA_TO     = ADDRA_FROM-ADDRA_BITS+1,      // 143-8+1=136
+parameter  OPCODE_FROM  = INST_BITS-1,                          // 148-1=147
+           OPCODE_TO    = OPCODE_FROM-OPCODE_BITS+1,            // 147-4+1=144
+           ADDRA_FROM   = OPCODE_TO-1,                          // 144-1=143
+           ADDRA_TO     = ADDRA_FROM-OFFMEM_ADDRA_BITS+1,       // 143-8+1=136
            ADDRB_FROM   = ADDRA_TO-1,                   // 136-1=135
-           ADDRB_TO     = ADDRB_FROM-ADDRB_BITS+1;      // 135-8+1=128
+           ADDRB_TO     = ADDRB_FROM-OFFMEM_ADDRB_BITS+1;      // 135-8+1=128
 
 // OPCODE
 parameter [OPCODE_BITS-1:0]     // Do nothing (1-cycyle)
@@ -47,6 +53,7 @@ parameter [OPCODE_BITS-1:0]     // Do nothing (1-cycyle)
                                 ACC_TO_UB_INST          = 4'h9,
                                 // Write unsigned-Buffer's data to AXI (n-cycles)
                                 UB_TO_AXI_INST          = 4'ha;
+
 
 
 // Minor states' num of cycles ('0' means n-cycles)

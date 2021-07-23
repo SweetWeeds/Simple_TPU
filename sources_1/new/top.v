@@ -66,7 +66,14 @@ wire [127:0] DATA_FIFO_MMU_PATH, WEIGHT_FIFO_MMU_PATH,
             UB_DATA_PATH, WB_WEIGHT_FIFO_PATH, CTRL_DOUT, RESLUT_DOUT,
             AXI_CU_LOAD_DATA_PATH, AXI_CU_WRITE_DATA_PATH;
 wire [319:0] MMU_ACC_PATH;
-wire [7:0] ADDRA, ADDRB;
+wire [UB_ADDRA_BITS-1:0]     UB_ADDRA;
+wire [UB_ADDRB_BITS-1:0]     UB_ADDRB;
+wire [WB_ADDRA_BITS-1:0]     WB_ADDRA;
+wire [WB_ADDRB_BITS-1:0]     WB_ADDRB;
+wire [ACC_ADDRA_BITS-1:0]    ACC_ADDRA;
+wire [ACC_ADDRB_BITS-1:0]    ACC_ADDRB;
+wire [OFFMEM_ADDRA_BITS-1:0] OFFMEM_ADDRA;
+wire [OFFMEM_ADDRB_BITS-1:0] OFFMEM_ADDRB;
 wire [1:0] axi_sm_mode;
 wire axi_txn_en;
 
@@ -75,8 +82,8 @@ wire axi_txn_en;
 myip_AXI4_Lite_Master_0 M00 (
 	// Users to add ports here
 	.c_m00_mode(axi_sm_mode),
-	.c_m00_off_mem_addra({24'h000000, ADDRA}),
-    .c_m00_off_mem_addrb({24'h000000, ADDRB}),
+	.c_m00_off_mem_addra(OFFMEM_ADDRA),
+    .c_m00_off_mem_addrb(OFFMEM_ADDRB),
 	.c_m00_wdata(CTRL_DOUT),
 	.c_m00_rdata(AXI_CU_LOAD_DATA_PATH),
     // End of user ports
@@ -130,8 +137,14 @@ CONTROL_UNIT CU (
     .weight_fifo_en(WEIGHT_FIFO_EN_SIG),
     .mm_en(MM_EN_SIG),
     .acc_en(ACC_EN_SIG),
-    .addra(ADDRA),
-    .addrb(ADDRB),
+    .ub_addra(UB_ADDRA),
+    .ub_addrb(UB_ADDRB),
+    .wb_addra(WB_ADDRA),
+    .wb_addrb(WB_ADDRB),
+    .acc_addra(ACC_ADDRA),
+    .acc_addrb(ACC_ADDRB),
+    .offmem_addra(OFFMEM_ADDRA),
+    .offmem_addrb(OFFMEM_ADDRB),
     .dout(CTRL_DOUT)
 );
 
@@ -149,8 +162,8 @@ BRAM #(.RAM_WIDTH(16*8), .RAM_DEPTH(256)) UB (
     .clk(clk),
     .wea(WRITE_UB_SIG),
     .enb(READ_UB_SIG),
-    .addra(ADDRA),
-    .addrb(ADDRB),
+    .addra(UB_ADDRA),
+    .addrb(UB_ADDRB),
     .dina(CTRL_DOUT),
     .doutb(UB_DATA_PATH)
 );
@@ -160,8 +173,8 @@ BRAM #(.RAM_WIDTH(16*8), .RAM_DEPTH(256)) WB (
     .clk(clk),
     .wea(WRITE_WB_SIG),
     .enb(READ_WB_SIG),
-    .addra(ADDRA),
-    .addrb(ADDRB),
+    .addra(WB_ADDRA),
+    .addrb(WB_ADDRB),
     .dina(CTRL_DOUT),
     .doutb(WB_WEIGHT_FIFO_PATH)
 );
@@ -187,15 +200,17 @@ MATRIX_MULTIPLY_UNIT MMU (
 );
 
 // Accumulator
-ACCUMULATOR ACC (
+ACCUMULATOR #(.DATA_SIZE(20), .OUTPUT_DATA_SIZE(8), .DATA_NUM(16), .RAM_DEPTH(64)) ACC
+(
     .clk(clk),
     .wea(WRITE_ACC_SIG),
     .enb(READ_ACC_SIG),
     .acc_en(ACC_EN_SIG),
-    .addra(ADDRA),
-    .addrb(ADDRB),
+    .addra(ACC_ADDRA),
+    .addrb(ACC_ADDRB),
     .dina(MMU_ACC_PATH),
     .doutb(RESLUT_DOUT)
 );
 
 endmodule
+// End of Systolic Array's TOP module //

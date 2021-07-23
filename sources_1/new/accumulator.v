@@ -28,7 +28,7 @@ module ACCUMULATOR #
     parameter DATA_NUM  = 16,
     parameter RAM_WIDTH = DATA_NUM*DATA_SIZE,     // Specify RAM data width
     parameter DOUT_WIDTH = DATA_NUM*OUTPUT_DATA_SIZE,
-    parameter RAM_DEPTH = 16,      // Specify RAM depth (number of entries)
+    parameter RAM_DEPTH = 64,      // Specify RAM depth (number of entries)
     parameter INIT_FILE = ""       // Specify name/location of RAM initialization file if using one (leave blank if not)
 )
 (
@@ -83,7 +83,7 @@ always @ (posedge clk) begin : READ_WRITE_LOGIC
         end
     end
     if (enb) begin
-        // Read data
+        // Read data with truncation
         for (i = DATA_NUM - 1; i >= 0; i = i - 1) begin
             if (bramb_parsed[i] < OUTPUT_DATA_MIN)
                 dout_parsed[i] <= OUTPUT_DATA_MIN;

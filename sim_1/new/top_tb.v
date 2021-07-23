@@ -19,7 +19,7 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module TOP_testbench;
+module TOP_TB;
 
 `include "tb_share.v"
 
@@ -61,7 +61,7 @@ wire axi_rvalid;
 wire axi_rready;
 // End of AXI Signals
 reg [OPCODE_BITS-1:0] OPCODE = 'd0;
-reg [ADDRA_BITS-1:0] ADDRA = 'd0, ADDRB = 'd0;
+reg [OFFMEM_ADDRA_BITS-1:0] ADDRA = 'd0, ADDRB = 'd0;
 reg [DIN_BITS-1:0] INPUT_DATA = 'd0;
 
 assign instruction[OPCODE_FROM:OPCODE_TO]   = OPCODE;
