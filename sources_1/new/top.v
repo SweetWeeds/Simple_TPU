@@ -24,34 +24,12 @@ module SYSTOLIC_ARRAY #
 (
     parameter integer C_M00_AXI_ADDR_WIDTH	= 32,
 	parameter integer C_M00_AXI_DATA_WIDTH	= 32,
-	parameter integer C_M00_AXI_TRANSACTIONS_NUM	= 4,
-    
-    // Instruction Set
-    // ISA(140-bit) = OPCODE_BITS(4-bit) + ADDRA_BITS(8-bit) + ADDRB_BITS(8-bit) + OPERAND_BITS(128-bit)
-    parameter   OPCODE_BITS  = 4,
-                UB_ADDRA_BITS        = 8,
-                UB_ADDRB_BITS        = 8,
-                WB_ADDRA_BITS        = 8,
-                WB_ADDRB_BITS        = 8,
-                ACC_ADDRA_BITS       = 6,
-                ACC_ADDRB_BITS       = 6,
-                OFFMEM_ADDRA_BITS    = 32,
-                OFFMEM_ADDRB_BITS    = 32,
-                INST_BITS    = OPCODE_BITS + OFFMEM_ADDRA_BITS + OFFMEM_ADDRB_BITS,   // 4+32+32=68-bit
-                DIN_BITS     = 128,
-    
-    // Parsing range
-    parameter   OPCODE_FROM  = INST_BITS-1,                          // 148-1=147
-                OPCODE_TO    = OPCODE_FROM-OPCODE_BITS+1,            // 147-4+1=144
-                ADDRA_FROM   = OPCODE_TO-1,                          // 144-1=143
-                ADDRA_TO     = ADDRA_FROM-OFFMEM_ADDRA_BITS+1,       // 143-8+1=136
-                ADDRB_FROM   = ADDRA_TO-1,                   // 136-1=135
-                ADDRB_TO     = ADDRB_FROM-OFFMEM_ADDRB_BITS+1        // 135-8+1=128
+	parameter integer C_M00_AXI_TRANSACTIONS_NUM	= 4
 )
 (
     input  wire reset_n,
     input  wire clk,
-    input  wire [INST_BITS-1:0] instruction,
+    input  wire [67:0] instruction,
     output wire idle_flag,
     output wire flag,
     // AXI4 Lite Master Signals
@@ -77,7 +55,9 @@ module SYSTOLIC_ARRAY #
     // End of AXI4 Lite Master Signals
 );
 
+`ifndef TESTBENCH
 `include "../../sa_share.v"
+`endif
 
 // Control signals
 wire READ_UB_SIG, WRITE_UB_SIG, READ_WB_SIG, WRITE_WB_SIG, READ_ACC_SIG,

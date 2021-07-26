@@ -30,7 +30,6 @@ endfunction
 
 reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 
-`ifdef RUN_TESTBENCH
 // The following code either initializes the memory values to a specified file or to all zeros to match hardware
 generate
     if (INIT_FILE != "") begin: use_init_file
@@ -47,7 +46,6 @@ generate
         end
     end
 endgenerate
-`endif
 
 
 always @ (negedge clk) begin : READ_WRITE_LOGIC

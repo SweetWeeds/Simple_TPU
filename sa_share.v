@@ -1,6 +1,3 @@
-`ifndef SA_SHARE
-`define SA_SHARE
-
 /** Functions **/
 function integer clogb2;
     input integer depth;
@@ -8,8 +5,30 @@ function integer clogb2;
         depth = depth >> 1;
 endfunction
 
+// Instruction Set
+// ISA(140-bit) = OPCODE_BITS(4-bit) + ADDRA_BITS(8-bit) + ADDRB_BITS(8-bit) + OPERAND_BITS(128-bit)
+parameter   OPCODE_BITS  = 4,
+            UB_ADDRA_BITS        = 8,
+            UB_ADDRB_BITS        = 8,
+            WB_ADDRA_BITS        = 8,
+            WB_ADDRB_BITS        = 8,
+            ACC_ADDRA_BITS       = 6,
+            ACC_ADDRB_BITS       = 6,
+            OFFMEM_ADDRA_BITS    = 32,
+            OFFMEM_ADDRB_BITS    = 32,
+            INST_BITS    = OPCODE_BITS + OFFMEM_ADDRA_BITS + OFFMEM_ADDRB_BITS,   // 4+32+32=68-bit
+            DIN_BITS     = 128;
+
+// Parsing range
+localparam  OPCODE_FROM  = INST_BITS-1,                          // 148-1=147
+            OPCODE_TO    = OPCODE_FROM-OPCODE_BITS+1,            // 147-4+1=144
+            ADDRA_FROM   = OPCODE_TO-1,                          // 144-1=143
+            ADDRA_TO     = ADDRA_FROM-OFFMEM_ADDRA_BITS+1,       // 143-8+1=136
+            ADDRB_FROM   = ADDRA_TO-1,                   // 136-1=135
+            ADDRB_TO     = ADDRB_FROM-OFFMEM_ADDRB_BITS+1;      // 135-8+1=128
+
 // OPCODE
-localparam [OPCODE_BITS-1:0]    // Do nothing (1-cycyle)
+localparam [OPCODE_BITS-1:0]     // Do nothing (1-cycyle)
                                 IDLE_INST               = 4'h0,
                                 // Data-FIFO Enable (1-cycle)
                                 DATA_FIFO_INST          = 4'h1,
@@ -35,7 +54,7 @@ localparam [OPCODE_BITS-1:0]    // Do nothing (1-cycyle)
 
 
 // Minor states' num of cycles ('0' means n-cycles)
-localparam [1:0]    IDLE_CYCLE              = 1,
+localparam [1:0]     IDLE_CYCLE              = 1,
                     DATA_FIFO_CYCLE         = 1,
                     WEIGHT_FIFO_CYCLE       = 1,
                     AXI_TO_UB_CYCLE         = 0,
@@ -46,5 +65,3 @@ localparam [1:0]    IDLE_CYCLE              = 1,
                     MAT_MUL_ACC_CYCLE       = 2,
                     ACC_TO_UB_CYCLE         = 2,
                     UB_TO_AXI_INST_CYCLE    = 0;
-
-`endif

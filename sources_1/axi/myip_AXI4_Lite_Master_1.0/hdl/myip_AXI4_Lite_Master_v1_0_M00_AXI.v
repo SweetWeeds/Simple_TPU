@@ -192,7 +192,7 @@
     //assign TXN_DONE         = txn_done;
     assign C_M_RDATA = {C_M_RDATA_PARSED[3], C_M_RDATA_PARSED[2], C_M_RDATA_PARSED[1], C_M_RDATA_PARSED[0]};
     for (genvar i = 0; i < C_M_TRANSACTIONS_NUM; i = i + 1) begin
-        assign C_M_WDATA_PARSED[i] = C_M_WDATA[i * C_M_AXI_DATA_WIDTH + : C_M_AXI_DATA_WIDTH];
+        assign C_M_WDATA_PARSED[i] = C_M_WDATA[i*C_M_AXI_DATA_WIDTH+:C_M_AXI_DATA_WIDTH];
     end
     assign INST_DONE = inst_done;
 
