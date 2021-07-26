@@ -46,17 +46,14 @@ parameter CLOCK_PS             = 10000;      //  should be a multiple of 10
 parameter clock_period         = CLOCK_PS / 1000.0;
 parameter half_clock_period    = clock_period / 2;
 parameter minimum_period       = clock_period / 10;
-parameter AXI_ADDR_WIDTH       = 9;
-parameter AXI_DATA_WIDTH       = 128;
-
 
 // regs & wires
 reg reset_n = 1'b1, clk;
 reg [1:0] axi_sm_mode;  // 0: M_IDLE, 1: M_LOAD, 2: M_STORE
-reg [AXI_DATA_WIDTH-1 : 0] C_M_WDATA;
-wire [AXI_DATA_WIDTH-1 : 0] C_M_RDATA;
-reg [AXI_ADDR_WIDTH-1 : 0] C_M_ADDRA;
-reg [AXI_ADDR_WIDTH-1 : 0] C_M_ADDRB;
+reg [C_M00_AXI_DATA_WIDTH-1 : 0] C_M_WDATA;
+wire [C_M00_AXI_DATA_WIDTH-1 : 0] C_M_RDATA;
+reg [C_M00_AXI_ADDR_WIDTH-1 : 0] C_M_ADDRA;
+reg [C_M00_AXI_ADDR_WIDTH-1 : 0] C_M_ADDRB;
 //reg axi_txn_en = 1'b0;
 // AXI Signals
 reg  axi_init_axi_txn = 1'b0;
@@ -244,7 +241,7 @@ initial begin : TEST_BENCH
 
     // 1. Write data to slave's BRAM //
     `ifdef WRITE_TB
-    for (integer i = 255; i >= 0; i = i + 1) begin
+    for (integer i = 256-16; i >= 0; i = i - 16) begin
         wait(axi_txn_done == 1'b0);
         $display("[Testbench:WRITE_TB:%d] Instruction start.", i);
         C_M_WDATA <= i * i;
@@ -259,7 +256,7 @@ initial begin : TEST_BENCH
 
     // 2. Read BRAM data from slave //
     `ifdef READ_TB
-    for (integer i = 0; i < 256; i = i + 1) begin
+    for (integer i = 0; i < 256; i = i + 16) begin
         wait(axi_txn_done == 1'b0);
         $display("[Testbench:READ_TB:%d] Instruction start.", i);
         axi_init_axi_txn  <= 1'b1;

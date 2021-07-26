@@ -216,13 +216,13 @@
     //ADDR_LSB = 3 for 42 bits (n downto 3)
 
     //localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH/32)+ 1;
-    localparam integer ADDR_LSB = clogb2(C_S_AXI_DATA_WIDTH/8);   // 128-b:
+    localparam integer ADDR_LSB = clogb2(C_S_AXI_DATA_WIDTH/8)-1;   // 128-b:
     localparam integer OPT_MEM_ADDR_BITS = clogb2(C_S_BRAM_DEPTH);
     localparam integer USER_NUM_MEM = 1;
     //----------------------------------------------
     //-- Signals for user logic memory space example
     //------------------------------------------------
-    wire [OPT_MEM_ADDR_BITS:0] mem_address;
+    wire [OPT_MEM_ADDR_BITS-1:0] mem_address;
     wire [USER_NUM_MEM-1:0] mem_select;
     reg [C_S_AXI_DATA_WIDTH-1:0] mem_data_out[0 : USER_NUM_MEM-1];
 
@@ -499,7 +499,7 @@
             for(mem_byte_index=0; mem_byte_index<= (C_S_AXI_DATA_WIDTH/8-1); mem_byte_index=mem_byte_index+1) begin:BYTE_BRAM_GEN
                 wire [8-1:0] data_in ;
                 wire [8-1:0] data_out;
-                reg  [8-1:0] byte_ram [0 : C_S_BRAM_DEPTH];
+                reg  [8-1:0] byte_ram [0 : C_S_BRAM_DEPTH-1];
                 integer  j;
 
                 //assigning 8 bit data

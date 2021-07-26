@@ -349,11 +349,13 @@ module myip_SA_AXI4_Master_v1_0_M00_AXI #
     // Next address after AWREADY indicates previous address acceptance
     always @(posedge M_AXI_ACLK) begin
         if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1) begin
-            axi_awaddr <= 'b0;
+            //axi_awaddr <= 'b0;
+            axi_awaddr <= C_M_OFF_MEM_ADDRA;
         end else if (M_AXI_AWREADY && axi_awvalid) begin
             axi_awaddr <= axi_awaddr + burst_size_bytes;
-        end else
+        end else begin
             axi_awaddr <= axi_awaddr;
+        end
     end
 
 
@@ -520,7 +522,8 @@ module myip_SA_AXI4_Master_v1_0_M00_AXI #
     // Next address after ARREADY indicates previous address acceptance
     always @(posedge M_AXI_ACLK) begin
         if (M_AXI_ARESETN == 0 || init_txn_pulse == 1'b1) begin
-            axi_araddr <= 'b0;
+            //axi_araddr <= 'b0;
+            axi_araddr <= C_M_OFF_MEM_ADDRB;
         end else if (M_AXI_ARREADY && axi_arvalid) begin
             axi_araddr <= axi_araddr + burst_size_bytes;
         end else

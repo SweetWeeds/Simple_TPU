@@ -431,7 +431,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>4e7e11b4</spirit:value>
+            <spirit:value>b2cccd21</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -447,7 +447,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>4e7e11b4</spirit:value>
+            <spirit:value>b2cccd21</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -1619,8 +1619,8 @@
         <xilinx:taxonomy>AXI_Peripheral</xilinx:taxonomy>
       </xilinx:taxonomies>
       <xilinx:displayName>myip_SA_AXI4_Master_v1.0</xilinx:displayName>
-      <xilinx:coreRevision>5</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2021-07-26T08:51:09Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>8</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2021-07-26T11:04:22Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@38248b5a_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@3b1dc6ae_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
@@ -1831,14 +1831,29 @@
         <xilinx:tag xilinx:name="ui.data.coregen.dd@71c8ec35_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@8a42464_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@439bc90_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6b6e25f9_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@f4df5c4_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@451e8d1b_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@24aa5623_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4b72391f_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@35dcea99_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@97baad4_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@bd18746_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2de3123b_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4f58b82e_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4b3a39_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3809950_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5d20a548_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2381727c_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6e3e45a9_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_AXI4_Master_1.0</xilinx:tag>
       </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2020.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="372f74e8"/>
       <xilinx:checksum xilinx:scope="addressSpaces" xilinx:value="0d32590a"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="b283d275"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="d56f4636"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="e2be5b62"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="2ea88d5f"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="b67510f6"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="25ad2d67"/>
     </xilinx:packagingInfo>
