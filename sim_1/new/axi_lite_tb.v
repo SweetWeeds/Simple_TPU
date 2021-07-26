@@ -22,7 +22,7 @@
 //`define READ_TB
 `define WRITE_TB
 
-module axi_tb;
+module axi_lite_tb;
 
 // Clock localparams
 parameter CLOCK_PS             = 10000;      //  should be a multiple of 10
