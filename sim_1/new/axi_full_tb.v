@@ -109,7 +109,12 @@ assign axi_aclk = clk;
 assign axi_aresetn = reset_n;
 
 // AXI4 Full Master
-myip_SA_AXI4_Master_0 M00
+myip_SA_AXI4_Master_0 # (
+    .C_M00_AXI_TARGET_SLAVE_BASE_ADDR(0),
+    .C_M00_AXI_BURST_LEN(1),
+    .C_M00_AXI_ADDR_WIDTH(32),
+    .C_M00_AXI_DATA_WIDTH(128)
+) M00
 (
 	// Users to add ports here
 	.c_m00_mode(axi_sm_mode),
@@ -240,32 +245,52 @@ initial begin : TEST_BENCH
     reset_n = 1'b1;
 
     // 1. Write data to slave's BRAM //
+    //$stop();
     `ifdef WRITE_TB
-    for (integer i = 256-16; i >= 0; i = i - 16) begin
-        wait(axi_txn_done == 1'b0);
+    for (integer i = 0; i < 256; i = i + 16) begin
         $display("[Testbench:WRITE_TB:%d] Instruction start.", i);
-        C_M_WDATA <= i * i;
-        axi_init_axi_txn  <= 1'b1;
-        axi_sm_mode <= M_STORE;
-        C_M_ADDRA <= i;
+        C_M_WDATA = i * i;
+        axi_sm_mode = M_STORE;
+        C_M_ADDRA = i;
+
+        // Init Pulse
+        axi_init_axi_txn = 1'b1;
+        # clock_period;
+        axi_init_axi_txn = 1'b0;
+
+        wait(axi_txn_done == 1'b0);
         wait (axi_txn_done == 1'b1);
+        # clock_period;
         $display("[Testbench:WRITE_TB:%d] Instruction done.", i);
-        axi_init_axi_txn <= 1'b0;
     end
     `endif
 
     // 2. Read BRAM data from slave //
+    //$stop();
     `ifdef READ_TB
     for (integer i = 0; i < 256; i = i + 16) begin
-        wait(axi_txn_done == 1'b0);
         $display("[Testbench:READ_TB:%d] Instruction start.", i);
-        axi_init_axi_txn  <= 1'b1;
-        axi_sm_mode <= M_LOAD;
-        C_M_ADDRB <= i;
+        axi_sm_mode = M_LOAD;
+        C_M_ADDRB = i;
+
+        // Init Pulse
+        axi_init_axi_txn = 1'b1;
+        # clock_period;
+        axi_init_axi_txn = 1'b0;
+
+        wait(axi_txn_done == 1'b0);
         wait (axi_txn_done == 1'b1);
+        if (C_M_RDATA == i * i) begin
+            $display("[Testbench:READ_TB:%d] Matching.", i);
+        end else begin
+            $display("[Testbench:READ_TB:%d] Not Matching.", i);
+            $display("                       C_M_RDATA:%x", C_M_RDATA);
+            $display("                       i*i:%x", i*i);
+        end
+        # clock_period;
         $display("[Testbench:READ_TB:%d] Instruction done.", i);
-        axi_init_axi_txn <= 1'b0;
     end
+    $stop();
     `endif
 end
 

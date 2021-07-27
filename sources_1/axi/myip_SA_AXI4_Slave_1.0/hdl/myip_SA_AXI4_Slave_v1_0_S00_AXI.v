@@ -13,7 +13,7 @@
         // Width of S_AXI data bus
         parameter integer C_S_AXI_DATA_WIDTH	= 128,
         // Width of S_AXI address bus
-        parameter integer C_S_AXI_ADDR_WIDTH	= 9,
+        parameter integer C_S_AXI_ADDR_WIDTH	= 32,
         // Width of optional user defined signal in write address channel
         parameter integer C_S_AXI_AWUSER_WIDTH	= 0,
         // Width of optional user defined signal in read address channel
