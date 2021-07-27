@@ -785,7 +785,7 @@ module myip_SA_AXI4_Master_v1_0_M00_AXI #
     // Add user logic here
     assign C_M_RDATA = M_AXI_RDATA;
     assign C_M_IDLE_STATUS = (mst_exec_state == M_IDLE);
-    assign TXN_DONE = reads_done || writes_done;
+    assign TXN_DONE = (M_AXI_RVALID && axi_rready && (read_index == C_M_AXI_BURST_LEN-1) && (read_burst_counter[C_NO_BURSTS_REQ])) || (M_AXI_BVALID && (write_burst_counter[C_NO_BURSTS_REQ]) && axi_bready);
 
 
     always @ (posedge M_AXI_ACLK) begin : NEXT_STATE_LOGIC

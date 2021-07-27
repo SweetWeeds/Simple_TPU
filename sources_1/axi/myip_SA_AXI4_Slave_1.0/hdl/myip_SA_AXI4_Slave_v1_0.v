@@ -4,7 +4,9 @@
     module myip_SA_AXI4_Slave_v1_0 #
     (
         // Users to add parameters here
-
+        parameter integer IS_TESTBENCH = 0,
+        parameter INIT_FILE = "",
+        parameter integer C_S_BRAM_DEPTH = 256,
         // User parameters ends
         // Do not modify the parameters beyond this line
 
@@ -76,6 +78,9 @@
     );
 // Instantiation of Axi Bus Interface S00_AXI
     myip_SA_AXI4_Slave_v1_0_S00_AXI # ( 
+        .IS_TESTBENCH(IS_TESTBENCH),
+        .INIT_FILE(INIT_FILE),
+        .C_S_BRAM_DEPTH(C_S_BRAM_DEPTH),
         .C_S_AXI_ID_WIDTH(C_S00_AXI_ID_WIDTH),
         .C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
         .C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH),

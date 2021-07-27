@@ -10,6 +10,7 @@ module BRAM #
 (
     parameter RAM_WIDTH = 16*8,     // Specify RAM data width
     parameter RAM_DEPTH = 256,       // Specify RAM depth (number of entries)
+    parameter IS_TESTBENCH = 0,
     parameter INIT_FILE = ""                       // Specify name/location of RAM initialization file if using one (leave blank if not)
 )
 (
@@ -31,6 +32,8 @@ endfunction
 reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 
 // The following code either initializes the memory values to a specified file or to all zeros to match hardware
+//`define TB
+`ifdef TB
 generate
     if (INIT_FILE != "") begin: use_init_file
         initial begin
@@ -46,7 +49,7 @@ generate
         end
     end
 endgenerate
-
+`endif
 
 always @ (negedge clk) begin : READ_WRITE_LOGIC
     if (wea) begin

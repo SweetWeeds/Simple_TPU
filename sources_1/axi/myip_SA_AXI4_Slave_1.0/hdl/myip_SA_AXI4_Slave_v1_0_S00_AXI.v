@@ -1,9 +1,10 @@
 
 `timescale 1 ns / 1 ps
-
     module myip_SA_AXI4_Slave_v1_0_S00_AXI #
     (
         // Users to add parameters here
+        parameter integer IS_TESTBENCH = 0,
+        parameter INIT_FILE = "",
         parameter integer C_S_BRAM_DEPTH = 256,
         // User parameters ends
         // Do not modify the parameters beyond this line
@@ -501,6 +502,23 @@
                 wire [8-1:0] data_out;
                 reg  [8-1:0] byte_ram [0 : C_S_BRAM_DEPTH-1];
                 integer  j;
+                
+                if (IS_TESTBENCH == 1) begin
+                    if (INIT_FILE == "") begin
+                    initial begin : INIT_FILE_NOT_EXIST
+                        for (j=0; j < C_S_BRAM_DEPTH; j=j+1) begin
+                            byte_ram[j] = {8'b0}; 
+                        end
+                    end
+                    end else begin
+                    initial begin : INIT_FILE_EXIST
+                        wait(tb_bram_ready == 1'b1);
+                        for (j=0; j < C_S_BRAM_DEPTH; j=j+1) begin
+                            byte_ram[j] = tb_bram[j][(mem_byte_index*8+7) -: 8]; 
+                        end
+                    end
+                    end
+                end
 
                 //assigning 8 bit data
                 assign data_in  = S_AXI_WDATA[(mem_byte_index*8+7) -: 8];
@@ -532,7 +550,16 @@
     end
 
     // Add user logic here
+    reg [C_S_AXI_DATA_WIDTH-1:0] tb_bram [0:C_S_BRAM_DEPTH-1];
+    reg tb_bram_ready = 1'b0;
 
+    if (IS_TESTBENCH == 1 && INIT_FILE != "") begin
+        initial begin
+            $readmemh(INIT_FILE, tb_bram, 0, C_S_BRAM_DEPTH-1);
+            tb_bram_ready = 1'b1;
+        end
+    end
+                            
     // User logic ends
 
     endmodule
