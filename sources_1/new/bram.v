@@ -32,7 +32,7 @@ endfunction
 reg [RAM_WIDTH-1:0] bram [RAM_DEPTH-1:0];
 
 // The following code either initializes the memory values to a specified file or to all zeros to match hardware
-//`define TB
+`define TB
 `ifdef TB
 generate
     if (INIT_FILE != "") begin: use_init_file

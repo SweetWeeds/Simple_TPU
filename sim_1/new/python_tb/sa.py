@@ -1,3 +1,4 @@
+import os
 import random
 from datetime import datetime
 
@@ -15,6 +16,23 @@ ACC_DATA_BITS = 20
 
 MMU_SIZE = 16
 MMU_BITS = 8
+
+OPCODE_BITS = 4
+ADDRA_BITS  = 32
+ADDRB_BITS  = 32
+OPCODE = {
+    "IDLE_INST"         : 0,
+    "DATA_FIFO_INST"    : 1,
+    "WEIGHT_FIFO_INST"  : 2,
+    "AXI_TO_UB_INST"    : 3,
+    "AXI_TO_WB_INST"    : 4,
+    "UB_TO_DATA_FIFO_INST" : 5,
+    "UB_TO_WEIGHT_FIFO_INST" : 6,
+    "MAT_MUL_INST"      : 7,
+    "MAT_MUL_ACC_INST"  : 8,
+    "ACC_TO_UB_INST"    : 9,
+    "UB_TO_AXI_INST"    : 10
+}
 
 def gen_random_hex_mem_data(file_path: str, depth=256, data_num=4, nbits=8):
     random.seed(datetime.now())
@@ -251,6 +269,7 @@ class SYSTOLIC_ARRAY:
         self.WEIGHT_FIFO = FIFO( depth=FIFO_DEPTH, data_num=FIFO_DATA_NUM, nbits=FIFO_DATA_BITS )
         self.ACCUMULATOR = BRAM( depth=ACC_DEPTH,  data_num=ACC_DATA_NUM,  nbits=ACC_DATA_BITS, out_nbits=RAM_DATA_BITS )
         self.MMU         = MATRIX_MULTIPLY_UNIT( size=MMU_SIZE, nbits=MMU_BITS )
+        self.isa_file    = "./pc.mem"
     
     # Deprecated
     #def WRITE_DATA(self, addr: int, val: str):
@@ -325,3 +344,15 @@ class SYSTOLIC_ARRAY:
 
     def READ_UB(self, addrb) -> str:
         return self.UB.read(addrb)
+
+    def GENERATE_ISA(self, opcode: str, addra: int, addrb: int, isa_bits=128):
+        if (opcode not in OPCODE):
+            print("[ERROR] opcode is not included.")
+            return
+        opcode = tohex(OPCODE[opcode], OPCODE_BITS)
+        addra  = tohex(addra, ADDRA_BITS)
+        addrb  = tohex(addrb, ADDRB_BITS)
+        isa = hexto(opcode + addra + addrb, OPCODE_BITS+ADDRA_BITS+ADDRB_BITS)
+        isa = tohex(isa, isa_bits) + "\n"
+        with open(self.isa_file, "a") as fp:
+            fp.write(isa)

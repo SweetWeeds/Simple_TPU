@@ -91,6 +91,7 @@ module CONTROL_UNIT_AXI4_FULL #
 localparam [1:0] IDLE = 2'b00,
                  LOAD_DATA   = 2'b01,
                  STORE_DATA  = 2'b10;
+localparam ADDR_LSB = 4;
 
 reg [OPCODE_BITS-1:0]   opcode;     // Operation Code
 reg [2:0]               minor_state;
@@ -99,7 +100,7 @@ reg [OFFMEM_ADDRA_BITS-1:0] addra;  // Write address buffer
 reg [OFFMEM_ADDRA_BITS-1:0] addrb;  // Read address buffer
 //reg inst_pulse_ff1, inst_pulse_ff2;
 reg inst_pulse_ff;
-reg axi_flag;
+reg axi_flag, inst_flag;
 wire inst_pulse;
 
 // Flag which represents idling
@@ -152,7 +153,7 @@ always @ (posedge clk) begin : INPUT_LOGIC
                 flag <= 1'b1;
             end
         end
-        DATA_FIFO_INST, WEIGHT_FIFO_INST, UB_TO_DATA_FIFO_INST,
+        IDLE_INST, DATA_FIFO_INST, WEIGHT_FIFO_INST, UB_TO_DATA_FIFO_INST,
         UB_TO_WEIGHT_FIFO_INST : begin
             // 1-cycle
             if (minor_state == 0) begin
@@ -335,7 +336,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                     weight_fifo_en  = 1'b0;
                     mm_en           = 1'b0;
                     acc_en          = 1'b0;
-                    ub_addra        = addra[UB_ADDRA_BITS-1:0];
+                    ub_addra        = addra[UB_ADDRA_BITS+ADDR_LSB-1:ADDR_LSB];
                     ub_addrb        = 8'h00;
                     wb_addra        = 8'h00;
                     wb_addrb        = 8'h00;
@@ -361,7 +362,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                     weight_fifo_en  = 1'b0;
                     mm_en           = 1'b0;
                     acc_en          = 1'b0;
-                    ub_addra        = addra[UB_ADDRA_BITS-1:0];
+                    ub_addra        = addra[UB_ADDRA_BITS+ADDR_LSB-1:ADDR_LSB];
                     ub_addrb        = 8'h00;
                     wb_addra        = 8'h00;
                     wb_addrb        = 8'h00;
@@ -388,7 +389,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 weight_fifo_en  = 1'b0;
                 mm_en           = 1'b0;
                 acc_en          = 1'b0;
-                ub_addra        = addra[UB_ADDRA_BITS-1:0];
+                ub_addra        = addra[UB_ADDRA_BITS+ADDR_LSB-1:ADDR_LSB];
                 ub_addrb        = 8'h0;
                 wb_addra        = 8'h0;
                 wb_addrb        = 8'h0;
@@ -476,7 +477,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 acc_en          = 1'b0;
                 ub_addra        = 8'b0;
                 ub_addrb        = 8'b0;
-                wb_addra        = addra[WB_ADDRA_BITS-1:0];
+                wb_addra        = addra[WB_ADDRA_BITS+ADDR_LSB-1:ADDR_LSB];
                 wb_addrb        = 8'b0;
                 acc_addra       = 6'b0;
                 acc_addrb       = 6'b0;
@@ -505,7 +506,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
             mm_en           = 1'b0;
             acc_en          = 1'b0;
             ub_addra        = 8'b0;
-            ub_addrb        = addrb[UB_ADDRB_BITS-1:0];
+            ub_addrb        = addrb[UB_ADDRB_BITS+ADDR_LSB-1:ADDR_LSB];
             wb_addra        = 8'b0;
             wb_addrb        = 8'b0;
             acc_addra       = 6'b0;
@@ -536,7 +537,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
             ub_addra        = 8'b0;
             ub_addrb        = 8'b0;
             wb_addra        = 8'b0;
-            wb_addrb        = addrb[UB_ADDRB_BITS-1:0];
+            wb_addrb        = addrb[UB_ADDRB_BITS+ADDR_LSB-1:ADDR_LSB];
             acc_addra       = 6'b0;
             acc_addrb       = 6'b0;
             offmem_addra    = 32'h00000000;
@@ -564,7 +565,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 mm_en           = 1'b0;
                 acc_en          = 1'b0;
                 ub_addra        = 8'b0;
-                ub_addrb        = addrb[UB_ADDRB_BITS-1:0];
+                ub_addrb        = addrb[UB_ADDRB_BITS+ADDR_LSB-1:ADDR_LSB];
                 wb_addra        = 8'b0;
                 wb_addrb        = 8'b0;
                 acc_addra       = 6'b0;
@@ -592,7 +593,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 ub_addrb        = 8'b0;
                 wb_addra        = 8'b0;
                 wb_addrb        = 8'b0;
-                acc_addra       = addra[ACC_ADDRA_BITS-1:0];
+                acc_addra       = addra[ACC_ADDRA_BITS+ADDR_LSB-1:ADDR_LSB];
                 acc_addrb       = 6'b0;
                 offmem_addra    = 32'h00000000;
                 offmem_addrb    = 32'h00000000;
@@ -620,7 +621,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 mm_en           = 1'b0;
                 acc_en          = 1'b1;
                 ub_addra        = 8'b0;
-                ub_addrb        = addrb[UB_ADDRB_BITS-1:0];
+                ub_addrb        = addrb[UB_ADDRB_BITS+ADDR_LSB-1:ADDR_LSB];
                 wb_addra        = 8'b0;
                 wb_addrb        = 8'b0;
                 acc_addra       = 6'b0;
@@ -648,7 +649,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 ub_addrb        = 8'b0;
                 wb_addra        = 8'b0;
                 wb_addrb        = 8'b0;
-                acc_addra       = addra[ACC_ADDRA_BITS-1:0];
+                acc_addra       = addra[ACC_ADDRA_BITS+ADDR_LSB-1:ADDR_LSB];
                 acc_addrb       = 6'b0;
                 offmem_addra    = 32'h00000000;
                 offmem_addrb    = 32'h00000000;
@@ -680,7 +681,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 wb_addra        = 8'b0;
                 wb_addrb        = 8'b0;
                 acc_addra       = 6'b0;
-                acc_addrb       = addrb[ACC_ADDRB_BITS-1:0];
+                acc_addrb       = addrb[ACC_ADDRB_BITS+ADDR_LSB-1:ADDR_LSB];
                 offmem_addra    = 32'h00000000;
                 offmem_addrb    = 32'h00000000;
                 dout            = 128'd0;
@@ -700,7 +701,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 weight_fifo_en  = 1'b0;
                 mm_en           = 1'b0;
                 acc_en          = 1'b0;
-                ub_addra        = addra[UB_ADDRA_BITS-1:0];
+                ub_addra        = addra[UB_ADDRA_BITS+ADDR_LSB-1:ADDR_LSB];
                 ub_addrb        = 8'b0;
                 wb_addra        = 8'b0;
                 wb_addrb        = 8'b0;
@@ -733,7 +734,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 mm_en           = 1'b0;
                 acc_en          = 1'b0;
                 ub_addra        = 8'b0;
-                ub_addrb        = addrb[UB_ADDRB_BITS-1:0];
+                ub_addrb        = addrb[UB_ADDRB_BITS+ADDR_LSB-1:ADDR_LSB];
                 wb_addra        = 8'b0;
                 wb_addrb        = 8'b0;
                 acc_addra       = 6'b0;

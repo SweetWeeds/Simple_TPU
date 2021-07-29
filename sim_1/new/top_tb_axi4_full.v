@@ -251,7 +251,7 @@ initial begin: TEST_BENCH
         $display("[%0t:TOP_TB:TEST_BENCH] Write data to UB(%d)", $time, i);
         init_inst_pulse <= 1'b1;
         OPCODE <= AXI_TO_UB_INST;
-        ADDRA <= i;  // Write addr (UB)
+        ADDRA <= i*16;  // Write addr (UB)
         ADDRB <= i*16;  // Read addr (off-mem)
         @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
@@ -265,7 +265,7 @@ initial begin: TEST_BENCH
         $display("[%0t:TOP_TB:TEST_BENCH] Write data to WB(%d)", $time, i);
         init_inst_pulse <= 1'b1;
         OPCODE <= AXI_TO_WB_INST;
-        ADDRA <= i;      // Write addr (WB)
+        ADDRA <= i*16;      // Write addr (WB)
         ADDRB <= (256-i-1)*16;  // Read addr (off-mem)
         @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
@@ -287,7 +287,7 @@ initial begin: TEST_BENCH
         $display("[%0t:TOP_TB:TEST_BENCH] Load data(%d)", $time, i);
         init_inst_pulse <= 1'b1;
         OPCODE <= UB_TO_DATA_FIFO_INST;
-        ADDRB <= i;
+        ADDRB <= i*16;
         @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
     end
@@ -299,7 +299,7 @@ initial begin: TEST_BENCH
         $display("[%0t:TOP_TB:TEST_BENCH] Load weight(%d)", $time, i);
         init_inst_pulse <= 1'b1;
         OPCODE <= UB_TO_WEIGHT_FIFO_INST;
-        ADDRB <= i;
+        ADDRB <= i*16;
         @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
     end
@@ -311,8 +311,8 @@ initial begin: TEST_BENCH
         $display("[%0t:TOP_TB:TEST_BENCH] Matrix Multiplication (%d)", $time, i);
         init_inst_pulse <= 1'b1;
         OPCODE <= MAT_MUL_INST;
-        ADDRA <= i;
-        ADDRB <= i;
+        ADDRA <= i*16;
+        ADDRB <= i*16;
         @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
     end
@@ -324,8 +324,8 @@ initial begin: TEST_BENCH
         $display("[%0t:TOP_TB:TEST_BENCH] Write result at UB(%d)", $time, i);
         init_inst_pulse <= 1'b1;
         OPCODE <= ACC_TO_UB_INST;
-        ADDRA <= 64 + i;
-        ADDRB <= i;
+        ADDRA <= (64 + i)*16;
+        ADDRB <= i*16;
         @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
     end
@@ -337,7 +337,7 @@ initial begin: TEST_BENCH
         init_inst_pulse <= 1'b1;
         OPCODE <= UB_TO_AXI_INST;
         ADDRA  <= i * 16;
-        ADDRB  <= 64 + i;
+        ADDRB  <= (64 + i)*16;
         @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
     end
@@ -348,8 +348,8 @@ initial begin: TEST_BENCH
     for (integer i = 0; i < 16; i = i + 1) begin
         init_inst_pulse <= 1'b1;
         OPCODE <= MAT_MUL_ACC_INST;
-        ADDRA <= i;
-        ADDRB <= 16 + i;
+        ADDRA <= i*16;
+        ADDRB <= (16 + i)*16;
         @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
     end
@@ -360,8 +360,8 @@ initial begin: TEST_BENCH
     for (integer i = 0; i < 16; i = i + 1) begin
         init_inst_pulse <= 1'b1;
         OPCODE <= ACC_TO_UB_INST;
-        ADDRA <= 64 + 16 + i;
-        ADDRB <= i;
+        ADDRA <= (64 + 16 + i)*16;
+        ADDRB <= i*16;
         @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
     end
@@ -373,7 +373,7 @@ initial begin: TEST_BENCH
         init_inst_pulse <= 1'b1;
         OPCODE  <= UB_TO_AXI_INST;
         ADDRA   <= i * 16;
-        ADDRB   <= 64 + i;
+        ADDRB   <= (64 + i)*16;
         @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
     end
