@@ -94,8 +94,8 @@ reg [OFFMEM_ADDRA_BITS-1:0] addrb;  // Read address buffer
 reg flag_buffer;
 
 localparam [1:0] IDLE = 2'b00,
-                 LOAD_OFF_MEM_DATA   = 2'b01,
-                 WRITE_OFF_MEM_DATA  = 2'b10;
+                 LOAD_DATA   = 2'b01,
+                 STORE_DATA  = 2'b10;
 
 assign idle_flag = (opcode == IDLE_INST) ? 1'b1 : 1'b0;
 
@@ -242,7 +242,7 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done or din or
     AXI_TO_UB_INST : begin
         if (inst_done == 1'b0) begin
             $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_UB_INST(0)", $time);
-            axi_sm_mode     = LOAD_OFF_MEM_DATA;
+            axi_sm_mode     = LOAD_DATA;
             axi_txn_en      = 1'b1;
             read_ub         = 1'b0;
             write_ub        = 1'b0;
@@ -294,7 +294,7 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done or din or
     AXI_TO_WB_INST : begin
         if (inst_done == 1'b0) begin
             $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_WB_INST(0)", $time);
-            axi_sm_mode     = LOAD_OFF_MEM_DATA;
+            axi_sm_mode     = LOAD_DATA;
             axi_txn_en      = 1'b1;
             read_ub         = 1'b0;
             write_ub        = 1'b0;
@@ -581,7 +581,7 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done or din or
             if (inst_done == 1'b0) begin
                 // Write off-mem through AXI I/F.
                 $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_AXI_INST(1)", $time);
-                axi_sm_mode     = WRITE_OFF_MEM_DATA;
+                axi_sm_mode     = STORE_DATA;
                 axi_txn_en      = 1'b1;
                 read_ub         = 1'b0;
                 write_ub        = 1'b0;

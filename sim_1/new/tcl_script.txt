@@ -44,12 +44,24 @@ for {set i 0} {$i < 16} {incr i} {
 }
 close $fp
 
-// 8_OFF_MEM_TB.txt
+// 8_OFF_MEM_TB.txt (AXI4 Lite)
 set fp [open 8_OFF_MEM_TB.txt w]
 for {set i 0} {$i < 256} {incr i} {
     puts $fp [get_value -radix hex "/OM0/OFF_MEM_BRAM/bram[$i]"]
 }
 close $fp
+
+// 8_OFF_MEM_TB.txt (AXI4 Full)
+set fp [open 8_OFF_MEM_TB.txt w]
+for {set i 0} {$i < 256} {incr i} {
+    set result ""
+    for {set j 15} {$j >= 0} {incr j -1} {
+        append result [get_value -radix hex "/S00/inst/myip_SA_AXI4_Slave_v1_0_S00_AXI_inst/\\BRAM_GEN[0]\.BYTE_BRAM_GEN[$j]\.byte_ram [$i]"]
+    }
+    puts $fp "$result"
+}
+close $fp
+
 
 // 9_ACC.txt
 set fp [open 9_ACC_TB.txt w]
@@ -65,9 +77,20 @@ for {set i 0} {$i < 256} {incr i} {
 }
 close $fp
 
-// 11_OFF_MEM.txt
+// 11_OFF_MEM.txt (AXI4 Lite)
 set fp [open 11_OFF_MEM_TB.txt w]
 for {set i 0} {$i < 256} {incr i} {
     puts $fp [get_value -radix hex "/OM0/OFF_MEM_BRAM/bram[$i]"]
+}
+close $fp
+
+// 11_OFF_MEM.txt (AXI4 Full)
+set fp [open 11_OFF_MEM_TB.txt w]
+for {set i 0} {$i < 256} {incr i} {
+    set result ""
+    for {set j 15} {$j >= 0} {incr j -1} {
+        append result [get_value -radix hex "/S00/inst/myip_SA_AXI4_Slave_v1_0_S00_AXI_inst/\\BRAM_GEN[0]\.BYTE_BRAM_GEN[$j]\.byte_ram [$i]"]
+    }
+    puts $fp "$result"
 }
 close $fp

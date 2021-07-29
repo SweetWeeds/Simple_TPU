@@ -259,21 +259,25 @@ class SYSTOLIC_ARRAY:
     def AXI_TO_UB_INST(self, off_mem: BRAM, addra: str, addrb: str):
         buffer = list()
         off_mem.read(addrb)
-        for i in range(4):
-            buffer.append(off_mem.read(addrb+3-i))
+        partition_num = int(self.UB.data_num / off_mem.data_num)
+        for i in range(partition_num):
+            buffer.append(off_mem.read(addrb+(partition_num-1)-i))
         self.UB.write(addra, "".join(buffer))
     
     def AXI_TO_WB_INST(self, off_mem: BRAM, addra: str, addrb: str):
         buffer = list()
         off_mem.read(addrb)
-        for i in range(4):
-            buffer.append(off_mem.read(addrb+3-i))
+        partition_num = int(self.UB.data_num / off_mem.data_num)
+        for i in range(partition_num):
+            buffer.append(off_mem.read(addrb+(partition_num-1)-i))
         self.WB.write(addra, "".join(buffer))
 
     def UB_TO_AXI_INST(self, off_mem: BRAM, addra: str, addrb: str):
         buffer = self.UB.read(addrb)
-        for i in range(4):
-            off_mem.write(addra+3-i, buffer[i*8:(i+1)*8])
+        partition_num = int(self.UB.data_num / off_mem.data_num)
+        partition_size = int(off_mem.data_num*8/4)
+        for i in range(partition_num):
+            off_mem.write(addra+(partition_num-1)-i, buffer[i*partition_size:(i+1)*partition_size])
 
     def UB_TO_DATA_FIFO_INST(self, addr: int):
         self.DATA_FIFO.write(self.UB.read(addr))

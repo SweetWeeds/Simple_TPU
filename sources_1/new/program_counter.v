@@ -19,11 +19,18 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module PROGRAM_COUNTER 
+module PROGRAM_COUNTER # 
+(
+    parameter INSTRUCTION_SIZE
+)
 (
     input clk,
+    input reset_n,
+    output wire [] instruction,
 
 )
+
+`include "../../sa_share.v"
 
 
 endmodule

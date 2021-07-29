@@ -408,7 +408,7 @@
 
     // Add user logic here
 
-    always @ (posedge S_AXI_ACLK) begin : WRITE_OFF_MEM_DATA_LOGIC
+    always @ (posedge S_AXI_ACLK) begin : STORE_DATA_LOGIC
         if (S_AXI_ARESETN == 1'b0) begin
             //$display("[AXI4_Lite_Slave] Off-mem write reset");
             write_off_mem_start <= 1'b0;
