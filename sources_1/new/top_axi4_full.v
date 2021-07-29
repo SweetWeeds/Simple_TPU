@@ -42,6 +42,7 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
 (
     input  wire reset_n,
     input  wire clk,
+    input  wire init_inst_pulse,
     input  wire [67:0] instruction,
     output wire idle_flag,
     output wire flag,
@@ -124,7 +125,7 @@ myip_SA_AXI4_Master_0 M00
 	.c_m00_mode(axi_sm_mode),
 	.c_m00_off_mem_addra(OFFMEM_ADDRA),
     .c_m00_off_mem_addrb(OFFMEM_ADDRB),
-	.c_m00_wdata(AXI_CU_WRITE_DATA_PATH),
+	.c_m00_wdata(CTRL_DOUT),
 	.c_m00_rdata(AXI_CU_LOAD_DATA_PATH),
     // End of user ports
 
@@ -215,6 +216,7 @@ CONTROL_UNIT_AXI4_FULL # (
     .instruction(instruction),
     .axi_sm_mode(axi_sm_mode),
     //.axi_txn_en(axi_txn_en),
+    .init_inst_pulse(init_inst_pulse),
     .init_txn_pulse(init_txn_pulse),
     .txn_done(TXN_DONE),
     .din(AXI_CU_LOAD_DATA_PATH),

@@ -108,6 +108,7 @@ wire m00_axi_rready;
 reg [OPCODE_BITS-1:0] OPCODE = 'd0;
 reg [OFFMEM_ADDRA_BITS-1:0] ADDRA = 'd0, ADDRB = 'd0;
 reg [DIN_BITS-1:0] INPUT_DATA = 'd0;
+reg init_inst_pulse = 1'b0;
 
 assign instruction[OPCODE_FROM:OPCODE_TO]   = OPCODE;
 assign instruction[ADDRA_FROM:ADDRA_TO]     = ADDRA;
@@ -122,6 +123,7 @@ SYSTOLIC_ARRAY_AXI4_FULL # (
 ) SA0 (
     .reset_n(reset_n),
     .clk(clk),
+    .init_inst_pulse(init_inst_pulse),
     .instruction(instruction),
     .idle_flag(idle_flag),
     .flag(flag),
@@ -243,163 +245,140 @@ initial begin: TEST_BENCH
     reset_n = 1'b1;
     # clock_period;
 
-    @ (flag == 1'b1);
-    @ (flag == 1'b0);
-
     // 1. Write data to UB
     $display("[%0t:TOP_TB:TEST_BENCH] 1. Write data to UB", $time);
-    for (integer i = 0; i < 256; i = i + 16) begin
+    for (integer i = 0; i < 256; i = i + 1) begin
         $display("[%0t:TOP_TB:TEST_BENCH] Write data to UB(%d)", $time, i);
+        init_inst_pulse <= 1'b1;
         OPCODE <= AXI_TO_UB_INST;
-        ADDRA <= i/16;  // Write addr (UB)
-        ADDRB <= i;  // Read addr (off-mem)
+        ADDRA <= i;  // Write addr (UB)
+        ADDRB <= i*16;  // Read addr (off-mem)
+        @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
-        @ (flag == 1'b0);
         // Synchronize instruction input in testbench.
-        if (i == 0) wait (idle_flag == 1'b0);
     end
-    OPCODE <= IDLE_INST;
-    @ (flag == 1'b1);
-    @ (flag == 1'b0);
     $stop();
 
     // 2. Write weight to WB
     $display("[%0t:TOP_TB:TEST_BENCH] 2. Write data to WB", $time);
-    for (integer i = 0; i < 256; i = i + 16) begin
+    for (integer i = 0; i < 256; i = i + 1) begin
         $display("[%0t:TOP_TB:TEST_BENCH] Write data to WB(%d)", $time, i);
+        init_inst_pulse <= 1'b1;
         OPCODE <= AXI_TO_WB_INST;
-        ADDRA <= i/4;      // Write addr (WB)
-        ADDRB <= (251-i);  // Read addr (off-mem)
+        ADDRA <= i;      // Write addr (WB)
+        ADDRB <= (256-i-1)*16;  // Read addr (off-mem)
+        @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
-        @ (flag == 1'b0);
     end
-    OPCODE <= IDLE_INST;
-    @ (flag == 1'b1);
-    @ (flag == 1'b0);
     $stop();
 
     // 3. IDLE
     $display("[%0t:TOP_TB:TEST_BENCH] 3. IDLE", $time);
-    for (integer i = 0; i < 256; i = i + 1) begin
-        $display("[%0t:TOP_TB:TEST_BENCH] IDLE(%d)", $time, i);
-        OPCODE <= IDLE_INST;
-        @ (flag == 1'b1);
-        @ (flag == 1'b0);
-    end
+    init_inst_pulse <= 1'b1;
     OPCODE <= IDLE_INST;
-    @ (flag == 1'b1);
-    @ (flag == 1'b0);
+    # (clock_period);
+    init_inst_pulse <= 1'b0;
+    # (100 * clock_period);
     $stop();
 
     // 4. Load Data
     $display("[%0t:TOP_TB:TEST_BENCH] 4. Load data", $time);
     for (integer i = 0; i < 5; i = i + 1) begin
         $display("[%0t:TOP_TB:TEST_BENCH] Load data(%d)", $time, i);
+        init_inst_pulse <= 1'b1;
         OPCODE <= UB_TO_DATA_FIFO_INST;
         ADDRB <= i;
+        @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
-        @ (flag == 1'b0);
-        if (i == 0) wait (idle_flag == 1'b0);
     end
-    OPCODE <= IDLE_INST;
-    @ (flag == 1'b1);
-    @ (flag == 1'b0);
     $stop();
 
     // 5. Load Weight
     $display("[%0t:TOP_TB:TEST_BENCH] 5. Load Weight", $time);
     for (integer i = 0; i < 21; i = i + 1) begin
         $display("[%0t:TOP_TB:TEST_BENCH] Load weight(%d)", $time, i);
+        init_inst_pulse <= 1'b1;
         OPCODE <= UB_TO_WEIGHT_FIFO_INST;
         ADDRB <= i;
+        @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
-        @ (flag == 1'b0);
     end
-    OPCODE <= IDLE_INST;
-    @ (flag == 1'b1);
-    @ (flag == 1'b0);
     $stop();
 
     // 6. Matrix Multiplication
     $display("[%0t:TOP_TB:TEST_BENCH] 6. Matrix Multiplication", $time);
     for (integer i = 0; i < 16; i = i + 1) begin
+        $display("[%0t:TOP_TB:TEST_BENCH] Matrix Multiplication (%d)", $time, i);
+        init_inst_pulse <= 1'b1;
         OPCODE <= MAT_MUL_INST;
         ADDRA <= i;
         ADDRB <= i;
+        @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
-        @ (flag == 1'b0);
     end
-    OPCODE <= IDLE_INST;
-    @ (flag == 1'b1);
-    @ (flag == 1'b0);
     $stop();
 
     // 7. Write result at UB
     $display("[%0t:TOP_TB:TEST_BENCH] 7. Write result at UB", $time);
     for (integer i = 0; i < 16; i = i + 1) begin
+        $display("[%0t:TOP_TB:TEST_BENCH] Write result at UB(%d)", $time, i);
+        init_inst_pulse <= 1'b1;
         OPCODE <= ACC_TO_UB_INST;
         ADDRA <= 64 + i;
         ADDRB <= i;
+        @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
-        @ (flag == 1'b0);
     end
-    OPCODE <= IDLE_INST;
-    @ (flag == 1'b1);
-    @ (flag == 1'b0);
     $stop();
 
     // 8. Write UB's results at OFF-MEM
     $display("[%0t:TOP_TB:TEST_BENCH] 8. Write UB's results at OFF-MEM", $time);
     for (integer i = 0; i < 16; i = i + 1) begin
+        init_inst_pulse <= 1'b1;
         OPCODE <= UB_TO_AXI_INST;
         ADDRA  <= i * 4;
         ADDRB  <= 64 + i;
+        @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
-        @ (flag == 1'b0);
     end
-    OPCODE <= IDLE_INST;
-    @ (flag == 1'b1);
-    @ (flag == 1'b0);
     $stop();
 
     // 9. Matrix Multiplication with accumulation.
     $display("[%0t:TOP_TB:TEST_BENCH] 9. Matrix Multiplication with accumulation", $time);
     for (integer i = 0; i < 16; i = i + 1) begin
+        init_inst_pulse <= 1'b1;
         OPCODE <= MAT_MUL_ACC_INST;
         ADDRA <= i;
         ADDRB <= 16 + i;
+        @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
-        @ (flag == 1'b0);
     end
-    OPCODE <= IDLE_INST;
-    @ (flag == 1'b1);
-    @ (flag == 1'b0);
     $stop();
 
     // 10. Write result at UB
     $display("[%0t:TOP_TB:TEST_BENCH] 10. Write result at UB", $time);
     for (integer i = 0; i < 16; i = i + 1) begin
+        init_inst_pulse <= 1'b1;
         OPCODE <= ACC_TO_UB_INST;
         ADDRA <= 64 + 16 + i;
         ADDRB <= i;
+        @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
-        @ (flag == 1'b0);
     end
-    OPCODE <= IDLE_INST;
-    @ (flag == 1'b1);
-    @ (flag == 1'b0);
     $stop();
 
     // 11. Write UB's results at OFF-MEM
     $display("[%0t:TOP_TB:TEST_BENCH] 11. Write UB's results at OFF-MEM", $time);
     for (integer i = 16; i < 33; i = i + 1) begin
+        init_inst_pulse <= 1'b1;
         OPCODE  <= UB_TO_AXI_INST;
         ADDRA   <= i * 4;
         ADDRB   <= 64 + i;
+        @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
-        @ (flag == 1'b0);
     end
     OPCODE <= IDLE_INST;
+    init_inst_pulse <= 1'b1;
     $stop();
 
 end
