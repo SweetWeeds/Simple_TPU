@@ -336,7 +336,7 @@ initial begin: TEST_BENCH
     for (integer i = 0; i < 16; i = i + 1) begin
         init_inst_pulse <= 1'b1;
         OPCODE <= UB_TO_AXI_INST;
-        ADDRA  <= i * 4;
+        ADDRA  <= i * 16;
         ADDRB  <= 64 + i;
         @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);
@@ -372,7 +372,7 @@ initial begin: TEST_BENCH
     for (integer i = 16; i < 33; i = i + 1) begin
         init_inst_pulse <= 1'b1;
         OPCODE  <= UB_TO_AXI_INST;
-        ADDRA   <= i * 4;
+        ADDRA   <= i * 16;
         ADDRB   <= 64 + i;
         @ (negedge idle_flag) init_inst_pulse <= 1'b0;
         @ (flag == 1'b1);

@@ -367,32 +367,30 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 end
             end else begin
                 // Transaction Complete: UB Data is ready
-                if (minor_state == 1) begin
-                    $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_UB_INST(2)", $time);
-                    axi_sm_mode     = IDLE;
-                    init_txn_pulse  = 1'b0;
-                    read_ub         = 1'b0;
-                    write_ub        = 1'b1;
-                    read_wb         = 1'b0;
-                    write_wb        = 1'b0;
-                    read_acc        = 1'b0;
-                    write_acc       = 1'b0;
-                    data_fifo_en    = 1'b0;
-                    mmu_load_weight_en = 1'b0;
-                    weight_fifo_en  = 1'b0;
-                    mm_en           = 1'b0;
-                    acc_en          = 1'b0;
-                    ub_addra        = addra[UB_ADDRA_BITS-1:0];
-                    ub_addrb        = 8'h0;
-                    wb_addra        = 8'h0;
-                    wb_addrb        = 8'h0;
-                    acc_addra       = 6'b0;
-                    acc_addrb       = 6'b0;
-                    offmem_addra    = 32'h00000000;
-                    offmem_addrb    = addrb;
-                    dout            = din;
-                    axi_flag        = 1'b1;
-                end
+                $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_UB_INST(2)", $time);
+                axi_sm_mode     = IDLE;
+                init_txn_pulse  = 1'b0;
+                read_ub         = 1'b0;
+                write_ub        = 1'b1;
+                read_wb         = 1'b0;
+                write_wb        = 1'b0;
+                read_acc        = 1'b0;
+                write_acc       = 1'b0;
+                data_fifo_en    = 1'b0;
+                mmu_load_weight_en = 1'b0;
+                weight_fifo_en  = 1'b0;
+                mm_en           = 1'b0;
+                acc_en          = 1'b0;
+                ub_addra        = addra[UB_ADDRA_BITS-1:0];
+                ub_addrb        = 8'h0;
+                wb_addra        = 8'h0;
+                wb_addrb        = 8'h0;
+                acc_addra       = 6'b0;
+                acc_addrb       = 6'b0;
+                offmem_addra    = 32'h00000000;
+                offmem_addrb    = addrb;
+                dout            = din;
+                axi_flag        = 1'b1;
             end
         end
         // AXI_TO_WB_INST (n-cycles)
@@ -450,32 +448,30 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                     axi_flag        = 1'b0;
                 end
             end else begin
-                if (minor_state == 1) begin
-                    $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_WB_INST(2)", $time);
-                    axi_sm_mode     = IDLE;
-                    init_txn_pulse  = 1'b0;
-                    read_ub         = 1'b0;
-                    write_ub        = 1'b0;
-                    read_wb         = 1'b0;
-                    write_wb        = 1'b1;
-                    read_acc        = 1'b0;
-                    write_acc       = 1'b0;
-                    data_fifo_en    = 1'b0;
-                    mmu_load_weight_en = 1'b0;
-                    weight_fifo_en  = 1'b0;
-                    mm_en           = 1'b0;
-                    acc_en          = 1'b0;
-                    ub_addra        = 8'b0;
-                    ub_addrb        = 8'b0;
-                    wb_addra        = addra[WB_ADDRA_BITS-1:0];
-                    wb_addrb        = 8'b0;
-                    acc_addra       = 6'b0;
-                    acc_addrb       = 6'b0;
-                    offmem_addra    = 32'h00000000;
-                    offmem_addrb    = 32'h00000000;
-                    dout            = din;
-                    axi_flag        = 1'b1;
-                end
+                $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_WB_INST(2)", $time);
+                axi_sm_mode     = IDLE;
+                init_txn_pulse  = 1'b0;
+                read_ub         = 1'b0;
+                write_ub        = 1'b0;
+                read_wb         = 1'b0;
+                write_wb        = 1'b1;
+                read_acc        = 1'b0;
+                write_acc       = 1'b0;
+                data_fifo_en    = 1'b0;
+                mmu_load_weight_en = 1'b0;
+                weight_fifo_en  = 1'b0;
+                mm_en           = 1'b0;
+                acc_en          = 1'b0;
+                ub_addra        = 8'b0;
+                ub_addrb        = 8'b0;
+                wb_addra        = addra[WB_ADDRA_BITS-1:0];
+                wb_addrb        = 8'b0;
+                acc_addra       = 6'b0;
+                acc_addrb       = 6'b0;
+                offmem_addra    = 32'h00000000;
+                offmem_addrb    = 32'h00000000;
+                dout            = din;
+                axi_flag        = 1'b1;
             end
         end
         // UB_TO_DATA_FIFO_INST (1-cycle)
@@ -724,112 +720,56 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 axi_flag        = 1'b0;
             end else begin
                 if (txn_done  == 1'b0) begin
-                    if (minor_state == 1) begin
-                        // Write off-mem through AXI I/F.
-                        $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_AXI_INST(1)", $time);
-                        axi_sm_mode     = WRITE_OFF_MEM_DATA;
-                        init_txn_pulse  = 1'b1;
-                        read_ub         = 1'b0;
-                        write_ub        = 1'b0;
-                        read_wb         = 1'b0;
-                        write_wb        = 1'b0;
-                        read_acc        = 1'b0;
-                        write_acc       = 1'b0;
-                        data_fifo_en    = 1'b0;
-                        mmu_load_weight_en = 1'b0;
-                        weight_fifo_en  = 1'b0;
-                        mm_en           = 1'b0;
-                        acc_en          = 1'b0;
-                        ub_addra        = 8'b0;
-                        ub_addrb        = 8'b0;
-                        wb_addra        = 8'b0;
-                        wb_addrb        = 8'b0;
-                        acc_addra       = 6'b0;
-                        acc_addrb       = 6'b0;
-                        offmem_addra    = addra;
-                        offmem_addrb    = 32'h00000000;
-                        dout            = uin;
-                        axi_flag        = 1'b0;
-                    end else begin
-                        // Write off-mem through AXI I/F.
-                        $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_AXI_INST(2)", $time);
-                        axi_sm_mode     = WRITE_OFF_MEM_DATA;
-                        init_txn_pulse  = 1'b0;
-                        read_ub         = 1'b0;
-                        write_ub        = 1'b0;
-                        read_wb         = 1'b0;
-                        write_wb        = 1'b0;
-                        read_acc        = 1'b0;
-                        write_acc       = 1'b0;
-                        data_fifo_en    = 1'b0;
-                        mmu_load_weight_en = 1'b0;
-                        weight_fifo_en  = 1'b0;
-                        mm_en           = 1'b0;
-                        acc_en          = 1'b0;
-                        ub_addra        = 8'b0;
-                        ub_addrb        = 8'b0;
-                        wb_addra        = 8'b0;
-                        wb_addrb        = 8'b0;
-                        acc_addra       = 6'b0;
-                        acc_addrb       = 6'b0;
-                        offmem_addra    = addra;
-                        offmem_addrb    = 32'h00000000;
-                        dout            = uin;
-                        axi_flag        = 1'b0;
-                    end
+                    // Write off-mem through AXI I/F.
+                    $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_AXI_INST(1)", $time);
+                    axi_sm_mode     = WRITE_OFF_MEM_DATA;
+                    init_txn_pulse  = 1'b1;
+                    read_ub         = 1'b0;
+                    write_ub        = 1'b0;
+                    read_wb         = 1'b0;
+                    write_wb        = 1'b0;
+                    read_acc        = 1'b0;
+                    write_acc       = 1'b0;
+                    data_fifo_en    = 1'b0;
+                    mmu_load_weight_en = 1'b0;
+                    weight_fifo_en  = 1'b0;
+                    mm_en           = 1'b0;
+                    acc_en          = 1'b0;
+                    ub_addra        = 8'b0;
+                    ub_addrb        = 8'b0;
+                    wb_addra        = 8'b0;
+                    wb_addrb        = 8'b0;
+                    acc_addra       = 6'b0;
+                    acc_addrb       = 6'b0;
+                    offmem_addra    = addra;
+                    offmem_addrb    = 32'h00000000;
+                    dout            = uin;
+                    axi_flag        = 1'b0;
                 end else begin
-                    if (minor_state == 2) begin
-                        // Write off-mem done.
-                        $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_AXI_INST(3)", $time);
-                        axi_sm_mode     = IDLE;
-                        init_txn_pulse  = 1'b1;
-                        read_ub         = 1'b0;
-                        write_ub        = 1'b0;
-                        read_wb         = 1'b0;
-                        write_wb        = 1'b0;
-                        read_acc        = 1'b0;
-                        write_acc       = 1'b0;
-                        data_fifo_en    = 1'b0;
-                        mmu_load_weight_en = 1'b0;
-                        weight_fifo_en  = 1'b0;
-                        mm_en           = 1'b0;
-                        acc_en          = 1'b0;
-                        ub_addra        = 8'b0;
-                        ub_addrb        = 8'b0;
-                        wb_addra        = 8'b0;
-                        wb_addrb        = 8'b0;
-                        acc_addra       = 6'b0;
-                        acc_addrb       = 6'b0;
-                        offmem_addra    = 32'h00000000;
-                        offmem_addrb    = 32'h00000000;
-                        dout            = 128'd0;
-                        axi_flag        = 1'b0;
-                    end else begin
-                        $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_AXI_INST(4)", $time);
-                        axi_sm_mode     = IDLE;
-                        init_txn_pulse  = 1'b0;
-                        read_ub         = 1'b0;
-                        write_ub        = 1'b0;
-                        read_wb         = 1'b0;
-                        write_wb        = 1'b0;
-                        read_acc        = 1'b0;
-                        write_acc       = 1'b0;
-                        data_fifo_en    = 1'b0;
-                        mmu_load_weight_en = 1'b0;
-                        weight_fifo_en  = 1'b0;
-                        mm_en           = 1'b0;
-                        acc_en          = 1'b0;
-                        ub_addra        = 8'b0;
-                        ub_addrb        = 8'b0;
-                        wb_addra        = 8'b0;
-                        wb_addrb        = 8'b0;
-                        acc_addra       = 6'b0;
-                        acc_addrb       = 6'b0;
-                        offmem_addra    = 32'h00000000;
-                        offmem_addrb    = 32'h00000000;
-                        dout            = 128'd0;
-                        axi_flag        = 1'b1;
-                    end
+                    $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_AXI_INST(2)", $time);
+                    axi_sm_mode     = IDLE;
+                    init_txn_pulse  = 1'b0;
+                    read_ub         = 1'b0;
+                    write_ub        = 1'b0;
+                    read_wb         = 1'b0;
+                    write_wb        = 1'b0;
+                    read_acc        = 1'b0;
+                    write_acc       = 1'b0;
+                    data_fifo_en    = 1'b0;
+                    mmu_load_weight_en = 1'b0;
+                    weight_fifo_en  = 1'b0;
+                    mm_en           = 1'b0;
+                    acc_en          = 1'b0;
+                    ub_addra        = 8'b0;
+                    ub_addrb        = 8'b0;
+                    wb_addra        = 8'b0;
+                    wb_addrb        = 8'b0;
+                    acc_addra       = 6'b0;
+                    acc_addrb       = 6'b0;
+                    offmem_addra    = 32'h00000000;
+                    offmem_addrb    = 32'h00000000;
+                    dout            = 128'd0;
+                    axi_flag        = 1'b1;
                 end
             end
         end
