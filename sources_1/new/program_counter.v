@@ -42,20 +42,19 @@ function integer clogb2;
 endfunction
 
 reg  [clogb2(PC_DEPTH-1)-1:0] counter;
-//reg  [INST_BITS-1:0] current_inst;
 reg  flag_ff, force_inst_ff;
 wire flag_pulse, force_inst_pulse;
 
-//assign instruction = current_inst;
 assign flag_pulse = ~flag_ff && flag;
 assign force_inst_pulse = ~force_inst_ff && force_inst;
+
 
 BRAM # (
     .RAM_WIDTH(INST_BITS),
     .RAM_DEPTH(PC_DEPTH),
     .IS_TESTBENCH(IS_TESTBENCH),
     .INIT_FILE(INIT_FILE)
-) PC_MEMORY (
+) ISA_MEMORY (
     .clk(clk),
     .wea(),
     .enb(flag_pulse || force_inst_pulse),

@@ -140,8 +140,13 @@ always @ (posedge clk) begin : INPUT_LOGIC
         AXI_TO_UB_INST, AXI_TO_WB_INST : begin
             minor_state_mode <= 1;
         end
-        default : begin
+        ACC_TO_UB_INST, MAT_MUL_INST, MAT_MUL_ACC_INST, IDLE_INST, 
+        DATA_FIFO_INST, WEIGHT_FIFO_INST, UB_TO_DATA_FIFO_INST, UB_TO_WEIGHT_FIFO_INST : begin
             minor_state_mode <= 0;
+        end
+        default : begin
+            // Exception: Do not change 'minor_state'
+            minor_state_mode <= 3;
         end
         endcase
     end else begin
@@ -195,6 +200,8 @@ always @ (posedge clk) begin : INPUT_LOGIC
                 if ((minor_state == 0) || (txn_done == 1)) begin
                     minor_state <= minor_state + 1;
                 end
+            end else begin
+                minor_state <= minor_state;
             end
         end
     end

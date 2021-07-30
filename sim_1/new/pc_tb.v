@@ -105,15 +105,17 @@ wire [C_M00_AXI_RUSER_WIDTH-1 : 0] m00_axi_ruser;
 wire m00_axi_rvalid;
 wire m00_axi_rready;
 // End of AXI Signals
-reg [OPCODE_BITS-1:0] OPCODE = 'd0;
+//reg [OPCODE_BITS-1:0] OPCODE = 'd0;
 reg [OFFMEM_ADDRA_BITS-1:0] ADDRA = 'd0, ADDRB = 'd0;
 //reg init_inst_pulse = 1'b0;
 reg force_inst = 1'b0;
+wire [OPCODE_BITS-1:0] OPCODE;
 
 //assign instruction[OPCODE_FROM:OPCODE_TO]   = OPCODE;
 //assign instruction[ADDRA_FROM:ADDRA_TO]     = ADDRA;
 //assign instruction[ADDRB_FROM:ADDRB_TO]     = ADDRB;
 //assign instruction[OPERAND_FROM:OPERAND_TO] = OPERAND;
+assign OPCODE = instruction[OPCODE_FROM:OPCODE_TO];
 
 // Instantiation
 SYSTOLIC_ARRAY_AXI4_FULL # (
@@ -250,6 +252,7 @@ initial begin : CLOCK_GENERATOR
 end
 
 initial begin: TEST_BENCH
+    integer i;
     // Initialization with 'reset_n'
     # clock_period;
     reset_n = 1'b0;
@@ -257,8 +260,9 @@ initial begin: TEST_BENCH
     reset_n = 1'b1;
     # clock_period;
 
-    force_inst = 1'b1;
+end
 
+always @ (OPCODE) begin
     $stop();
 end
 

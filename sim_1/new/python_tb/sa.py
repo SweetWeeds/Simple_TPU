@@ -70,6 +70,7 @@ def compare(file_path: str, data: list) -> bool:
         print(f"[ERROR] File not found. ({file_path})")
 
 def compare_file(file1: str, file2: str) -> bool:
+    print(f"/** Comparing \"{file1}\" and \"{file2}\" **/")
     flag = True
     try:
         # file1
@@ -262,14 +263,16 @@ class MATRIX_MULTIPLY_UNIT:
         return ret
 
 class SYSTOLIC_ARRAY:
-    def __init__(self):
+    def __init__(self, gen_isa=False):
         self.UB          = BRAM( depth=RAM_DEPTH,  data_num=RAM_DATA_NUM,  nbits=RAM_DATA_BITS , fill_zero=True )
         self.WB          = BRAM( depth=RAM_DEPTH,  data_num=RAM_DATA_NUM,  nbits=RAM_DATA_BITS , fill_zero=True )
         self.DATA_FIFO   = FIFO( depth=FIFO_DEPTH, data_num=FIFO_DATA_NUM, nbits=FIFO_DATA_BITS )
         self.WEIGHT_FIFO = FIFO( depth=FIFO_DEPTH, data_num=FIFO_DATA_NUM, nbits=FIFO_DATA_BITS )
         self.ACCUMULATOR = BRAM( depth=ACC_DEPTH,  data_num=ACC_DATA_NUM,  nbits=ACC_DATA_BITS, out_nbits=RAM_DATA_BITS )
         self.MMU         = MATRIX_MULTIPLY_UNIT( size=MMU_SIZE, nbits=MMU_BITS )
+        self.isa_fp      = None
         self.isa_file    = "./pc.mem"
+        self.gen_isa     = gen_isa
     
     # Deprecated
     #def WRITE_DATA(self, addr: int, val: str):
@@ -345,7 +348,13 @@ class SYSTOLIC_ARRAY:
     def READ_UB(self, addrb) -> str:
         return self.UB.read(addrb)
 
-    def GENERATE_ISA(self, opcode: str, addra: int, addrb: int, isa_bits=128):
+    def GENERATE_ISA(self, opcode: str, addra: int, addrb: int, isa_bits=128, fp_close=False):
+        if (self.gen_isa == False):
+            return
+        if (self.isa_fp == None):
+            if os.path.exists(os.path.join(self.isa_file)):
+                os.remove(os.path.join(self.isa_file))
+            self.isa_fp = open(self.isa_file, "a")
         if (opcode not in OPCODE):
             print("[ERROR] opcode is not included.")
             return
@@ -354,5 +363,8 @@ class SYSTOLIC_ARRAY:
         addrb  = tohex(addrb, ADDRB_BITS)
         isa = hexto(opcode + addra + addrb, OPCODE_BITS+ADDRA_BITS+ADDRB_BITS)
         isa = tohex(isa, isa_bits) + "\n"
-        with open(self.isa_file, "a") as fp:
-            fp.write(isa)
+        self.isa_fp.write(isa)
+
+    def ISA_FP_CLOSE(self):
+        if (self.isa_fp != None):
+            self.isa_fp.close()
