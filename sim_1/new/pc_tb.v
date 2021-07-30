@@ -177,7 +177,6 @@ SYSTOLIC_ARRAY_AXI4_FULL # (
 
 // Slave off memory
 myip_SA_AXI4_Slave_0 # (
-    .IS_TESTBENCH('d1),
     .INIT_FILE("/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sim_1/new/hex_mem.mem")
 ) S00 (
     .s00_axi_aclk(clk),
@@ -229,7 +228,6 @@ myip_SA_AXI4_Slave_0 # (
 );
 
 PROGRAM_COUNTER # (
-    .IS_TESTBENCH(1),
     .PC_DEPTH(1024),
     .INST_BITS(128),
     .INIT_FILE("/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sim_1/new/python_tb/pc.mem")

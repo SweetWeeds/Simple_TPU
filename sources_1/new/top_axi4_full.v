@@ -37,8 +37,10 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
     parameter [1:0] M_IDLE = 2'b00,
                     M_LOAD = 2'b01,
                     M_STORE = 2'b10,
+    
     // End of AXI params
-
+    parameter integer C_S00_AXI_DATA_WIDTH	= 32,
+    parameter integer C_S00_AXI_ADDR_WIDTH	= 5,
     // Instruction Set
     // ISA(140-bit) = OPCODE_BITS(4-bit) + ADDRA_BITS(8-bit) + ADDRB_BITS(8-bit) + OPERAND_BITS(128-bit)
     parameter   OPCODE_BITS  = 4,
@@ -50,6 +52,7 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
                 ACC_ADDRB_BITS       = 6,
                 OFFMEM_ADDRA_BITS    = 32,
                 OFFMEM_ADDRB_BITS    = 32,
+                PC_ADDR_BITS         = 10,
                 INST_BITS    = OPCODE_BITS + OFFMEM_ADDRA_BITS + OFFMEM_ADDRB_BITS,   // 4+32+32=68-bit
                 DIN_BITS     = 128,
 
@@ -89,9 +92,9 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
     input  wire reset_n,
     input  wire clk,
     input  wire init_inst_pulse,
-    input  wire [67:0] instruction,
+    //input  wire [67:0] instruction,
     output wire idle_flag,
-    output wire flag,
+    //output wire flag,
     // AXI4 Lite Master Signals
 	// Ports of Axi Master Bus Interface M00_AXI
 	output wire [C_M00_AXI_ID_WIDTH-1 : 0] m00_axi_awid,
@@ -135,8 +138,30 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
 	input wire  m00_axi_rlast,
 	input wire [C_M00_AXI_RUSER_WIDTH-1 : 0] m00_axi_ruser,
 	input wire  m00_axi_rvalid,
-	output wire  m00_axi_rready
+	output wire  m00_axi_rready,
     // End of AXI4 Lite Master Signals
+
+    // Ports of AXI4 Slave Bus Interface S00_AXI
+    input  wire s00_axi_awaddr,
+    input  wire [2 : 0] s00_axi_awprot,
+    input  wire s00_axi_awvalid,
+    output wire s00_axi_awready,
+    input  wire [C_S00_AXI_DATA_WIDTH-1 : 0] s00_axi_wdata,
+    input  wire [(C_S00_AXI_DATA_WIDTH/8)-1 : 0] s00_axi_wstrb,
+    input  wire s00_axi_wvalid,
+    output wire s00_axi_wready,
+    output wire [1 : 0] s00_axi_bresp,
+    output wire s00_axi_bvalid,
+    input  wire s00_axi_bready,
+    input  wire [C_S00_AXI_ADDR_WIDTH-1 : 0] s00_axi_araddr,
+    input  wire [2 : 0] s00_axi_arprot,
+    input  wire s00_axi_arvalid,
+    output wire s00_axi_arready,
+    output wire [C_S00_AXI_DATA_WIDTH-1 : 0] s00_axi_rdata,
+    output wire [1 : 0] s00_axi_rresp,
+    output wire s00_axi_rvalid,
+    input  wire s00_axi_rready
+    // End of AXI4 Slave Bus Signals
 );
 
 //`ifndef TESTBENCH
@@ -162,7 +187,11 @@ wire [OFFMEM_ADDRA_BITS-1:0] OFFMEM_ADDRA;
 wire [OFFMEM_ADDRB_BITS-1:0] OFFMEM_ADDRB;
 wire [1:0] axi_sm_mode;
 //wire axi_txn_en;
-wire init_txn_pulse;
+wire init_txn_pulse, flag;
+wire [INST_BITS-1:0] instruction;
+wire pc_wea;
+wire [INST_BITS-1:0] pc_din;
+wire [PC_ADDR_BITS-1:0] pc_addra;
 
 // AXI4 Full Master
 myip_SA_AXI4_Master_0 M00
@@ -222,6 +251,46 @@ myip_SA_AXI4_Master_0 M00
     .m00_axi_ruser(m00_axi_ruser),
     .m00_axi_rvalid(m00_axi_rvalid),
     .m00_axi_rready(m00_axi_rready)
+);
+
+// AXI4-Full Slave (Instruction Buffer)
+myip_SA_Instruction_Buffer_0 # (
+    .C_S00_ADDR_BITS(PC_ADDR_BITS),
+    .C_S00_INST_BITS(INST_BITS),
+    .C_S00_AXI_DATA_WIDTH(32),
+    .C_S00_AXI_ADDR_WIDTH(5)
+) S00 (
+		// Users to add ports here
+		.c_s00_force_inst(c_s00_force_inst),
+		.c_s00_wea(c_s00_wea),
+		.c_s00_douta(c_s00_douta),
+		.c_s00_addra(c_s00_addra),
+		// User ports ends
+		// Do not modify the ports beyond this line
+
+
+		// Ports of Axi Slave Bus Interface S00_AXI
+		.s00_axi_aclk(clk),
+		.s00_axi_aresetn(reset_n),
+		.s00_axi_awaddr(s00_axi_awaddr),
+		.s00_axi_awprot(s00_axi_awprot),
+		.s00_axi_awvalid(s00_axi_awvalid),
+		.s00_axi_awready(s00_axi_awready),
+		.s00_axi_wdata(s00_axi_wdata),
+		.s00_axi_wstrb(s00_axi_wstrb),
+		.s00_axi_wvalid(s00_axi_wvalid),
+		.s00_axi_wready(s00_axi_wready),
+		.s00_axi_bresp(s00_axi_bresp),
+		.s00_axi_bvalid(s00_axi_bvalid),
+		.s00_axi_bready(s00_axi_bready),
+		.s00_axi_araddr(s00_axi_araddr),
+		.s00_axi_arprot(s00_axi_arprot),
+		.s00_axi_arvalid(s00_axi_arvalid),
+		.s00_axi_arready(s00_axi_arready),
+		.s00_axi_rdata(s00_axi_rdata),
+		.s00_axi_rresp(s00_axi_rresp),
+		.s00_axi_rvalid(s00_axi_rvalid),
+		.s00_axi_rready(s00_axi_rready)
 );
 
 // Controller
@@ -290,6 +359,23 @@ CONTROL_UNIT_AXI4_FULL # (
     .offmem_addra(OFFMEM_ADDRA),
     .offmem_addrb(OFFMEM_ADDRB),
     .dout(CTRL_DOUT)
+);
+
+// Instruction Buffer
+INSTRUCTION_BUFFER # (
+    .PC_DEPTH(1024),
+    .ADDR_BITS(PC_ADDR_BITS),
+    .INST_BITS(128)
+) IB (
+    .clk(clk),
+    .reset_n(reset_n),
+    .flag(flag),
+    .force_inst(force_inst),
+    .wea(pc_wea),
+    .din(pc_din),
+    .addra(pc_addra),
+    .instruction(instruction),
+    .init_inst_pulse(init_inst_pulse)
 );
 
 // Weight-FIFO

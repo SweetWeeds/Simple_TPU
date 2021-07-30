@@ -4,8 +4,8 @@
 // Engineer: Hankyul Kwon
 // 
 // Create Date: 2021/07/23 14:13:00
-// Design Name: Program Counter
-// Module Name: PROGRAM_COUNTER
+// Design Name: Instruction Buffer
+// Module Name: INSTRUCTION_BUFFER
 // Project Name: Systolic Array
 // Target Devices: ZCU102
 // Tool Versions: Vivado 2020.2
@@ -19,10 +19,10 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module PROGRAM_COUNTER # 
+module INSTRUCTION_BUFFER # 
 (
-    parameter integer IS_TESTBENCH = 0,
     parameter integer PC_DEPTH = 1024,
+    parameter integer ADDR_BITS = 10,
     parameter integer INST_BITS = 128,
     parameter INIT_FILE = ""
 )
@@ -31,6 +31,9 @@ module PROGRAM_COUNTER #
     input  wire reset_n,
     input  wire flag,
     input  wire force_inst,
+    input  wire wea,
+    input  wire [INST_BITS-1:0] din,
+    input  wire [ADDR_BITS-1:0] addra,
     output wire [INST_BITS-1:0] instruction,
     output reg  init_inst_pulse
 );
@@ -52,15 +55,14 @@ assign force_inst_pulse = ~force_inst_ff && force_inst;
 BRAM # (
     .RAM_WIDTH(INST_BITS),
     .RAM_DEPTH(PC_DEPTH),
-    .IS_TESTBENCH(IS_TESTBENCH),
     .INIT_FILE(INIT_FILE)
 ) ISA_MEMORY (
     .clk(clk),
-    .wea(),
+    .wea(wea),
     .enb(flag_pulse || force_inst_pulse),
-    .addra(),
+    .addra(addra),
     .addrb(counter),
-    .dina(),
+    .dina(din),
     .doutb(instruction)
 );
 

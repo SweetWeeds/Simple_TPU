@@ -7,7 +7,6 @@ module BRAM #
 (
     parameter RAM_WIDTH = 16*8,     // Specify RAM data width
     parameter RAM_DEPTH = 256,       // Specify RAM depth (number of entries)
-    parameter IS_TESTBENCH = 0,
     parameter INIT_FILE = ""                       // Specify name/location of RAM initialization file if using one (leave blank if not)
 )
 (

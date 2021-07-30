@@ -3,7 +3,6 @@
     module myip_SA_AXI4_Slave_v1_0_S00_AXI #
     (
         // Users to add parameters here
-        parameter integer IS_TESTBENCH = 0,
         parameter INIT_FILE = "",
         parameter integer C_S_BRAM_DEPTH = 256,
         // User parameters ends

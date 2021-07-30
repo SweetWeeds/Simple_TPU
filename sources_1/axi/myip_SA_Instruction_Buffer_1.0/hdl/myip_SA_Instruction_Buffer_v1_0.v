@@ -4,18 +4,22 @@
 	module myip_SA_Instruction_Buffer_v1_0 #
 	(
 		// Users to add parameters here
-
+        parameter integer C_S00_ADDR_BITS = 10,
+        parameter integer C_S00_INST_BITS = 128,
 		// User parameters ends
 		// Do not modify the parameters beyond this line
 
 
 		// Parameters of Axi Slave Bus Interface S00_AXI
 		parameter integer C_S00_AXI_DATA_WIDTH	= 32,
-		parameter integer C_S00_AXI_ADDR_WIDTH	= 4
+		parameter integer C_S00_AXI_ADDR_WIDTH	= 5
 	)
 	(
 		// Users to add ports here
-
+		output wire c_s00_force_inst,
+		output wire c_s00_wea,
+		output wire [C_S00_INST_BITS-1:0] c_s00_douta,
+		output wire [C_S00_ADDR_BITS-1:0] c_s00_addra,
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -48,6 +52,12 @@
 		.C_S_AXI_DATA_WIDTH(C_S00_AXI_DATA_WIDTH),
 		.C_S_AXI_ADDR_WIDTH(C_S00_AXI_ADDR_WIDTH)
 	) myip_SA_Instruction_Buffer_v1_0_S00_AXI_inst (
+		// User ports
+		.C_S_FORCE_INST(c_s00_force_inst),
+		.C_S_WEA(c_s00_wea),
+		.C_S_DOUTA(c_s00_douta),
+		.C_S_ADDRA(c_s00_addra),
+		// End of user ports
 		.S_AXI_ACLK(s00_axi_aclk),
 		.S_AXI_ARESETN(s00_axi_aresetn),
 		.S_AXI_AWADDR(s00_axi_awaddr),

@@ -15,7 +15,6 @@ proc init_gui { IPINST } {
   ipgui::add_param $IPINST -name "C_S00_AXI_HIGHADDR" -parent ${Page_0}
 
   ipgui::add_param $IPINST -name "INIT_FILE"
-  ipgui::add_param $IPINST -name "IS_TESTBENCH"
   ipgui::add_param $IPINST -name "C_S_BRAM_DEPTH"
 
 }
@@ -35,15 +34,6 @@ proc update_PARAM_VALUE.INIT_FILE { PARAM_VALUE.INIT_FILE } {
 
 proc validate_PARAM_VALUE.INIT_FILE { PARAM_VALUE.INIT_FILE } {
 	# Procedure called to validate INIT_FILE
-	return true
-}
-
-proc update_PARAM_VALUE.IS_TESTBENCH { PARAM_VALUE.IS_TESTBENCH } {
-	# Procedure called to update IS_TESTBENCH when any of the dependent parameters in the arguments change
-}
-
-proc validate_PARAM_VALUE.IS_TESTBENCH { PARAM_VALUE.IS_TESTBENCH } {
-	# Procedure called to validate IS_TESTBENCH
 	return true
 }
 
@@ -181,11 +171,6 @@ proc update_MODELPARAM_VALUE.C_S00_AXI_BUSER_WIDTH { MODELPARAM_VALUE.C_S00_AXI_
 proc update_MODELPARAM_VALUE.INIT_FILE { MODELPARAM_VALUE.INIT_FILE PARAM_VALUE.INIT_FILE } {
 	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
 	set_property value [get_property value ${PARAM_VALUE.INIT_FILE}] ${MODELPARAM_VALUE.INIT_FILE}
-}
-
-proc update_MODELPARAM_VALUE.IS_TESTBENCH { MODELPARAM_VALUE.IS_TESTBENCH PARAM_VALUE.IS_TESTBENCH } {
-	# Procedure called to set VHDL generic/Verilog parameter value(s) based on TCL parameter value
-	set_property value [get_property value ${PARAM_VALUE.IS_TESTBENCH}] ${MODELPARAM_VALUE.IS_TESTBENCH}
 }
 
 proc update_MODELPARAM_VALUE.C_S_BRAM_DEPTH { MODELPARAM_VALUE.C_S_BRAM_DEPTH PARAM_VALUE.C_S_BRAM_DEPTH } {
