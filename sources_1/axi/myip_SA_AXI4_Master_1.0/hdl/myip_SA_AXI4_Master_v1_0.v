@@ -29,7 +29,7 @@
     	input  wire [C_M00_AXI_ADDR_WIDTH-1 : 0] c_m00_off_mem_addrb,
     	input  wire [C_M00_AXI_DATA_WIDTH-1 : 0] c_m00_wdata,
     	output wire [C_M00_AXI_DATA_WIDTH-1 : 0] c_m00_rdata,
-    	output wire c_m_idle_status,    // 1: IDLE, 0: Working
+    	//output wire c_m_idle_status,    // 1: IDLE, 0: Working
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -102,7 +102,7 @@
 		.C_M_OFF_MEM_ADDRB(c_m00_off_mem_addrb),
 		.C_M_WDATA(c_m00_wdata),
 		.C_M_RDATA(c_m00_rdata),
-		.C_M_IDLE_STATUS(c_m_idle_status),
+		//.C_M_IDLE_STATUS(c_m_idle_status),
 		// End of user ports
 		.INIT_AXI_TXN(m00_axi_init_axi_txn),
 		.TXN_DONE(m00_axi_txn_done),

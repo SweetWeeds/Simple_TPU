@@ -29,15 +29,61 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
     parameter integer C_M00_AXI_ID_WIDTH	= 1,
     parameter integer C_M00_AXI_ADDR_WIDTH	= 32,
     parameter integer C_M00_AXI_DATA_WIDTH	= 128,
-    parameter integer C_M00_AXI_AWUSER_WIDTH	= 0,
-    parameter integer C_M00_AXI_ARUSER_WIDTH	= 0,
-    parameter integer C_M00_AXI_WUSER_WIDTH	= 0,
-    parameter integer C_M00_AXI_RUSER_WIDTH	= 0,
-    parameter integer C_M00_AXI_BUSER_WIDTH	= 0,
+    parameter integer C_M00_AXI_AWUSER_WIDTH	= 1,
+    parameter integer C_M00_AXI_ARUSER_WIDTH	= 1,
+    parameter integer C_M00_AXI_WUSER_WIDTH	= 1,
+    parameter integer C_M00_AXI_RUSER_WIDTH	= 1,
+    parameter integer C_M00_AXI_BUSER_WIDTH	= 1,
     parameter [1:0] M_IDLE = 2'b00,
                     M_LOAD = 2'b01,
-                    M_STORE = 2'b10
+                    M_STORE = 2'b10,
     // End of AXI params
+
+    // Instruction Set
+    // ISA(140-bit) = OPCODE_BITS(4-bit) + ADDRA_BITS(8-bit) + ADDRB_BITS(8-bit) + OPERAND_BITS(128-bit)
+    parameter   OPCODE_BITS  = 4,
+                UB_ADDRA_BITS        = 8,
+                UB_ADDRB_BITS        = 8,
+                WB_ADDRA_BITS        = 8,
+                WB_ADDRB_BITS        = 8,
+                ACC_ADDRA_BITS       = 6,
+                ACC_ADDRB_BITS       = 6,
+                OFFMEM_ADDRA_BITS    = 32,
+                OFFMEM_ADDRB_BITS    = 32,
+                INST_BITS    = OPCODE_BITS + OFFMEM_ADDRA_BITS + OFFMEM_ADDRB_BITS,   // 4+32+32=68-bit
+                DIN_BITS     = 128,
+
+    // Parsing range
+    parameter  OPCODE_FROM  = INST_BITS-1,                          // 148-1=147
+                OPCODE_TO    = OPCODE_FROM-OPCODE_BITS+1,            // 147-4+1=144
+                ADDRA_FROM   = OPCODE_TO-1,                          // 144-1=143
+                ADDRA_TO     = ADDRA_FROM-OFFMEM_ADDRA_BITS+1,       // 143-8+1=136
+                ADDRB_FROM   = ADDRA_TO-1,                   // 136-1=135
+                ADDRB_TO     = ADDRB_FROM-OFFMEM_ADDRB_BITS+1,      // 135-8+1=128
+
+    // OPCODE
+    parameter [OPCODE_BITS-1:0]     // Do nothing (1-cycyle)
+                                    IDLE_INST               = 4'h0,
+                                    // Data-FIFO Enable (1-cycle)
+                                    DATA_FIFO_INST          = 4'h1,
+                                    // Weight-FIFO Enable (1-cycle)
+                                    WEIGHT_FIFO_INST        = 4'h2,
+                                    // Write data into UB (1-cycle)
+                                    AXI_TO_UB_INST          = 4'h3,
+                                    // Write weight into WB (1-cycle)
+                                    AXI_TO_WB_INST          = 4'h4,
+                                    // Load data from UB to data-FIFO (1-cycle)
+                                    UB_TO_DATA_FIFO_INST    = 4'h5,
+                                    // Load Weight from WB to weight-FIFO (1-cycle)
+                                    UB_TO_WEIGHT_FIFO_INST  = 4'h6,
+                                    // Execute Matrix Multiplication (1-cycle)
+                                    MAT_MUL_INST            = 4'h7,
+                                    // Execute Matrix Multiplication with accumulation (1-cycle)
+                                    MAT_MUL_ACC_INST        = 4'h8,
+                                    // Write result data from ACC to UB (1-cycle)
+                                    ACC_TO_UB_INST          = 4'h9,
+                                    // Write unsigned-Buffer's data to AXI (n-cycles)
+                                    UB_TO_AXI_INST          = 4'ha
 )
 (
     input  wire reset_n,
@@ -93,9 +139,9 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
     // End of AXI4 Lite Master Signals
 );
 
-`ifndef TESTBENCH
-`include "../../sa_share.v"
-`endif
+//`ifndef TESTBENCH
+//`include "../../sa_share.v"
+//`endif
 
 // Control signals
 wire READ_UB_SIG, WRITE_UB_SIG, READ_WB_SIG, WRITE_WB_SIG, READ_ACC_SIG,

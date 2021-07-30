@@ -1,3 +1,5 @@
+//`define TB
+
 /** Functions **/
 function integer clogb2;
     input integer depth;
@@ -20,7 +22,7 @@ parameter   OPCODE_BITS  = 4,
             DIN_BITS     = 128;
 
 // Parsing range
-localparam  OPCODE_FROM  = INST_BITS-1,                          // 148-1=147
+parameter  OPCODE_FROM  = INST_BITS-1,                          // 148-1=147
             OPCODE_TO    = OPCODE_FROM-OPCODE_BITS+1,            // 147-4+1=144
             ADDRA_FROM   = OPCODE_TO-1,                          // 144-1=143
             ADDRA_TO     = ADDRA_FROM-OFFMEM_ADDRA_BITS+1,       // 143-8+1=136
@@ -28,7 +30,7 @@ localparam  OPCODE_FROM  = INST_BITS-1,                          // 148-1=147
             ADDRB_TO     = ADDRB_FROM-OFFMEM_ADDRB_BITS+1;      // 135-8+1=128
 
 // OPCODE
-localparam [OPCODE_BITS-1:0]     // Do nothing (1-cycyle)
+parameter [OPCODE_BITS-1:0]     // Do nothing (1-cycyle)
                                 IDLE_INST               = 4'h0,
                                 // Data-FIFO Enable (1-cycle)
                                 DATA_FIFO_INST          = 4'h1,
@@ -54,7 +56,7 @@ localparam [OPCODE_BITS-1:0]     // Do nothing (1-cycyle)
 
 
 // Minor states' num of cycles ('0' means n-cycles)
-localparam [1:0]     IDLE_CYCLE              = 1,
+parameter [1:0]     IDLE_CYCLE              = 1,
                     DATA_FIFO_CYCLE         = 1,
                     WEIGHT_FIFO_CYCLE       = 1,
                     AXI_TO_UB_CYCLE         = 0,

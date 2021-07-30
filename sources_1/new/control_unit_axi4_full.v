@@ -57,7 +57,6 @@ module CONTROL_UNIT_AXI4_FULL #
     input  wire clk,
     input  wire [INST_BITS-1:0] instruction,    // 68-bit instruction
     output reg  [1:0] axi_sm_mode,  // axi state machine mode
-    //output reg  axi_txn_ff,
     input  wire init_inst_pulse,
     output reg  init_txn_pulse,
     input  wire txn_done ,  // is 'din' data is valid
@@ -98,7 +97,6 @@ reg [2:0]               minor_state;
 reg [1:0] minor_state_mode;         // 0: For exact-cycle inst, 1: For AXI write, 2: For AXI read
 reg [OFFMEM_ADDRA_BITS-1:0] addra;  // Write address buffer
 reg [OFFMEM_ADDRA_BITS-1:0] addrb;  // Read address buffer
-//reg inst_pulse_ff1, inst_pulse_ff2;
 reg inst_pulse_ff;
 reg axi_flag, inst_flag;
 wire inst_pulse;
@@ -125,7 +123,6 @@ always @ (posedge clk) begin : INPUT_LOGIC
         minor_state <= 0;
         minor_state_mode <= 0;
         flag        <= 1'b0;
-    //end else if (flag == 1'b1) begin
     end else if (inst_pulse == 1'b1) begin
         // Get next instruction
         flag    <= 1'b0;
@@ -154,7 +151,9 @@ always @ (posedge clk) begin : INPUT_LOGIC
         ACC_TO_UB_INST, MAT_MUL_INST, MAT_MUL_ACC_INST : begin
             // 2-cycles
             if (minor_state == 1) begin
+                `ifdef TB
                 $display("[%0t:CU:COMPLETE_FLAG] 2-cycles instruction copmlete.", $time);
+                `endif
                 flag <= 1'b1;
             end
         end
@@ -162,14 +161,18 @@ always @ (posedge clk) begin : INPUT_LOGIC
         UB_TO_WEIGHT_FIFO_INST : begin
             // 1-cycle
             if (minor_state == 0) begin
+                `ifdef TB
                 $display("[%0t:CU:COMPLETE_FLAG] 1-cycles instruction copmlete.", $time);
+                `endif
                 flag <= 1'b1;
             end
         end
         AXI_TO_UB_INST, AXI_TO_WB_INST, UB_TO_AXI_INST : begin
             // n-cycles
             if (axi_flag == 1'b1) begin
+                `ifdef TB
                 $display("[%0t:CU:COMPLETE_FLAG] n-cycles instruction copmlete.", $time);
+                `endif
                 flag <= 1'b1;
             end
         end
@@ -208,9 +211,11 @@ always @ (posedge clk) begin : INPUT_LOGIC
 end
 
 
-always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or uin or rin) begin : OUTPUT_LOGIC
+always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or uin or rin or flag) begin : OUTPUT_LOGIC
     if (flag) begin
+        `ifdef TB
         $display("[%0t:CU:OUTPUT_LOGIC] IDLE", $time);
+        `endif
         axi_sm_mode     = IDLE;
         init_txn_pulse  = 1'b0;
         read_ub         = 1'b0;
@@ -239,7 +244,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
 
         // IDLE_INST (1-cycle)
         IDLE_INST : begin
+            `ifdef TB
             $display("[%0t:CU:OUTPUT_LOGIC] IDLE", $time);
+            `endif
             axi_sm_mode     = IDLE;
             init_txn_pulse  = 1'b0;
             read_ub         = 1'b0;
@@ -268,7 +275,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
 
         // DATA_FIFO_INST (1-cycle)
         DATA_FIFO_INST : begin
+            `ifdef TB
             $display("[%0t:CU:OUTPUT_LOGIC] DATA_FIFO_INST", $time);
+            `endif
             axi_sm_mode     = IDLE;
             init_txn_pulse  = 1'b0;
             read_ub         = 1'b0;
@@ -297,7 +306,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
 
         // WEIGHT_FIFO_INST (1-cycle)
         WEIGHT_FIFO_INST : begin
+            `ifdef TB
             $display("[%0t:CU:OUTPUT_LOGIC] WEIGHT_FIFO_INST", $time);
+            `endif
             axi_sm_mode     = IDLE;
             init_txn_pulse  = 1'b0;
             read_ub         = 1'b0;
@@ -329,7 +340,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
             if (txn_done  == 1'b0) begin
                 if (minor_state == 0) begin
                     // Init (minor_state == 0)
+                    `ifdef TB
                     $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_UB_INST(0)", $time);
+                    `endif
                     axi_sm_mode     = LOAD_DATA;
                     init_txn_pulse  = 1'b1;
                     read_ub         = 1'b0;
@@ -355,7 +368,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                     axi_flag        = 1'b0;
                 end else begin
                     // Wait for transaction complete.
+                    `ifdef TB
                     $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_UB_INST(1)", $time);
+                    `endif
                     axi_sm_mode     = LOAD_DATA;
                     init_txn_pulse  = 1'b0;
                     read_ub         = 1'b0;
@@ -382,7 +397,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 end
             end else begin
                 // Transaction Complete: UB Data is ready
+                `ifdef TB
                 $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_UB_INST(2)", $time);
+                `endif
                 axi_sm_mode     = IDLE;
                 init_txn_pulse  = 1'b0;
                 read_ub         = 1'b0;
@@ -415,7 +432,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
             if (txn_done  == 1'b0) begin
                 if (minor_state == 0) begin
                     // Init (minor_state == 0)
+                    `ifdef TB
                     $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_WB_INST(0)", $time);
+                    `endif
                     axi_sm_mode     = LOAD_DATA;
                     init_txn_pulse  = 1'b1;
                     read_ub         = 1'b0;
@@ -441,7 +460,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                     axi_flag        = 1'b0;
                 end else begin
                     // Wait for transaction complete.
+                    `ifdef TB
                     $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_WB_INST(1)", $time);
+                    `endif
                     axi_sm_mode     = LOAD_DATA;
                     init_txn_pulse  = 1'b0;
                     read_ub         = 1'b0;
@@ -468,7 +489,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 end
             end else begin
                 // Transaction Complete: WB Data is ready
+                `ifdef TB
                 $display("[%0t:CU:OUTPUT_LOGIC] AXI_TO_WB_INST(2)", $time);
+                `endif
                 axi_sm_mode     = IDLE;
                 init_txn_pulse  = 1'b0;
                 read_ub         = 1'b0;
@@ -498,7 +521,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
 
         // UB_TO_DATA_FIFO_INST (1-cycle)
         UB_TO_DATA_FIFO_INST : begin
+            `ifdef TB
             $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_DATA_FIFO_INST", $time);
+            `endif
             axi_sm_mode     = IDLE;
             init_txn_pulse  = 1'b0;
             read_ub         = 1'b1;
@@ -527,7 +552,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
 
         // UB_TO_WEIGHT_FIFO_INST (1-cycle)
         UB_TO_WEIGHT_FIFO_INST : begin
+            `ifdef TB
             $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_WEIGHT_FIFO_INST", $time);
+            `endif
             axi_sm_mode     = IDLE;
             init_txn_pulse  = 1'b0;
             read_ub         = 1'b0;
@@ -557,7 +584,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
         // MAT_MUL_INST (1-cycle)
         MAT_MUL_INST : begin
             if (minor_state == 0) begin
+                `ifdef TB
                 $display("[%0t:CU:OUTPUT_LOGIC] MAT_MUL_INST(0)", $time);
+                `endif
                 axi_sm_mode     = IDLE;
                 init_txn_pulse  = 1'b0;
                 read_ub         = 1'b1;
@@ -582,7 +611,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 dout            = 128'd0;
                 axi_flag        = 1'b0;
             end else begin
+                `ifdef TB
                 $display("[%0t:CU:OUTPUT_LOGIC] MAT_MUL_INST(1)", $time);
+                `endif
                 axi_sm_mode     = IDLE;
                 init_txn_pulse  = 1'b0;
                 read_ub         = 1'b0;
@@ -613,7 +644,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
         // MAT_MUL_INST_ACC (1-cycle)
         MAT_MUL_ACC_INST : begin
             if (minor_state == 0) begin
+                `ifdef TB
                 $display("[%0t:CU:OUTPUT_LOGIC] MAT_MUL_ACC_INST(0)", $time);
+                `endif
                 axi_sm_mode     = IDLE;
                 init_txn_pulse  = 1'b0;
                 read_ub         = 1'b1;
@@ -638,7 +671,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 dout            = 128'd0;
                 axi_flag        = 1'b0;
             end else begin
+                `ifdef TB
                 $display("[%0t:CU:OUTPUT_LOGIC] MAT_MUL_ACC_INST(1)", $time);
+                `endif
                 axi_sm_mode     = IDLE;
                 init_txn_pulse  = 1'b0;
                 read_ub         = 1'b0;
@@ -669,7 +704,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
         // ACC_TO_UB_INST (n-cycles)
         ACC_TO_UB_INST : begin
             if (minor_state == 2'd0) begin
+                `ifdef TB
                 $display("[%0t:CU:OUTPUT_LOGIC] ACC_TO_UB_INST(0)", $time);
+                `endif
                 axi_sm_mode     = IDLE;
                 init_txn_pulse  = 1'b0;
                 read_ub         = 1'b0;
@@ -694,7 +731,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 dout            = 128'd0;
                 axi_flag        = 1'b0;
             end else begin
+                `ifdef TB
                 $display("[%0t:CU:OUTPUT_LOGIC] ACC_TO_UB_INST(1)", $time);
+                `endif
                 axi_sm_mode     = IDLE;
                 init_txn_pulse  = 1'b0;
                 read_ub         = 1'b0;
@@ -726,7 +765,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
         UB_TO_AXI_INST : begin
             if (minor_state == 0) begin
                 // Init: Read UB data.
+                `ifdef TB
                 $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_AXI_INST(0)", $time);
+                `endif
                 axi_sm_mode     = IDLE;
                 init_txn_pulse  = 1'b0;
                 read_ub         = 1'b1;
@@ -753,7 +794,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
             end else begin
                 if (txn_done  == 1'b0) begin
                     // Write off-mem through AXI I/F.
+                    `ifdef TB
                     $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_AXI_INST(1)", $time);
+                    `endif
                     axi_sm_mode     = STORE_DATA;
                     init_txn_pulse  = 1'b1;
                     read_ub         = 1'b0;
@@ -778,7 +821,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                     dout            = uin;
                     axi_flag        = 1'b0;
                 end else begin
+                    `ifdef TB
                     $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_AXI_INST(2)", $time);
+                    `endif
                     axi_sm_mode     = IDLE;
                     init_txn_pulse  = 1'b0;
                     read_ub         = 1'b0;
@@ -809,7 +854,9 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
 
         // Exception : No operation (1-cycle)
         default : begin
+            `ifdef TB
             $display("[%0t:CU:OUTPUT_LOGIC] Exception", $time);
+            `endif
             axi_sm_mode     = IDLE;
             init_txn_pulse  = 1'b0;
             read_ub         = 1'b0;

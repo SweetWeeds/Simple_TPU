@@ -503,22 +503,21 @@
                 reg  [8-1:0] byte_ram [0 : C_S_BRAM_DEPTH-1];
                 integer  j;
                 
-                if (IS_TESTBENCH == 1) begin
+                `ifdef TB
                     if (INIT_FILE == "") begin
-                    initial begin : INIT_FILE_NOT_EXIST
-                        for (j=0; j < C_S_BRAM_DEPTH; j=j+1) begin
-                            byte_ram[j] = {8'b0}; 
+                        initial begin : INIT_FILE_NOT_EXIST
+                            for (j=0; j < C_S_BRAM_DEPTH; j=j+1) begin
+                                byte_ram[j] = {8'b0}; 
+                            end
                         end
-                    end
                     end else begin
-                    initial begin : INIT_FILE_EXIST
-                        wait(tb_bram_ready == 1'b1);
-                        for (j=0; j < C_S_BRAM_DEPTH; j=j+1) begin
-                            byte_ram[j] = tb_bram[j][(mem_byte_index*8+7) -: 8]; 
+                        initial begin : INIT_FILE_EXIST
+                            for (j=0; j < C_S_BRAM_DEPTH; j=j+1) begin
+                                byte_ram[j] = tb_bram[j][(mem_byte_index*8+7) -: 8]; 
+                            end
                         end
                     end
-                    end
-                end
+                `endif
 
                 //assigning 8 bit data
                 assign data_in  = S_AXI_WDATA[(mem_byte_index*8+7) -: 8];
@@ -540,7 +539,7 @@
     endgenerate
     //Output register or memory read data
 
-    always @ ( mem_data_out, axi_rvalid) begin
+    always @ ( mem_data_out or axi_rvalid) begin
         if (axi_rvalid) begin
             // Read address mux
             axi_rdata <= mem_data_out[0];
@@ -551,14 +550,16 @@
 
     // Add user logic here
     reg [C_S_AXI_DATA_WIDTH-1:0] tb_bram [0:C_S_BRAM_DEPTH-1];
-    reg tb_bram_ready = 1'b0;
+    //reg tb_bram_ready = 1'b0;
 
-    if (IS_TESTBENCH == 1 && INIT_FILE != "") begin
+    `ifdef TB
+    if (INIT_FILE != "") begin
         initial begin
             $readmemh(INIT_FILE, tb_bram, 0, C_S_BRAM_DEPTH-1);
             tb_bram_ready = 1'b1;
         end
     end
+    `endif
                             
     // User logic ends
 

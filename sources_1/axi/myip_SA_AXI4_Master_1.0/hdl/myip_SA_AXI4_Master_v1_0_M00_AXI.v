@@ -36,7 +36,7 @@ module myip_SA_AXI4_Master_v1_0_M00_AXI #
     input  wire [C_M_AXI_ADDR_WIDTH-1 : 0] C_M_OFF_MEM_ADDRB,
     input  wire [C_M_AXI_DATA_WIDTH-1 : 0] C_M_WDATA,
     output wire [C_M_AXI_DATA_WIDTH-1 : 0] C_M_RDATA,
-    output wire C_M_IDLE_STATUS,    // 1: IDLE, 0: Working
+    //output wire C_M_IDLE_STATUS,    // 1: IDLE, 0: Working
     // User ports ends
     // Do not modify the ports beyond this line
 
@@ -185,7 +185,7 @@ module myip_SA_AXI4_Master_v1_0_M00_AXI #
     // Example State machine to initialize counter, initialize write transactions,
     // initialize read transactions and comparison of read data with the
     // written data words.
-    parameter [1:0] IDLE = 2'b00, // This state initiates AXI4Lite transaction
+    localparam [1:0] IDLE = 2'b00, // This state initiates AXI4Lite transaction
             // after the state machine changes state to INIT_WRITE
             // when there is 0 to 1 transition on INIT_AXI_TXN
         INIT_WRITE   = 2'b01, // This state initializes write transaction,
@@ -198,7 +198,7 @@ module myip_SA_AXI4_Master_v1_0_M00_AXI #
             // of the written data with the read data
     
     // Major state parameters
-    parameter [1:0] M_IDLE = 2'b00,
+    localparam [1:0] M_IDLE = 2'b00,
                     M_LOAD = 2'b01,
                     M_STORE = 2'b10;
 
@@ -784,7 +784,7 @@ module myip_SA_AXI4_Master_v1_0_M00_AXI #
 
     // Add user logic here
     assign C_M_RDATA = M_AXI_RDATA;
-    assign C_M_IDLE_STATUS = (mst_exec_state == M_IDLE);
+    //assign C_M_IDLE_STATUS = (mst_exec_state == M_IDLE);
     assign TXN_DONE = (M_AXI_RVALID && axi_rready && (read_index == C_M_AXI_BURST_LEN-1) && (read_burst_counter[C_NO_BURSTS_REQ])) || (M_AXI_BVALID && (write_burst_counter[C_NO_BURSTS_REQ]) && axi_bready);
 
 
