@@ -119,123 +119,54 @@ wire [OPCODE_BITS-1:0] OPCODE;
 assign OPCODE = instruction[OPCODE_FROM:OPCODE_TO];
 
 // Instantiation
-SYSTOLIC_ARRAY_AXI4_FULL # (
-    .C_M00_AXI_ADDR_WIDTH(32),
-    .C_M00_AXI_DATA_WIDTH(128)
-) SA0 (
-    .reset_n(reset_n),
-    .clk(clk),
-    .init_inst_pulse(init_inst_pulse),
-    .instruction(instruction),
-    .idle_flag(idle_flag),
-    .flag(flag),
-    // Start of AXI4 Full Signals //
-	.m00_axi_awid(m00_axi_awid),
-	.m00_axi_awaddr(m00_axi_awaddr),
-	.m00_axi_awlen(m00_axi_awlen),
-	.m00_axi_awsize(m00_axi_awsize),
-	.m00_axi_awburst(m00_axi_awburst),
-	.m00_axi_awlock(m00_axi_awlock),
-	.m00_axi_awcache(m00_axi_awcache),
-	.m00_axi_awprot(m00_axi_awprot),
-	.m00_axi_awqos(m00_axi_awqos),
-	.m00_axi_awuser(m00_axi_awuser),
-	.m00_axi_awvalid(m00_axi_awvalid),
-	.m00_axi_awready(m00_axi_awready),
-	.m00_axi_wdata(m00_axi_wdata),
-	.m00_axi_wstrb(m00_axi_wstrb),
-	.m00_axi_wlast(m00_axi_wlast),
-	.m00_axi_wuser(m00_axi_wuser),
-	.m00_axi_wvalid(m00_axi_wvalid),
-	.m00_axi_wready(m00_axi_wready),
-	.m00_axi_bid(m00_axi_bid),
-	.m00_axi_bresp(m00_axi_bresp),
-	.m00_axi_buser(m00_axi_buser),
-	.m00_axi_bvalid(m00_axi_bvalid),
-	.m00_axi_bready(m00_axi_bready),
-	.m00_axi_arid(m00_axi_arid),
-	.m00_axi_araddr(m00_axi_araddr),
-	.m00_axi_arlen(m00_axi_arlen),
-	.m00_axi_arsize(m00_axi_arsize),
-	.m00_axi_arburst(m00_axi_arburst),
-	.m00_axi_arlock(m00_axi_arlock),
-	.m00_axi_arcache(m00_axi_arcache),
-	.m00_axi_arprot(m00_axi_arprot),
-	.m00_axi_arqos(m00_axi_arqos),
-	.m00_axi_aruser(m00_axi_aruser),
-	.m00_axi_arvalid(m00_axi_arvalid),
-	.m00_axi_arready(m00_axi_arready),
-	.m00_axi_rid(m00_axi_rid),
-	.m00_axi_rdata(m00_axi_rdata),
-	.m00_axi_rresp(m00_axi_rresp),
-	.m00_axi_rlast(m00_axi_rlast),
-	.m00_axi_ruser(m00_axi_ruser),
-	.m00_axi_rvalid(m00_axi_rvalid),
-	.m00_axi_rready(m00_axi_rready)
-    // End of AXI4 Full Signals //
+// AXI4-Full Slave (Instruction Buffer)
+myip_SA_Instruction_Buffer_0 S00 (
+		// Users to add ports here
+		.c_s00_force_inst(c_s00_force_inst),
+		.c_s00_wea(c_s00_wea),
+		.c_s00_douta(c_s00_douta),
+		.c_s00_addra(c_s00_addra),
+		// User ports ends
+		// Do not modify the ports beyond this line
+
+
+		// Ports of Axi Slave Bus Interface S00_AXI
+		.s00_axi_aclk(clk),
+		.s00_axi_aresetn(reset_n),
+		.s00_axi_awaddr(s00_axi_awaddr),
+		.s00_axi_awprot(s00_axi_awprot),
+		.s00_axi_awvalid(s00_axi_awvalid),
+		.s00_axi_awready(s00_axi_awready),
+		.s00_axi_wdata(s00_axi_wdata),
+		.s00_axi_wstrb(s00_axi_wstrb),
+		.s00_axi_wvalid(s00_axi_wvalid),
+		.s00_axi_wready(s00_axi_wready),
+		.s00_axi_bresp(s00_axi_bresp),
+		.s00_axi_bvalid(s00_axi_bvalid),
+		.s00_axi_bready(s00_axi_bready),
+		.s00_axi_araddr(s00_axi_araddr),
+		.s00_axi_arprot(s00_axi_arprot),
+		.s00_axi_arvalid(s00_axi_arvalid),
+		.s00_axi_arready(s00_axi_arready),
+		.s00_axi_rdata(s00_axi_rdata),
+		.s00_axi_rresp(s00_axi_rresp),
+		.s00_axi_rvalid(s00_axi_rvalid),
+		.s00_axi_rready(s00_axi_rready)
 );
 
-// Slave off memory
-myip_SA_AXI4_Slave_0 # (
-    .INIT_FILE("/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sim_1/new/hex_mem.mem")
-) S00 (
-    .s00_axi_aclk(clk),
-    .s00_axi_aresetn(reset_n),
-    .s00_axi_awid(m00_axi_awid),
-    .s00_axi_awaddr(m00_axi_awaddr),
-    .s00_axi_awlen(m00_axi_awlen),
-    .s00_axi_awsize(m00_axi_awsize),
-    .s00_axi_awburst(m00_axi_awburst),
-    .s00_axi_awlock(m00_axi_awlock),
-    .s00_axi_awcache(m00_axi_awcache),
-    .s00_axi_awprot(m00_axi_awprot),
-    .s00_axi_awqos(m00_axi_awqos),
-    .s00_axi_awregion(m00_axi_awregion),
-    .s00_axi_awuser(m00_axi_awuser),
-    .s00_axi_awvalid(m00_axi_awvalid),
-    .s00_axi_awready(m00_axi_awready),
-    .s00_axi_wdata(m00_axi_wdata),
-    .s00_axi_wstrb(m00_axi_wstrb),
-    .s00_axi_wlast(m00_axi_wlast),
-    .s00_axi_wuser(m00_axi_wuser),
-    .s00_axi_wvalid(m00_axi_wvalid),
-    .s00_axi_wready(m00_axi_wready),
-    .s00_axi_bid(m00_axi_bid),
-    .s00_axi_bresp(m00_axi_bresp),
-    .s00_axi_buser(m00_axi_buser),
-    .s00_axi_bvalid(m00_axi_bvalid),
-    .s00_axi_bready(m00_axi_bready),
-    .s00_axi_arid(m00_axi_arid),
-    .s00_axi_araddr(m00_axi_araddr),
-    .s00_axi_arlen(m00_axi_arlen),
-    .s00_axi_arsize(m00_axi_arsize),
-    .s00_axi_arburst(m00_axi_arburst),
-    .s00_axi_arlock(m00_axi_arlock),
-    .s00_axi_arcache(m00_axi_arcache),
-    .s00_axi_arprot(m00_axi_arprot),
-    .s00_axi_arqos(m00_axi_arqos),
-    .s00_axi_arregion(m00_axi_arregion),
-    .s00_axi_aruser(m00_axi_aruser),
-    .s00_axi_arvalid(m00_axi_arvalid),
-    .s00_axi_arready(m00_axi_arready),
-    .s00_axi_rid(m00_axi_rid),
-    .s00_axi_rdata(m00_axi_rdata),
-    .s00_axi_rresp(m00_axi_rresp),
-    .s00_axi_rlast(m00_axi_rlast),
-    .s00_axi_ruser(m00_axi_ruser),
-    .s00_axi_rvalid(m00_axi_rvalid),
-    .s00_axi_rready(m00_axi_rready)
-);
-
+// Instruction Buffer
 INSTRUCTION_BUFFER # (
     .PC_DEPTH(1024),
-    .INST_BITS(128),
-    .INIT_FILE("/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sim_1/new/python_tb/pc.mem")
+    .ADDR_BITS(PC_ADDR_BITS),
+    .INST_BITS(128)
 ) IB (
     .clk(clk),
     .reset_n(reset_n),
     .flag(flag),
-    .force_inst(force_inst),
+    .force_inst(c_s00_force_inst),
+    .wea(c_s00_wea),
+    .din(c_s00_douta),
+    .addra(c_s00_addra),
     .instruction(instruction),
     .init_inst_pulse(init_inst_pulse)
 );

@@ -91,7 +91,7 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
 (
     input  wire reset_n,
     input  wire clk,
-    input  wire init_inst_pulse,
+    //input  wire init_inst_pulse,
     //input  wire [67:0] instruction,
     output wire idle_flag,
     //output wire flag,
@@ -189,9 +189,9 @@ wire [1:0] axi_sm_mode;
 //wire axi_txn_en;
 wire init_txn_pulse, flag;
 wire [INST_BITS-1:0] instruction;
-wire pc_wea;
-wire [INST_BITS-1:0] pc_din;
-wire [PC_ADDR_BITS-1:0] pc_addra;
+wire c_s00_wea, c_s00_force_inst;
+wire [INST_BITS-1:0] c_s00_douta;
+wire [PC_ADDR_BITS-1:0] c_s00_addra;
 
 // AXI4 Full Master
 myip_SA_AXI4_Master_0 M00
@@ -254,12 +254,7 @@ myip_SA_AXI4_Master_0 M00
 );
 
 // AXI4-Full Slave (Instruction Buffer)
-myip_SA_Instruction_Buffer_0 # (
-    .C_S00_ADDR_BITS(PC_ADDR_BITS),
-    .C_S00_INST_BITS(INST_BITS),
-    .C_S00_AXI_DATA_WIDTH(32),
-    .C_S00_AXI_ADDR_WIDTH(5)
-) S00 (
+myip_SA_Instruction_Buffer_0 S00 (
 		// Users to add ports here
 		.c_s00_force_inst(c_s00_force_inst),
 		.c_s00_wea(c_s00_wea),
@@ -370,10 +365,10 @@ INSTRUCTION_BUFFER # (
     .clk(clk),
     .reset_n(reset_n),
     .flag(flag),
-    .force_inst(force_inst),
-    .wea(pc_wea),
-    .din(pc_din),
-    .addra(pc_addra),
+    .force_inst(c_s00_force_inst),
+    .wea(c_s00_wea),
+    .din(c_s00_douta),
+    .addra(c_s00_addra),
     .instruction(instruction),
     .init_inst_pulse(init_inst_pulse)
 );

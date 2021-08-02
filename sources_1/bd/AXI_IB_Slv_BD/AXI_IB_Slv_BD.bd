@@ -1,0 +1,157 @@
+{
+  "design": {
+    "design_info": {
+      "boundary_crc": "0x0",
+      "device": "xczu9eg-ffvb1156-2-e",
+      "gen_directory": "../../../../systolic_array.gen/sources_1/bd/AXI_IB_Slv_BD",
+      "name": "AXI_IB_Slv_BD",
+      "rev_ctrl_bd_flag": "RevCtrlBdOff",
+      "synth_flow_mode": "Hierarchical",
+      "tool_version": "2020.2"
+    },
+    "design_tree": {
+      "myip_SA_Instruction_0": "",
+      "axi_vip_0": ""
+    },
+    "ports": {
+      "aclk": {
+        "type": "clk",
+        "direction": "I",
+        "parameters": {
+          "FREQ_HZ": {
+            "value": "100000000"
+          }
+        }
+      },
+      "aresetn": {
+        "type": "rst",
+        "direction": "I"
+      },
+      "force_inst": {
+        "direction": "O"
+      },
+      "wea": {
+        "direction": "O"
+      },
+      "douta": {
+        "type": "data",
+        "direction": "O",
+        "left": "127",
+        "right": "0"
+      },
+      "addra": {
+        "type": "data",
+        "direction": "O",
+        "left": "9",
+        "right": "0"
+      }
+    },
+    "components": {
+      "myip_SA_Instruction_0": {
+        "vlnv": "user.org:user:myip_SA_Instruction_Buffer:1.0",
+        "xci_name": "AXI_IB_Slv_BD_myip_SA_Instruction_0_0",
+        "xci_path": "ip/AXI_IB_Slv_BD_myip_SA_Instruction_0_0/AXI_IB_Slv_BD_myip_SA_Instruction_0_0.xci",
+        "inst_hier_path": "myip_SA_Instruction_0"
+      },
+      "axi_vip_0": {
+        "vlnv": "xilinx.com:ip:axi_vip:1.1",
+        "xci_name": "AXI_IB_Slv_BD_axi_vip_0_0",
+        "xci_path": "ip/AXI_IB_Slv_BD_axi_vip_0_0/AXI_IB_Slv_BD_axi_vip_0_0.xci",
+        "inst_hier_path": "axi_vip_0",
+        "parameters": {
+          "ADDR_WIDTH": {
+            "value": "32"
+          },
+          "DATA_WIDTH": {
+            "value": "32"
+          },
+          "HAS_BRESP": {
+            "value": "1"
+          },
+          "HAS_PROT": {
+            "value": "1"
+          },
+          "HAS_WSTRB": {
+            "value": "1"
+          },
+          "INTERFACE_MODE": {
+            "value": "MASTER"
+          },
+          "PROTOCOL": {
+            "value": "AXI4LITE"
+          },
+          "READ_WRITE_MODE": {
+            "value": "WRITE_ONLY"
+          }
+        },
+        "addressing": {
+          "address_spaces": {
+            "Master_AXI": {
+              "range": "4G",
+              "width": "32"
+            }
+          }
+        },
+        "interface_ports": {
+          "M_AXI": {
+            "mode": "Master",
+            "address_space_ref": "Master_AXI",
+            "base_address": {
+              "minimum": "0x00000000",
+              "maximum": "0xFFFFFFFF",
+              "width": "32"
+            }
+          }
+        }
+      }
+    },
+    "interface_nets": {
+      "axi_vip_0_M_AXI": {
+        "interface_ports": [
+          "axi_vip_0/M_AXI",
+          "myip_SA_Instruction_0/S00_AXI"
+        ]
+      }
+    },
+    "nets": {
+      "aclk_1": {
+        "ports": [
+          "aclk",
+          "axi_vip_0/aclk",
+          "myip_SA_Instruction_0/s00_axi_aclk"
+        ]
+      },
+      "aresetn_1": {
+        "ports": [
+          "aresetn",
+          "axi_vip_0/aresetn",
+          "myip_SA_Instruction_0/s00_axi_aresetn"
+        ]
+      },
+      "myip_SA_Instruction_0_c_s00_addra": {
+        "ports": [
+          "myip_SA_Instruction_0/c_s00_addra",
+          "addra"
+        ]
+      },
+      "myip_SA_Instruction_0_c_s00_douta": {
+        "ports": [
+          "myip_SA_Instruction_0/c_s00_douta",
+          "douta"
+        ]
+      },
+      "myip_SA_Instruction_0_c_s00_wea": {
+        "ports": [
+          "myip_SA_Instruction_0/c_s00_wea",
+          "wea"
+        ]
+      },
+      "myip_SA_Instruction_0_c_s00_force_inst": {
+        "ports": [
+          "myip_SA_Instruction_0/c_s00_force_inst",
+          "force_inst"
+        ]
+      }
+    }
+  }
+}
