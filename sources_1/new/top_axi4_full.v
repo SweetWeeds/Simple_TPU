@@ -40,7 +40,7 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
     
     // End of AXI params
     parameter integer C_S00_AXI_DATA_WIDTH	= 32,
-    parameter integer C_S00_AXI_ADDR_WIDTH	= 5,
+    parameter integer C_S00_AXI_ADDR_WIDTH	= 32,
     // Instruction Set
     // ISA(140-bit) = OPCODE_BITS(4-bit) + ADDRA_BITS(8-bit) + ADDRB_BITS(8-bit) + OPERAND_BITS(128-bit)
     parameter   OPCODE_BITS  = 4,
@@ -142,7 +142,7 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
     // End of AXI4 Lite Master Signals
 
     // Ports of AXI4 Slave Bus Interface S00_AXI
-    input  wire s00_axi_awaddr,
+    input  wire [C_S00_AXI_ADDR_WIDTH-1 : 0] s00_axi_awaddr,
     input  wire [2 : 0] s00_axi_awprot,
     input  wire s00_axi_awvalid,
     output wire s00_axi_awready,

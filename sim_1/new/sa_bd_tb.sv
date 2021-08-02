@@ -148,14 +148,15 @@ module sa_bd_tb;
 
   initial begin
     clk = 1'b0;
-    resetn = 1'b0;
-    #10;
     resetn = 1'b1;
-    #100;
+    #10;
     resetn = 1'b0;
+    #100;
+    resetn = 1'b1;
   end
 
   initial begin
+    # 110;
     master_agent = new("master", DUT.SYSTOLIC_ARRAY_i.axi_vip_0.inst.IF);
     master_agent.set_agent_tag("master vip");
     master_agent.set_verbosity(0);
@@ -163,7 +164,7 @@ module sa_bd_tb;
 
     //ineterrupt enable
     mtestID = 0;
-    mtestADDR = 'h44A0_0001;
+    mtestADDR = 'h44A0_0000;
     mtestBurstLength = 0;
     //mtestDataSize = xil_axi_size_t'(xil_clog2(128/8));
     mtestDataSize = XIL_AXI_SIZE_4BYTE;

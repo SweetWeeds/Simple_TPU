@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x7FFDA7844A7BA123",
+      "boundary_crc": "0x7FFDA7841892E45D",
       "device": "xczu9eg-ffvb1156-2-e",
       "gen_directory": "../../../../systolic_array.gen/sources_1/bd/SYSTOLIC_ARRAY",
       "name": "SYSTOLIC_ARRAY",
@@ -11,9 +11,9 @@
       "validated": "true"
     },
     "design_tree": {
-      "SYSTOLIC_ARRAY_AXI4_0": "",
       "axi_vip_0": "",
-      "myip_SA_AXI4_Slave_0": ""
+      "myip_SA_AXI4_Slave_0": "",
+      "SYSTOLIC_ARRAY_AXI4_0": ""
     },
     "ports": {
       "clk": {
@@ -29,7 +29,7 @@
             "value_src": "default"
           },
           "FREQ_HZ": {
-            "value": "100000000"
+            "value": "166000000"
           },
           "FREQ_TOLERANCE_HZ": {
             "value": "0",
@@ -61,6 +61,66 @@
       }
     },
     "components": {
+      "axi_vip_0": {
+        "vlnv": "xilinx.com:ip:axi_vip:1.1",
+        "xci_name": "SYSTOLIC_ARRAY_axi_vip_0_0",
+        "xci_path": "ip/SYSTOLIC_ARRAY_axi_vip_0_0/SYSTOLIC_ARRAY_axi_vip_0_0.xci",
+        "inst_hier_path": "axi_vip_0",
+        "parameters": {
+          "ADDR_WIDTH": {
+            "value": "32"
+          },
+          "DATA_WIDTH": {
+            "value": "32"
+          },
+          "HAS_BRESP": {
+            "value": "1"
+          },
+          "HAS_PROT": {
+            "value": "1"
+          },
+          "HAS_RRESP": {
+            "value": "1"
+          },
+          "HAS_WSTRB": {
+            "value": "1"
+          },
+          "INTERFACE_MODE": {
+            "value": "MASTER"
+          },
+          "PROTOCOL": {
+            "value": "AXI4LITE"
+          },
+          "READ_WRITE_MODE": {
+            "value": "READ_WRITE"
+          }
+        },
+        "addressing": {
+          "address_spaces": {
+            "Master_AXI": {
+              "range": "4G",
+              "width": "32"
+            }
+          }
+        },
+        "interface_ports": {
+          "M_AXI": {
+            "mode": "Master",
+            "address_space_ref": "Master_AXI",
+            "base_address": {
+              "minimum": "0x00000000",
+              "maximum": "0xFFFFFFFF",
+              "width": "32"
+            }
+          }
+        }
+      },
+      "myip_SA_AXI4_Slave_0": {
+        "vlnv": "user.org:user:myip_SA_AXI4_Slave:1.0",
+        "xci_name": "SYSTOLIC_ARRAY_myip_SA_AXI4_Slave_0_0",
+        "xci_path": "ip/SYSTOLIC_ARRAY_myip_SA_AXI4_Slave_0_0/SYSTOLIC_ARRAY_myip_SA_AXI4_Slave_0_0.xci",
+        "inst_hier_path": "myip_SA_AXI4_Slave_0"
+      },
       "SYSTOLIC_ARRAY_AXI4_0": {
         "vlnv": "xilinx.com:module_ref:SYSTOLIC_ARRAY_AXI4_FULL:1.0",
         "xci_name": "SYSTOLIC_ARRAY_SYSTOLIC_ARRAY_AXI4_0_0",
@@ -96,7 +156,7 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "100000000",
+                "value": "166000000",
                 "value_src": "user_prop"
               },
               "ID_WIDTH": {
@@ -428,7 +488,7 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "100000000",
+                "value": "166000000",
                 "value_src": "user_prop"
               },
               "ID_WIDTH": {
@@ -531,7 +591,9 @@
             "port_maps": {
               "AWADDR": {
                 "physical_name": "s00_axi_awaddr",
-                "direction": "I"
+                "direction": "I",
+                "left": "31",
+                "right": "0"
               },
               "AWPROT": {
                 "physical_name": "s00_axi_awprot",
@@ -638,7 +700,7 @@
                 "value_src": "constant"
               },
               "FREQ_HZ": {
-                "value": "100000000",
+                "value": "166000000",
                 "value_src": "user_prop"
               },
               "CLK_DOMAIN": {
@@ -670,79 +732,19 @@
             }
           }
         }
-      },
-      "axi_vip_0": {
-        "vlnv": "xilinx.com:ip:axi_vip:1.1",
-        "xci_name": "SYSTOLIC_ARRAY_axi_vip_0_0",
-        "xci_path": "ip/SYSTOLIC_ARRAY_axi_vip_0_0/SYSTOLIC_ARRAY_axi_vip_0_0.xci",
-        "inst_hier_path": "axi_vip_0",
-        "parameters": {
-          "ADDR_WIDTH": {
-            "value": "32"
-          },
-          "DATA_WIDTH": {
-            "value": "32"
-          },
-          "HAS_BRESP": {
-            "value": "1"
-          },
-          "HAS_PROT": {
-            "value": "1"
-          },
-          "HAS_RRESP": {
-            "value": "1"
-          },
-          "HAS_WSTRB": {
-            "value": "1"
-          },
-          "INTERFACE_MODE": {
-            "value": "MASTER"
-          },
-          "PROTOCOL": {
-            "value": "AXI4LITE"
-          },
-          "READ_WRITE_MODE": {
-            "value": "READ_WRITE"
-          }
-        },
-        "addressing": {
-          "address_spaces": {
-            "Master_AXI": {
-              "range": "4G",
-              "width": "32"
-            }
-          }
-        },
-        "interface_ports": {
-          "M_AXI": {
-            "mode": "Master",
-            "address_space_ref": "Master_AXI",
-            "base_address": {
-              "minimum": "0x00000000",
-              "maximum": "0xFFFFFFFF",
-              "width": "32"
-            }
-          }
-        }
-      },
-      "myip_SA_AXI4_Slave_0": {
-        "vlnv": "user.org:user:myip_SA_AXI4_Slave:1.0",
-        "xci_name": "SYSTOLIC_ARRAY_myip_SA_AXI4_Slave_0_0",
-        "xci_path": "ip/SYSTOLIC_ARRAY_myip_SA_AXI4_Slave_0_0/SYSTOLIC_ARRAY_myip_SA_AXI4_Slave_0_0.xci",
-        "inst_hier_path": "myip_SA_AXI4_Slave_0"
       }
     },
     "interface_nets": {
-      "SYSTOLIC_ARRAY_AXI4_0_m00_axi": {
-        "interface_ports": [
-          "SYSTOLIC_ARRAY_AXI4_0/m00_axi",
-          "myip_SA_AXI4_Slave_0/S00_AXI"
-        ]
-      },
       "axi_vip_0_M_AXI": {
         "interface_ports": [
           "axi_vip_0/M_AXI",
           "SYSTOLIC_ARRAY_AXI4_0/s00_axi"
+        ]
+      },
+      "SYSTOLIC_ARRAY_AXI4_0_m00_axi": {
+        "interface_ports": [
+          "SYSTOLIC_ARRAY_AXI4_0/m00_axi",
+          "myip_SA_AXI4_Slave_0/S00_AXI"
         ]
       }
     },
@@ -751,39 +753,20 @@
         "ports": [
           "clk",
           "axi_vip_0/aclk",
-          "SYSTOLIC_ARRAY_AXI4_0/clk",
-          "myip_SA_AXI4_Slave_0/s00_axi_aclk"
+          "myip_SA_AXI4_Slave_0/s00_axi_aclk",
+          "SYSTOLIC_ARRAY_AXI4_0/clk"
         ]
       },
       "reset_n_1": {
         "ports": [
           "reset_n",
           "axi_vip_0/aresetn",
-          "SYSTOLIC_ARRAY_AXI4_0/reset_n",
-          "myip_SA_AXI4_Slave_0/s00_axi_aresetn"
-        ]
-      },
-      "axi_vip_0_m_axi_awaddr": {
-        "ports": [
-          "axi_vip_0/m_axi_awaddr",
-          "SYSTOLIC_ARRAY_AXI4_0/s00_axi_awaddr"
+          "myip_SA_AXI4_Slave_0/s00_axi_aresetn",
+          "SYSTOLIC_ARRAY_AXI4_0/reset_n"
         ]
       }
     },
     "addressing": {
-      "/SYSTOLIC_ARRAY_AXI4_0": {
-        "address_spaces": {
-          "m00_axi": {
-            "segments": {
-              "SEG_myip_SA_AXI4_Slave_0_S00_AXI_mem": {
-                "address_block": "/myip_SA_AXI4_Slave_0/S00_AXI/S00_AXI_mem",
-                "offset": "0x76000000",
-                "range": "4K"
-              }
-            }
-          }
-        }
-      },
       "/axi_vip_0": {
         "address_spaces": {
           "Master_AXI": {
@@ -791,6 +774,19 @@
               "SEG_SYSTOLIC_ARRAY_AXI4_0_reg0": {
                 "address_block": "/SYSTOLIC_ARRAY_AXI4_0/s00_axi/reg0",
                 "offset": "0x44A00000",
+                "range": "4K"
+              }
+            }
+          }
+        }
+      },
+      "/SYSTOLIC_ARRAY_AXI4_0": {
+        "address_spaces": {
+          "m00_axi": {
+            "segments": {
+              "SEG_myip_SA_AXI4_Slave_0_S00_AXI_mem": {
+                "address_block": "/myip_SA_AXI4_Slave_0/S00_AXI/S00_AXI_mem",
+                "offset": "0x76000000",
                 "range": "4K"
               }
             }
