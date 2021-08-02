@@ -1,4 +1,3 @@
-`define TB;
 
 //  Xilinx Simple Dual Port Single Clock RAM
 //  This code implements a parameterizable SDP single clock memory.

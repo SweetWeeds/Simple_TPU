@@ -30,7 +30,7 @@ initial begin : CLOCK_GENERATOR
 end
 
 INSTRUCTION_BUFFER #(
-    .INIT_FILE("/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sim_1/new/hex_mem.mem")
+    .INIT_FILE("/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sim_1/new/python_tb/pc.mem")
 ) IB (
     .clk(clk),
     .reset_n(reset_n),
@@ -72,22 +72,6 @@ initial begin
     end
     $stop();
 
-    // IB_MODE (Wrap)
-    while (i <= 50) begin
-        i = i + 1;
-        ib_mode = 1;
-        ib_incr = 1;
-        ib_jmp  = 0;
-        @ (posedge init_inst_pulse) flag    = 0;
-        @ (negedge init_inst_pulse) flag    = 1;
-    end
-    $stop();
-
-    // Jump
-    start_addr = 'h0ff;
-    ib_jmp = 1;
-    @ (posedge init_inst_pulse) $stop();
-    ib_en = 1'b0;
 end
 
 endmodule

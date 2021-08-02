@@ -53,96 +53,99 @@ function integer clogb2;
         depth = depth >> 1;
 endfunction
 
-wire internal_clk;
 reg  [clogb2(PC_DEPTH-1)-1:0] counter;
 reg  flag_ff, force_inst_ff;
 wire flag_pulse, force_inst_pulse;
+wire [INST_BITS-1:0] doutb;
 
-assign internal_clk = ib_en ? clk : 1'b0;
 assign flag_pulse = ~flag_ff && flag;
 assign force_inst_pulse = ~force_inst_ff && force_inst;
-
+assign instruction = ib_en ? doutb : 0;
 
 BRAM # (
     .RAM_WIDTH(INST_BITS),
     .RAM_DEPTH(PC_DEPTH),
     .INIT_FILE(INIT_FILE)
 ) ISA_MEMORY (
-    .clk(internal_clk),
+    .clk(clk),
     .wea(wea),
     .enb(flag_pulse || force_inst_pulse),
     .addra(addra),
     .addrb(counter),
     .dina(din),
-    .doutb(instruction)
+    .doutb(doutb)
 );
 
-
-always @ (posedge internal_clk) begin : FLAG_PULSE
+always @ (posedge clk) begin : FLAG_PULSE
     if (reset_n == 1'b0) begin
         flag_ff <= 1'b0;
         force_inst_ff <= 1'b0;
-    end else begin
+    end else if (ib_en) begin
         flag_ff <= flag;
         force_inst_ff <= force_inst;
     end
 end
 
-
-always @ (posedge internal_clk) begin : PC_LOGIC
+always @ (posedge clk) begin : PC_LOGIC
     if (reset_n == 1'b0) begin
         counter <= start_addr;
         init_inst_pulse <= 1'b0;
         complete_flag <= 1'b0;
-    end else if (flag_pulse) begin
-        // Determine next 'counter' value
-        if (ib_jmp) begin
-            // Jump counter
-            //  Go to 'start_addr' when increasing.
-            //  Go to 'end_addr' when decreasing.
-            if (ib_incr)
-                counter <= start_addr;
-            else
-                counter <= end_addr;
-            complete_flag <= 1'b0;
-        end else begin
-            if (ib_incr) begin
-                // Counter increase
-                if (counter != end_addr) begin
-                    // Less than 'end_addr'
-                    counter <= counter + 1;
-                end else begin
-                    // Reach boundary
-                    if (ib_mode) begin
-                        // Wrap
-                        counter <= start_addr;
-                    end else begin
-                        // Procedural
-                        counter <= counter;
-                        complete_flag <= 1'b1;
-                    end
-                end
+    end else if (ib_en) begin
+        if (flag_pulse || force_inst_pulse) begin
+            // Determine next 'counter' value
+            if (ib_jmp) begin
+                // Jump counter
+                //  Go to 'start_addr' when increasing.
+                //  Go to 'end_addr' when decreasing.
+                if (ib_incr)
+                    counter <= start_addr;
+                else
+                    counter <= end_addr;
+                complete_flag <= 1'b0;
             end else begin
-                // Counter decrease
-                if (counter != start_addr) begin
-                    // Larger than 'start_addr'
-                    counter <= counter - 1;
-                end else begin
-                    // Reach boundary
-                    if (ib_mode) begin
-                        // Wrap
-                        counter <= end_addr;
+                if (ib_incr) begin
+                    // Counter increase
+                    if (counter != end_addr) begin
+                        // Less than 'end_addr'
+                        counter <= counter + 1;
+                        complete_flag <= 1'b0;
                     end else begin
-                        // Procedural
-                        counter <= counter;
-                        complete_flag <= 1'b1;
+                        // Reach boundary
+                        if (ib_mode) begin
+                            // Wrap
+                            counter <= start_addr;
+                            complete_flag <= 1'b0;
+                        end else begin
+                            // Procedural
+                            counter <= counter;
+                            complete_flag <= 1'b1;
+                        end
+                    end
+                end else begin
+                    // Counter decrease
+                    if (counter != start_addr) begin
+                        // Larger than 'start_addr'
+                        counter <= counter - 1;
+                        complete_flag <= 1'b0;
+                    end else begin
+                        // Reach boundary
+                        if (ib_mode) begin
+                            // Wrap
+                            counter <= end_addr;
+                            complete_flag <= 1'b0;
+                        end else begin
+                            // Procedural
+                            counter <= counter;
+                            complete_flag <= 1'b1;
+                        end
                     end
                 end
             end
+            init_inst_pulse <= 1'b1;
+        end else begin
+            init_inst_pulse <= 1'b0;
         end
-        init_inst_pulse <= 1'b1;
-    end else begin
-        init_inst_pulse <= 1'b0;
     end
 end
 

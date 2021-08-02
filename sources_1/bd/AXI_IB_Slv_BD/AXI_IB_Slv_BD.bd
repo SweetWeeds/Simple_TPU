@@ -1,7 +1,7 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x0",
+      "boundary_crc": "0xBE072C9643AB6899",
       "device": "xczu9eg-ffvb1156-2-e",
       "gen_directory": "../../../../systolic_array.gen/sources_1/bd/AXI_IB_Slv_BD",
       "name": "AXI_IB_Slv_BD",
@@ -10,8 +10,8 @@
       "tool_version": "2020.2"
     },
     "design_tree": {
-      "myip_SA_Instruction_0": "",
-      "axi_vip_0": ""
+      "axi_vip_0": "",
+      "myip_SA_Instruction_0": ""
     },
     "ports": {
       "aclk": {
@@ -47,12 +47,6 @@
       }
     },
     "components": {
-      "myip_SA_Instruction_0": {
-        "vlnv": "user.org:user:myip_SA_Instruction_Buffer:1.0",
-        "xci_name": "AXI_IB_Slv_BD_myip_SA_Instruction_0_0",
-        "xci_path": "ip/AXI_IB_Slv_BD_myip_SA_Instruction_0_0/AXI_IB_Slv_BD_myip_SA_Instruction_0_0.xci",
-        "inst_hier_path": "myip_SA_Instruction_0"
-      },
       "axi_vip_0": {
         "vlnv": "xilinx.com:ip:axi_vip:1.1",
         "xci_name": "AXI_IB_Slv_BD_axi_vip_0_0",
@@ -103,6 +97,12 @@
             }
           }
         }
+      },
+      "myip_SA_Instruction_0": {
+        "vlnv": "user.org:user:myip_SA_Instruction_Buffer:1.0",
+        "xci_name": "AXI_IB_Slv_BD_myip_SA_Instruction_0_0",
+        "xci_path": "ip/AXI_IB_Slv_BD_myip_SA_Instruction_0_0/AXI_IB_Slv_BD_myip_SA_Instruction_0_0.xci",
+        "inst_hier_path": "myip_SA_Instruction_0"
       }
     },
     "interface_nets": {
@@ -151,6 +151,21 @@
           "myip_SA_Instruction_0/c_s00_force_inst",
           "force_inst"
         ]
+      }
+    },
+    "addressing": {
+      "/axi_vip_0": {
+        "address_spaces": {
+          "Master_AXI": {
+            "segments": {
+              "SEG_myip_SA_Instruction_0_S00_AXI_reg": {
+                "address_block": "/myip_SA_Instruction_0/S00_AXI/S00_AXI_reg",
+                "offset": "0x44A00000",
+                "range": "4K"
+              }
+            }
+          }
+        }
       }
     }
   }
