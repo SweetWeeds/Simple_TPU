@@ -266,7 +266,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>66ac39fa</spirit:value>
+            <spirit:value>e80c457e</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -282,7 +282,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>66ac39fa</spirit:value>
+            <spirit:value>e80c457e</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -375,6 +375,105 @@
       </spirit:port>
       <spirit:port>
         <spirit:name>c_s00_addra</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_ADDR_BITS&apos;)) - 1)">9</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>c_s00_ib_mode</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>c_s00_ib_en</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>c_s00_ib_incr</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>c_s00_ib_jmp</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>c_s00_ib_complete</spirit:name>
+        <spirit:wire>
+          <spirit:direction>in</spirit:direction>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>c_s00_start_addr</spirit:name>
+        <spirit:wire>
+          <spirit:direction>out</spirit:direction>
+          <spirit:vector>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_ADDR_BITS&apos;)) - 1)">9</spirit:left>
+            <spirit:right spirit:format="long">0</spirit:right>
+          </spirit:vector>
+          <spirit:wireTypeDefs>
+            <spirit:wireTypeDef>
+              <spirit:typeName>wire</spirit:typeName>
+              <spirit:viewNameRef>xilinx_verilogsynthesis</spirit:viewNameRef>
+              <spirit:viewNameRef>xilinx_verilogbehavioralsimulation</spirit:viewNameRef>
+            </spirit:wireTypeDef>
+          </spirit:wireTypeDefs>
+        </spirit:wire>
+      </spirit:port>
+      <spirit:port>
+        <spirit:name>c_s00_end_addr</spirit:name>
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
@@ -751,7 +850,7 @@
       <spirit:file>
         <spirit:name>hdl/myip_SA_Instruction_Buffer_v1_0.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_264bffa7</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_b58361dc</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -890,8 +989,8 @@
         <xilinx:taxonomy>AXI_Peripheral</xilinx:taxonomy>
       </xilinx:taxonomies>
       <xilinx:displayName>myip_SA_Instruction_Buffer_v1.0</xilinx:displayName>
-      <xilinx:coreRevision>5</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2021-08-02T08:41:52Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>10</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2021-08-03T07:41:55Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@5a2ac05d_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@66c0af69_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
@@ -923,14 +1022,55 @@
         <xilinx:tag xilinx:name="ui.data.coregen.dd@82a1059_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@592a3edb_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@646d2b99_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@482f54e_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2470e801_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@30de5898_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4b1c5042_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@36f429fd_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3f7af98b_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@17aa5e1c_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@44db9d73_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@66e8dabe_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1acb44c3_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@117bcfdd_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@65abd453_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1b58628e_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@206b0c6e_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3422462f_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@2a35d095_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7fa1d182_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@51017ea4_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@e31d8f_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7bcb3e9b_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5f6b8d00_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@20ab7007_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@b0c5679_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@540c19e6_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4ded3488_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@36f0a6ee_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5846c245_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5efaae34_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@695a87a1_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@78a3cfb7_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3db59f22_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@3cd931e6_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@18c987a1_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4d5222ee_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@fbda9ac_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@4f41def3_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5fb05e95_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@232d1511_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@796d9da7_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@7a01e47f_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@6ccc17f3_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
       </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2020.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="616027be"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="ed1368d5"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="4219772a"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="f47e1766"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="b1af01db"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="8ec0a8a3"/>
       <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="fafa1767"/>
       <xilinx:checksum xilinx:scope="parameters" xilinx:value="695db06e"/>
     </xilinx:packagingInfo>

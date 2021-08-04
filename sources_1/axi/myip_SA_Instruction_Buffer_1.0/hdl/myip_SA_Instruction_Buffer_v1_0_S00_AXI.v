@@ -23,7 +23,6 @@
         output wire C_S_IB_MODE,
         output wire C_S_IB_EN,
         output wire C_S_IB_INCR,
-        output wire C_S_IB_CNT_RST,
         output wire C_S_IB_JMP,
         input  wire C_S_IB_COMPLETE,
         output wire [C_S_ADDR_BITS-1:0] C_S_START_ADDR,
@@ -457,8 +456,8 @@
     assign C_S_IB_EN        = slv_reg0[3];
     assign C_S_IB_INCR      = slv_reg0[4];
     assign C_S_IB_JMP       = slv_reg0[5];
-    assign C_S_START_ADDR   = slv_reg0[21:12];
-    assign C_S_END_ADDR     = slv_reg0[31:22];
+    assign C_S_END_ADDR     = slv_reg0[21:12];
+    assign C_S_START_ADDR   = slv_reg0[31:22];
 
 
     always @ (posedge S_AXI_ACLK) begin : C_S_INIT_WRITE_PULSE

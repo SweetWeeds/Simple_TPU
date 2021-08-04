@@ -7,8 +7,7 @@
       "name": "SYSTOLIC_ARRAY",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
-      "tool_version": "2020.2",
-      "validated": "true"
+      "tool_version": "2020.2"
     },
     "design_tree": {
       "axi_vip_0": "",
@@ -20,44 +19,14 @@
         "type": "clk",
         "direction": "I",
         "parameters": {
-          "ASSOCIATED_RESET": {
-            "value": "reset_n",
-            "value_src": "default"
-          },
-          "CLK_DOMAIN": {
-            "value": "SYSTOLIC_ARRAY_clk",
-            "value_src": "default"
-          },
           "FREQ_HZ": {
             "value": "166000000"
-          },
-          "FREQ_TOLERANCE_HZ": {
-            "value": "0",
-            "value_src": "default"
-          },
-          "INSERT_VIP": {
-            "value": "0",
-            "value_src": "default"
-          },
-          "PHASE": {
-            "value": "0.000",
-            "value_src": "default"
           }
         }
       },
       "reset_n": {
         "type": "rst",
-        "direction": "I",
-        "parameters": {
-          "INSERT_VIP": {
-            "value": "0",
-            "value_src": "default"
-          },
-          "POLARITY": {
-            "value": "ACTIVE_LOW",
-            "value_src": "default"
-          }
-        }
+        "direction": "I"
       }
     },
     "components": {
@@ -119,7 +88,12 @@
         "vlnv": "user.org:user:myip_SA_AXI4_Slave:1.0",
         "xci_name": "SYSTOLIC_ARRAY_myip_SA_AXI4_Slave_0_0",
         "xci_path": "ip/SYSTOLIC_ARRAY_myip_SA_AXI4_Slave_0_0/SYSTOLIC_ARRAY_myip_SA_AXI4_Slave_0_0.xci",
-        "inst_hier_path": "myip_SA_AXI4_Slave_0"
+        "inst_hier_path": "myip_SA_AXI4_Slave_0",
+        "parameters": {
+          "INIT_FILE": {
+            "value": "/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sim_1/new/hex_mem_128b.mem"
+          }
+        }
       },
       "SYSTOLIC_ARRAY_AXI4_0": {
         "vlnv": "xilinx.com:module_ref:SYSTOLIC_ARRAY_AXI4_FULL:1.0",
@@ -154,10 +128,6 @@
               "PROTOCOL": {
                 "value": "AXI4",
                 "value_src": "constant"
-              },
-              "FREQ_HZ": {
-                "value": "166000000",
-                "value_src": "user_prop"
               },
               "ID_WIDTH": {
                 "value": "1",
@@ -242,10 +212,6 @@
               "MAX_BURST_LENGTH": {
                 "value": "256",
                 "value_src": "auto"
-              },
-              "CLK_DOMAIN": {
-                "value": "SYSTOLIC_ARRAY_clk",
-                "value_src": "default_prop"
               }
             },
             "port_maps": {
@@ -487,10 +453,6 @@
                 "value": "AXI4LITE",
                 "value_src": "constant"
               },
-              "FREQ_HZ": {
-                "value": "166000000",
-                "value_src": "user_prop"
-              },
               "ID_WIDTH": {
                 "value": "0",
                 "value_src": "constant"
@@ -574,18 +536,6 @@
               "MAX_BURST_LENGTH": {
                 "value": "1",
                 "value_src": "auto"
-              },
-              "CLK_DOMAIN": {
-                "value": "SYSTOLIC_ARRAY_clk",
-                "value_src": "default_prop"
-              },
-              "RUSER_BITS_PER_BYTE": {
-                "value": "0",
-                "value_src": "user_prop"
-              },
-              "WUSER_BITS_PER_BYTE": {
-                "value": "0",
-                "value_src": "user_prop"
               }
             },
             "port_maps": {
@@ -698,14 +648,6 @@
               "ASSOCIATED_BUSIF": {
                 "value": "m00_axi:s00_axi",
                 "value_src": "constant"
-              },
-              "FREQ_HZ": {
-                "value": "166000000",
-                "value_src": "user_prop"
-              },
-              "CLK_DOMAIN": {
-                "value": "SYSTOLIC_ARRAY_clk",
-                "value_src": "default_prop"
               }
             }
           },
@@ -735,16 +677,16 @@
       }
     },
     "interface_nets": {
-      "axi_vip_0_M_AXI": {
-        "interface_ports": [
-          "axi_vip_0/M_AXI",
-          "SYSTOLIC_ARRAY_AXI4_0/s00_axi"
-        ]
-      },
       "SYSTOLIC_ARRAY_AXI4_0_m00_axi": {
         "interface_ports": [
           "SYSTOLIC_ARRAY_AXI4_0/m00_axi",
           "myip_SA_AXI4_Slave_0/S00_AXI"
+        ]
+      },
+      "axi_vip_0_M_AXI": {
+        "interface_ports": [
+          "axi_vip_0/M_AXI",
+          "SYSTOLIC_ARRAY_AXI4_0/s00_axi"
         ]
       }
     },

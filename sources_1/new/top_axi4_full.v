@@ -190,8 +190,15 @@ wire [1:0] axi_sm_mode;
 wire init_txn_pulse, flag;
 wire [INST_BITS-1:0] instruction;
 wire c_s00_wea, c_s00_force_inst;
-wire [INST_BITS-1:0] c_s00_douta;
+wire [128-1:0] c_s00_douta;
 wire [PC_ADDR_BITS-1:0] c_s00_addra;
+wire c_s00_ib_mode;
+wire c_s00_ib_en;
+wire c_s00_ib_incr;
+wire c_s00_ib_jmp;
+wire c_s00_ib_complete;
+wire [PC_ADDR_BITS-1:0] c_s00_start_addr;
+wire [PC_ADDR_BITS-1:0] c_s00_end_addr;
 
 // AXI4 Full Master
 myip_SA_AXI4_Master_0 M00
@@ -260,6 +267,13 @@ myip_SA_Instruction_Buffer_0 S00 (
 		.c_s00_wea(c_s00_wea),
 		.c_s00_douta(c_s00_douta),
 		.c_s00_addra(c_s00_addra),
+        .c_s00_ib_mode(c_s00_ib_mode),
+		.c_s00_ib_en(c_s00_ib_en),
+		.c_s00_ib_incr(c_s00_ib_incr),
+		.c_s00_ib_jmp(c_s00_ib_jmp),
+		.c_s00_ib_complete(c_s00_ib_complete),
+		.c_s00_start_addr(c_s00_start_addr),
+		.c_s00_end_addr(c_s00_end_addr),
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -367,6 +381,15 @@ INSTRUCTION_BUFFER # (
     .flag(flag),
     .force_inst(c_s00_force_inst),
     .wea(c_s00_wea),
+    // Start of IB Control signals
+    .ib_mode(c_s00_ib_mode),    // IB Mode (1: Wrap, 0: Procedural)
+    .ib_en(c_s00_ib_en),        // IB Enable (1: Enable, 0: Disable)
+    .ib_incr(c_s00_ib_incr),    // Counter increment (1: Increase, 0: Decrease)
+    .ib_jmp(c_s00_ib_jmp),      // Jump (Go to start address('start_addr'))
+    .start_addr(c_s00_start_addr),  // Start address of IB
+    .end_addr(c_s00_end_addr),    // End address of IB
+    .complete_flag(c_s00_ib_complete),
+    // End of IB Cotnrol signals
     .din(c_s00_douta),
     .addra(c_s00_addra),
     .instruction(instruction),

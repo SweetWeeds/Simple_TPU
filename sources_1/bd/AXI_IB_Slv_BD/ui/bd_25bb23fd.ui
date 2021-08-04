@@ -1,7 +1,7 @@
 {
    "ActiveEmotionalView":"Default View",
    "Default View_ScaleFactor":"1.41421",
-   "Default View_TopLeft":"-296,-332",
+   "Default View_TopLeft":"-298,-332",
    "ExpandedHierarchyInLayout":"",
    "guistr":"# # String gsaved with Nlview 7.0r4  2019-12-20 bk=1.5203 VDI=41 GEI=36 GUI=JA:10.0 TLS
 #  -string -flagsOSRD
@@ -13,13 +13,13 @@ preplace portBus douta -pg 1 -lvl 3 -x 570 -y -90 -defaultsOSRD
 preplace portBus addra -pg 1 -lvl 3 -x 570 -y -50 -defaultsOSRD
 preplace inst axi_vip_0 -pg 1 -lvl 1 -x -100 -y -30 -defaultsOSRD
 preplace inst myip_SA_Instruction_0 -pg 1 -lvl 2 -x 330 -y 50 -defaultsOSRD
-preplace netloc aclk_1 1 0 2 -250 -200 50
-preplace netloc aresetn_1 1 0 2 -260 -210 60
-preplace netloc myip_SA_Instruction_0_c_s00_addra 1 2 1 550 -50n
-preplace netloc myip_SA_Instruction_0_c_s00_douta 1 2 1 540 -90n
-preplace netloc myip_SA_Instruction_0_c_s00_wea 1 2 1 530 -140n
-preplace netloc myip_SA_Instruction_0_c_s00_force_inst 1 2 1 520 -180n
-preplace netloc axi_vip_0_M_AXI 1 1 1 70 -160n
+preplace netloc aclk_1 1 0 2 -250 -100 10
+preplace netloc aresetn_1 1 0 2 -260 80 N
+preplace netloc myip_SA_Instruction_0_c_s00_addra 1 2 1 530 -50n
+preplace netloc myip_SA_Instruction_0_c_s00_douta 1 2 1 520 -90n
+preplace netloc myip_SA_Instruction_0_c_s00_wea 1 2 1 510 -140n
+preplace netloc myip_SA_Instruction_0_c_s00_force_inst 1 2 1 500 -180n
+preplace netloc axi_vip_0_M_AXI 1 1 1 0 -30n
 levelinfo -pg 1 -280 -100 330 570
 pagesize -pg 1 -db -bbox -sgen -390 -510 720 610
 "

@@ -72,129 +72,267 @@
 //*****************************************************************************
 
 `timescale 1ns/1ps
+`define TB
 
 import axi_vip_pkg::*;
 //import design_1_axi_vip_0_0_pkg::*;
-import SYSTOLIC_ARRAY_axi_vip_0_0_pkg::*;
+import SYSTOLIC_ARRAY_BD_axi_vip_0_0_pkg::*;
+
+parameter IB_MEM_FILE = "/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sim_1/new/python_tb/pc.mem";
 
 module sa_bd_tb;
 
-  //======================================================================================
-  //                                simulation traffic generator
-  //======================================================================================
-  xil_axi_uint                            mtestID;
-  // ADDR value for WRITE/READ_BURST transaction
-  xil_axi_ulong                           mtestADDR;
-  // Burst Length value for WRITE/READ_BURST transaction
-  xil_axi_len_t                           mtestBurstLength;
-  // SIZE value for WRITE/READ_BURST transaction
-  xil_axi_size_t                          mtestDataSize;
-  // Burst Type value for WRITE/READ_BURST transaction
-  xil_axi_burst_t                         mtestBurstType;
-  // LOCK value for WRITE/READ_BURST transaction
-  xil_axi_lock_t                          mtestLOCK;
-  // Cache Type value for WRITE/READ_BURST transaction
-  xil_axi_cache_t                         mtestCacheType = 3;
-  // Protection Type value for WRITE/READ_BURST transaction
-  xil_axi_prot_t                          mtestProtectionType = 3'b000;
-  // Region value for WRITE/READ_BURST transaction
-  xil_axi_region_t                        mtestRegion = 4'b000;
-  // QOS value for WRITE/READ_BURST transaction
-  xil_axi_qos_t                           mtestQOS = 4'b000;
-  // Data beat value for WRITE/READ_BURST transaction
-  xil_axi_data_beat                       dbeat;
-  // User beat value for WRITE/READ_BURST transaction
-  xil_axi_user_beat                       usrbeat;
-  // Wuser value for WRITE/READ_BURST transaction
-  xil_axi_data_beat [255:0]               mtestWUSER;
-  // Awuser value for WRITE/READ_BURST transaction
-  xil_axi_data_beat                       mtestAWUSER = 'h0;
-  // Aruser value for WRITE/READ_BURST transaction
-  xil_axi_data_beat                       mtestARUSER = 0;
-  // Ruser value for WRITE/READ_BURST transaction
-  xil_axi_data_beat [255:0]               mtestRUSER;
-  // Buser value for WRITE/READ_BURST transaction
-  xil_axi_uint                            mtestBUSER = 0;
-  // Bresp value for WRITE/READ_BURST transaction
-  xil_axi_resp_t                          mtestBresp;
-  // Rresp value for WRITE/READ_BURST transaction
-  xil_axi_resp_t[255:0]                   mtestRresp;
-  bit [32767:0]                           mtestWData;
-  bit [32767:0]                           mtestRData;
+    //======================================================================================
+    //                                simulation traffic generator
+    //======================================================================================
+    xil_axi_uint                            mtestID;
+    // ADDR value for WRITE/READ_BURST transaction
+    xil_axi_ulong                           mtestADDR;
+    xil_axi_ulong                           mtestBaseADDR;
+    // Burst Length value for WRITE/READ_BURST transaction
+    xil_axi_len_t                           mtestBurstLength;
+    // SIZE value for WRITE/READ_BURST transaction
+    xil_axi_size_t                          mtestDataSize;
+    // Burst Type value for WRITE/READ_BURST transaction
+    xil_axi_burst_t                         mtestBurstType;
+    // LOCK value for WRITE/READ_BURST transaction
+    xil_axi_lock_t                          mtestLOCK;
+    // Cache Type value for WRITE/READ_BURST transaction
+    xil_axi_cache_t                         mtestCacheType = 3;
+    // Protection Type value for WRITE/READ_BURST transaction
+    xil_axi_prot_t                          mtestProtectionType = 3'b000;
+    // Region value for WRITE/READ_BURST transaction
+    xil_axi_region_t                        mtestRegion = 4'b000;
+    // QOS value for WRITE/READ_BURST transaction
+    xil_axi_qos_t                           mtestQOS = 4'b000;
+    // Data beat value for WRITE/READ_BURST transaction
+    xil_axi_data_beat                       dbeat;
+    // User beat value for WRITE/READ_BURST transaction
+    xil_axi_user_beat                       usrbeat;
+    // Wuser value for WRITE/READ_BURST transaction
+    xil_axi_data_beat [255:0]               mtestWUSER;
+    // Awuser value for WRITE/READ_BURST transaction
+    xil_axi_data_beat                       mtestAWUSER = 'h0;
+    // Aruser value for WRITE/READ_BURST transaction
+    xil_axi_data_beat                       mtestARUSER = 0;
+    // Ruser value for WRITE/READ_BURST transaction
+    xil_axi_data_beat [255:0]               mtestRUSER;
+    // Buser value for WRITE/READ_BURST transaction
+    xil_axi_uint                            mtestBUSER = 0;
+    // Bresp value for WRITE/READ_BURST transaction
+    xil_axi_resp_t                          mtestBresp;
+    // Rresp value for WRITE/READ_BURST transaction
+    xil_axi_resp_t[255:0]                   mtestRresp;
+    bit [32767:0]                           mtestWData;
+    bit [32767:0]                           mtestRData;
 
-  reg [127:0] input_data[2047:0];
-  reg [127:0] weight_data[143840:0];
-  reg [127:0] bias_data[61:0];
-  reg [127:0] batch_norm_data[24:0];
-
-  SYSTOLIC_ARRAY_axi_vip_0_0_mst_t master_agent;
-
-
-  reg clk;
-  reg resetn;
+    reg [127:0] instruction[0:2047];
+    reg [31:0]  slv_reg0;    // Logic control
+    reg [31:0]  slv_reg1;    // C_S_DOUTA[0]
+    reg [31:0]  slv_reg2;    // C_S_DOUTA[1]
+    reg [31:0]  slv_reg3;    // C_S_DOUTA[2]
+    reg [31:0]  slv_reg4;    // C_S_DOUTA[3]
+    reg [31:0]  slv_reg5;    // addr
     
-    SYSTOLIC_ARRAY_wrapper
-    DUT
-    (
+    SYSTOLIC_ARRAY_BD_axi_vip_0_0_mst_t master_agent;
+
+    reg clk;
+    reg resetn;
+    
+    SYSTOLIC_ARRAY_BD_wrapper DUT (
         clk,
         resetn
     );
 
-  //===============================================================================================
-  //                                                instruction format
-  //===============================================================================================
+    //===============================================================================================
+    //                                                instruction format
+    //===============================================================================================
 
-  always #5 clk = ~clk;
+    always #5 clk = ~clk;
 
-  initial begin
-    clk = 1'b0;
-    resetn = 1'b1;
-    #10;
-    resetn = 1'b0;
-    #100;
-    resetn = 1'b1;
-  end
+    initial begin : RESET_LOGIC
+        // Reset logics
+        clk = 1'b0;
+        resetn = 1'b1;
+        #10;
+        resetn = 1'b0;
+        #100;
+        resetn = 1'b1;
+    end
 
-  initial begin
-    # 110;
-    master_agent = new("master", DUT.SYSTOLIC_ARRAY_i.axi_vip_0.inst.IF);
-    master_agent.set_agent_tag("master vip");
-    master_agent.set_verbosity(0);
-    master_agent.start_master();
+    initial begin : TESTBENCH_LOGIC
+        $readmemh(IB_MEM_FILE, instruction, 0, 635);
+        # 110;  // Wait for reset
+        master_agent = new("master", DUT.SYSTOLIC_ARRAY_BD_i.axi_vip_0.inst.IF);
+        master_agent.set_agent_tag("master vip");
+        master_agent.set_verbosity(0);
+        master_agent.start_master();
 
-    //ineterrupt enable
-    mtestID = 0;
-    mtestADDR = 'h44A0_0000;
-    mtestBurstLength = 0;
-    //mtestDataSize = xil_axi_size_t'(xil_clog2(128/8));
-    mtestDataSize = XIL_AXI_SIZE_4BYTE;
-    mtestBurstType = XIL_AXI_BURST_TYPE_INCR;
-    mtestLOCK = XIL_AXI_ALOCK_NOLOCK;
-    mtestProtectionType = 0;
-    mtestRegion = 0;
-    mtestQOS = 0;
-    
-    mtestWData = 32'b1;
-    master_agent.AXI4_WRITE_BURST(
-    mtestID,
-    mtestADDR,
-    mtestBurstLength,
-    mtestDataSize,
-    mtestBurstType,
-    mtestLOCK,
-    mtestCacheType,
-    mtestProtectionType,
-    mtestRegion,
-    mtestQOS,
-    mtestAWUSER,
-    mtestWData,
-    mtestWUSER,
-    mtestBresp
-    );
-   
-    #1000;
-    $finish;
+        // Set VIP's params
+        mtestID = 0;
+        mtestBurstLength = 0;
+        mtestBaseADDR = 'h44A0_0000;
+        //mtestDataSize = xil_axi_size_t'(xil_clog2(128/8));
+        mtestDataSize = XIL_AXI_SIZE_4BYTE; // 32-bit
+        mtestBurstType = XIL_AXI_BURST_TYPE_INCR;
+        mtestLOCK = XIL_AXI_ALOCK_NOLOCK;
+        mtestProtectionType = 0;
+        mtestRegion = 0;
+        mtestQOS = 0;
+        
+        // 1. Fill data in instruction buffer
+        for (integer pc_addr=0; pc_addr < 635; pc_addr=pc_addr+1) begin
+            // Prepare data
+            slv_reg0 = 32'b0010010;
+            slv_reg1 = instruction[pc_addr][127:96];
+            slv_reg2 = instruction[pc_addr][95:64];
+            slv_reg3 = instruction[pc_addr][63:32];
+            slv_reg4 = instruction[pc_addr][31:0];
+            slv_reg5 = pc_addr;
 
-  end
+            // slv_reg1 (C_S_DOUTA[0])
+            mtestWData = slv_reg1;
+            mtestADDR = mtestBaseADDR + 1*4;
+            master_agent.AXI4_WRITE_BURST(
+                mtestID,
+                mtestADDR,
+                mtestBurstLength,
+                mtestDataSize,
+                mtestBurstType,
+                mtestLOCK,
+                mtestCacheType,
+                mtestProtectionType,
+                mtestRegion,
+                mtestQOS,
+                mtestAWUSER,
+                mtestWData,
+                mtestWUSER,
+                mtestBresp
+            );
+
+            // slv_reg2 (C_S_DOUTA[1])
+            mtestWData = slv_reg2;
+            mtestADDR = mtestBaseADDR + 2*4;
+            master_agent.AXI4_WRITE_BURST(
+                mtestID,
+                mtestADDR,
+                mtestBurstLength,
+                mtestDataSize,
+                mtestBurstType,
+                mtestLOCK,
+                mtestCacheType,
+                mtestProtectionType,
+                mtestRegion,
+                mtestQOS,
+                mtestAWUSER,
+                mtestWData,
+                mtestWUSER,
+                mtestBresp
+            );
+
+            // slv_reg3 (C_S_DOUTA[2])
+            mtestWData = slv_reg3;
+            mtestADDR = mtestBaseADDR + 3*4;
+            master_agent.AXI4_WRITE_BURST(
+                mtestID,
+                mtestADDR,
+                mtestBurstLength,
+                mtestDataSize,
+                mtestBurstType,
+                mtestLOCK,
+                mtestCacheType,
+                mtestProtectionType,
+                mtestRegion,
+                mtestQOS,
+                mtestAWUSER,
+                mtestWData,
+                mtestWUSER,
+                mtestBresp
+            );
+
+            // slv_reg4 (C_S_DOUTA[3])
+            mtestWData = slv_reg4;
+            mtestADDR = mtestBaseADDR + 4*4;
+            master_agent.AXI4_WRITE_BURST(
+                mtestID,
+                mtestADDR,
+                mtestBurstLength,
+                mtestDataSize,
+                mtestBurstType,
+                mtestLOCK,
+                mtestCacheType,
+                mtestProtectionType,
+                mtestRegion,
+                mtestQOS,
+                mtestAWUSER,
+                mtestWData,
+                mtestWUSER,
+                mtestBresp
+            );
+
+            // slv_reg5 (C_S_ADDRA)
+            mtestWData = slv_reg5;
+            mtestADDR = mtestBaseADDR + 5*4;
+            master_agent.AXI4_WRITE_BURST(
+                mtestID,
+                mtestADDR,
+                mtestBurstLength,
+                mtestDataSize,
+                mtestBurstType,
+                mtestLOCK,
+                mtestCacheType,
+                mtestProtectionType,
+                mtestRegion,
+                mtestQOS,
+                mtestAWUSER,
+                mtestWData,
+                mtestWUSER,
+                mtestBresp
+            );
+
+            // slv_reg0 (SA's slave control inst)
+            mtestWData = slv_reg0;
+            mtestADDR = mtestBaseADDR + 0*4;
+            master_agent.AXI4_WRITE_BURST(
+                mtestID,
+                mtestADDR,
+                mtestBurstLength,
+                mtestDataSize,
+                mtestBurstType,
+                mtestLOCK,
+                mtestCacheType,
+                mtestProtectionType,
+                mtestRegion,
+                mtestQOS,
+                mtestAWUSER,
+                mtestWData,
+                mtestWUSER,
+                mtestBresp
+            );
+        end
+
+        // 2. Generate force instruction pulse signal
+        slv_reg0 = 32'b0000000000_1001111011_00000_0111001;
+        mtestWData = slv_reg0;
+        mtestADDR = mtestBaseADDR + 0*4;
+        master_agent.AXI4_WRITE_BURST(
+            mtestID,
+            mtestADDR,
+            mtestBurstLength,
+            mtestDataSize,
+            mtestBurstType,
+            mtestLOCK,
+            mtestCacheType,
+            mtestProtectionType,
+            mtestRegion,
+            mtestQOS,
+            mtestAWUSER,
+            mtestWData,
+            mtestWUSER,
+            mtestBresp
+        );
+        # 1000;
+        $finish;
+    end
 
 endmodule

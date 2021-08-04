@@ -76,11 +76,11 @@ BRAM # (
     .doutb(doutb)
 );
 
-always @ (posedge clk) begin : FLAG_PULSE
-    if (reset_n == 1'b0) begin
+always @ (posedge clk) begin : FLAG_PULSE_LOGIC
+    if (reset_n == 1'b0 || ib_en == 1'b0) begin
         flag_ff <= 1'b0;
         force_inst_ff <= 1'b0;
-    end else if (ib_en) begin
+    end else if (ib_en == 1'b1) begin
         flag_ff <= flag;
         force_inst_ff <= force_inst;
     end
@@ -94,7 +94,7 @@ always @ (posedge clk) begin : PC_LOGIC
     end else if (ib_en) begin
         if (flag_pulse || force_inst_pulse) begin
             // Determine next 'counter' value
-            if (ib_jmp) begin
+            if (ib_jmp && force_inst_pulse) begin
                 // Jump counter
                 //  Go to 'start_addr' when increasing.
                 //  Go to 'end_addr' when decreasing.

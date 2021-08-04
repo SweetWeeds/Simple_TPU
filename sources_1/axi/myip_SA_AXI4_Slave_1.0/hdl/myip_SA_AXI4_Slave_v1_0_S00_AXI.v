@@ -1,5 +1,6 @@
-
 `timescale 1 ns / 1 ps
+`define TB
+
     module myip_SA_AXI4_Slave_v1_0_S00_AXI #
     (
         // Users to add parameters here
@@ -214,6 +215,7 @@
     //ADDR_LSB is used for addressing 32/64 bit registers/memories
     //ADDR_LSB = 2 for 32 bits (n downto 2)
     //ADDR_LSB = 3 for 42 bits (n downto 3)
+    reg [C_S_AXI_DATA_WIDTH-1:0] tb_bram [0:C_S_BRAM_DEPTH-1];
 
     //localparam integer ADDR_LSB = (C_S_AXI_DATA_WIDTH/32)+ 1;
     localparam integer ADDR_LSB = clogb2(C_S_AXI_DATA_WIDTH/8)-1;   // 128-b:
@@ -493,10 +495,10 @@
             wire mem_wren;
 
             assign mem_wren = axi_wready && S_AXI_WVALID ;
-
             assign mem_rden = axi_arv_arr_flag ; //& ~axi_rvalid
 
             for(mem_byte_index=0; mem_byte_index<= (C_S_AXI_DATA_WIDTH/8-1); mem_byte_index=mem_byte_index+1) begin:BYTE_BRAM_GEN
+                
                 wire [8-1:0] data_in ;
                 wire [8-1:0] data_out;
                 reg  [8-1:0] byte_ram [0 : C_S_BRAM_DEPTH-1];
@@ -511,6 +513,11 @@
                         end
                     end else begin
                         initial begin : INIT_FILE_EXIST
+                            if (mem_byte_index == 0) begin
+                                $display("[myip_SA_AXI4_Slave_v1_0_S00_AXI] Init file...");
+                                $readmemh(INIT_FILE, tb_bram, 0, C_S_BRAM_DEPTH-1);
+                            end
+                            $display("[myip_SA_AXI4_Slave_v1_0_S00_AXI] Copying files...");
                             for (j=0; j < C_S_BRAM_DEPTH; j=j+1) begin
                                 byte_ram[j] = tb_bram[j][(mem_byte_index*8+7) -: 8]; 
                             end
@@ -548,17 +555,6 @@
     end
 
     // Add user logic here
-    reg [C_S_AXI_DATA_WIDTH-1:0] tb_bram [0:C_S_BRAM_DEPTH-1];
-    //reg tb_bram_ready = 1'b0;
-
-    `ifdef TB
-    if (INIT_FILE != "") begin
-        initial begin
-            $readmemh(INIT_FILE, tb_bram, 0, C_S_BRAM_DEPTH-1);
-            tb_bram_ready = 1'b1;
-        end
-    end
-    `endif
                             
     // User logic ends
 

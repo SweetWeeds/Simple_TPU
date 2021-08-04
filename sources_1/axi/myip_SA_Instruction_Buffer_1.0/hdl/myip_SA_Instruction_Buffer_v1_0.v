@@ -20,6 +20,13 @@
 		output wire c_s00_wea,
 		output wire [C_S00_INST_BITS-1:0] c_s00_douta,
 		output wire [C_S00_ADDR_BITS-1:0] c_s00_addra,
+		output wire c_s00_ib_mode,
+		output wire c_s00_ib_en,
+		output wire c_s00_ib_incr,
+		output wire c_s00_ib_jmp,
+		input  wire c_s00_ib_complete,
+		output wire [C_S00_ADDR_BITS-1:0] c_s00_start_addr,
+		output wire [C_S00_ADDR_BITS-1:0] c_s00_end_addr,
 		// User ports ends
 		// Do not modify the ports beyond this line
 
@@ -57,6 +64,13 @@
 		.C_S_WEA(c_s00_wea),
 		.C_S_DOUTA(c_s00_douta),
 		.C_S_ADDRA(c_s00_addra),
+		.C_S_IB_MODE(c_s00_ib_mode),
+		.C_S_IB_EN(c_s00_ib_en),
+		.C_S_IB_INCR(c_s00_ib_incr),
+		.C_S_IB_JMP(c_s00_ib_jmp),
+		.C_S_IB_COMPLETE(c_s00_ib_complete),
+		.C_S_START_ADDR(c_s00_start_addr),
+		.C_S_END_ADDR(c_s00_end_addr),
 		// End of user ports
 		.S_AXI_ACLK(s00_axi_aclk),
 		.S_AXI_ARESETN(s00_axi_aresetn),
