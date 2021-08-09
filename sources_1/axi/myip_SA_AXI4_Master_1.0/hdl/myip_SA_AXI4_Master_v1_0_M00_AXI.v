@@ -9,11 +9,11 @@ module myip_SA_AXI4_Master_v1_0_M00_AXI #
     // Do not modify the parameters beyond this line
 
     // Base address of targeted slave
-    parameter  C_M_TARGET_SLAVE_BASE_ADDR	= 32'hA0000000,
+    parameter  C_M_TARGET_SLAVE_BASE_ADDR	= 32'hA000_0000,
     // Burst Length. Supports 1, 2, 4, 8, 16, 32, 64, 128, 256 burst lengths
     parameter integer C_M_AXI_BURST_LEN	= 1,
     // Thread ID Width
-    parameter integer C_M_AXI_ID_WIDTH	= 1,
+    parameter integer C_M_AXI_ID_WIDTH	= 16,
     // Width of Address Bus
     parameter integer C_M_AXI_ADDR_WIDTH	= 32,
     // Width of Data Bus
@@ -250,7 +250,7 @@ module myip_SA_AXI4_Master_v1_0_M00_AXI #
     // I/O Connections assignments
 
     //I/O Connections. Write Address (AW)
-    assign M_AXI_AWID	= 'b0;
+    assign M_AXI_AWID	= 3'd1;
     //The AXI address is a concatenation of the target base address + active offset range
     assign M_AXI_AWADDR	= C_M_TARGET_SLAVE_BASE_ADDR + axi_awaddr;
     //Burst LENgth is number of transaction beats, minus 1
@@ -258,11 +258,12 @@ module myip_SA_AXI4_Master_v1_0_M00_AXI #
     //Size should be C_M_AXI_DATA_WIDTH, in 2^SIZE bytes, otherwise narrow bursts are used
     assign M_AXI_AWSIZE	= clogb2((C_M_AXI_DATA_WIDTH/8)-1);
     //INCR burst type is usually used, except for keyhole bursts
-    //assign M_AXI_AWBURST	= 2'b01;
-    assign M_AXI_AWBURST	= 2'b00;    // fixed-burst
+    assign M_AXI_AWBURST	= 2'b01;
+    //assign M_AXI_AWBURST	= 2'b00;    // fixed-burst
     assign M_AXI_AWLOCK	= 1'b0;
     //Update value to 4'b0011 if coherent accesses to be used via the Zynq ACP port. Not Allocated, Modifiable, not Bufferable. Not Bufferable since this example is meant to test memory, not intermediate cache.
-    assign M_AXI_AWCACHE	= 4'b0010;
+    //assign M_AXI_AWCACHE	= 4'b0010;
+    assign M_AXI_AWCACHE	= 4'b0011;
     assign M_AXI_AWPROT	= 3'h0;
     assign M_AXI_AWQOS	= 4'h0;
     assign M_AXI_AWUSER	= 'b1;

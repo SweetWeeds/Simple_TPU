@@ -99,9 +99,7 @@ close $fp
 set fp [open VIP_OFF_MEM_TB.txt w]
 for {set i 0} {$i < 256} {incr i} {
     set result ""
-    for {set j 15} {$j >= 0} {incr j -1} {
-        append result [get_value -radix hex "/DUT/SYSTOLIC_ARRAY_i/myip_SA_AXI4_Slave_0/inst/myip_SA_AXI4_Slave_v1_0_S00_AXI_inst/\\BRAM_GEN[0]\.BYTE_BRAM_GEN[$j]\.byte_ram [$i]"]
-    }
+    append result [get_value -radix hex "/DUT/SA_smartconnect_TB_i/blk_mem_gen_0/inst/\\native_mem_mapped_module\.blk_mem_gen_v8_4_4_inst /memory[$i]"]
     puts $fp "$result"
 }
 close $fp

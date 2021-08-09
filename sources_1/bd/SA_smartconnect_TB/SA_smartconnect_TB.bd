@@ -1,17 +1,20 @@
 {
   "design": {
     "design_info": {
-      "boundary_crc": "0x7FFDA7841892E45D",
+      "boundary_crc": "0xC91E4F3E1A172F67",
       "device": "xczu9eg-ffvb1156-2-e",
-      "gen_directory": "../../../../systolic_array.gen/sources_1/bd/SYSTOLIC_ARRAY",
-      "name": "SYSTOLIC_ARRAY",
+      "gen_directory": "../../../../systolic_array.gen/sources_1/bd/SA_smartconnect_TB",
+      "name": "SA_smartconnect_TB",
       "rev_ctrl_bd_flag": "RevCtrlBdOff",
       "synth_flow_mode": "Hierarchical",
-      "tool_version": "2020.2"
+      "tool_version": "2020.2",
+      "validated": "true"
     },
     "design_tree": {
+      "axi_bram_ctrl_0": "",
+      "blk_mem_gen_0": "",
       "axi_vip_0": "",
-      "myip_SA_AXI4_Slave_0": "",
+      "smartconnect_0": "",
       "SYSTOLIC_ARRAY_AXI4_0": ""
     },
     "ports": {
@@ -19,25 +22,131 @@
         "type": "clk",
         "direction": "I",
         "parameters": {
+          "ASSOCIATED_RESET": {
+            "value": "resetn",
+            "value_src": "default"
+          },
+          "CLK_DOMAIN": {
+            "value": "SA_smartconnect_TB_clk",
+            "value_src": "default"
+          },
           "FREQ_HZ": {
-            "value": "166000000"
+            "value": "100000000"
+          },
+          "FREQ_TOLERANCE_HZ": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "PHASE": {
+            "value": "0.000",
+            "value_src": "default"
           }
         }
       },
-      "reset_n": {
+      "resetn": {
         "type": "rst",
-        "direction": "I"
+        "direction": "I",
+        "parameters": {
+          "INSERT_VIP": {
+            "value": "0",
+            "value_src": "default"
+          },
+          "POLARITY": {
+            "value": "ACTIVE_LOW",
+            "value_src": "default"
+          }
+        }
       }
     },
     "components": {
+      "axi_bram_ctrl_0": {
+        "vlnv": "xilinx.com:ip:axi_bram_ctrl:4.1",
+        "xci_name": "SA_smartconnect_TB_axi_bram_ctrl_0_0",
+        "xci_path": "ip\\SA_smartconnect_TB_axi_bram_ctrl_0_0\\SA_smartconnect_TB_axi_bram_ctrl_0_0.xci",
+        "inst_hier_path": "axi_bram_ctrl_0",
+        "parameters": {
+          "DATA_WIDTH": {
+            "value": "128"
+          },
+          "READ_LATENCY": {
+            "value": "1"
+          },
+          "SINGLE_PORT_BRAM": {
+            "value": "1"
+          }
+        }
+      },
+      "blk_mem_gen_0": {
+        "vlnv": "xilinx.com:ip:blk_mem_gen:8.4",
+        "xci_name": "SA_smartconnect_TB_blk_mem_gen_0_0",
+        "xci_path": "ip\\SA_smartconnect_TB_blk_mem_gen_0_0\\SA_smartconnect_TB_blk_mem_gen_0_0.xci",
+        "inst_hier_path": "blk_mem_gen_0",
+        "parameters": {
+          "Coe_File": {
+            "value": "../../../../../sim_1/new/hex_mem_128b.coe"
+          },
+          "EN_SAFETY_CKT": {
+            "value": "true"
+          },
+          "Enable_32bit_Address": {
+            "value": "true"
+          },
+          "Fill_Remaining_Memory_Locations": {
+            "value": "false"
+          },
+          "Load_Init_File": {
+            "value": "true"
+          },
+          "Memory_Type": {
+            "value": "Single_Port_RAM"
+          },
+          "Operating_Mode_A": {
+            "value": "WRITE_FIRST"
+          },
+          "Port_B_Clock": {
+            "value": "0"
+          },
+          "Port_B_Enable_Rate": {
+            "value": "0"
+          },
+          "Read_Width_A": {
+            "value": "128"
+          },
+          "Register_PortA_Output_of_Memory_Primitives": {
+            "value": "false"
+          },
+          "Use_RSTA_Pin": {
+            "value": "true"
+          },
+          "Write_Width_A": {
+            "value": "128"
+          },
+          "use_bram_block": {
+            "value": "Stand_Alone"
+          }
+        }
+      },
       "axi_vip_0": {
         "vlnv": "xilinx.com:ip:axi_vip:1.1",
-        "xci_name": "SYSTOLIC_ARRAY_axi_vip_0_0",
-        "xci_path": "ip\\SYSTOLIC_ARRAY_axi_vip_0_0\\SYSTOLIC_ARRAY_axi_vip_0_0.xci",
+        "xci_name": "SA_smartconnect_TB_axi_vip_0_0",
+        "xci_path": "ip\\SA_smartconnect_TB_axi_vip_0_0\\SA_smartconnect_TB_axi_vip_0_0.xci",
         "inst_hier_path": "axi_vip_0",
         "parameters": {
           "ADDR_WIDTH": {
             "value": "32"
+          },
+          "ARUSER_WIDTH": {
+            "value": "0"
+          },
+          "AWUSER_WIDTH": {
+            "value": "0"
+          },
+          "BUSER_WIDTH": {
+            "value": "0"
           },
           "DATA_WIDTH": {
             "value": "32"
@@ -45,7 +154,22 @@
           "HAS_BRESP": {
             "value": "1"
           },
+          "HAS_BURST": {
+            "value": "1"
+          },
+          "HAS_CACHE": {
+            "value": "1"
+          },
+          "HAS_LOCK": {
+            "value": "1"
+          },
           "HAS_PROT": {
+            "value": "1"
+          },
+          "HAS_QOS": {
+            "value": "1"
+          },
+          "HAS_REGION": {
             "value": "1"
           },
           "HAS_RRESP": {
@@ -54,14 +178,32 @@
           "HAS_WSTRB": {
             "value": "1"
           },
+          "ID_WIDTH": {
+            "value": "0"
+          },
           "INTERFACE_MODE": {
             "value": "MASTER"
           },
           "PROTOCOL": {
-            "value": "AXI4LITE"
+            "value": "AXI4"
           },
           "READ_WRITE_MODE": {
             "value": "READ_WRITE"
+          },
+          "RUSER_BITS_PER_BYTE": {
+            "value": "0"
+          },
+          "RUSER_WIDTH": {
+            "value": "0"
+          },
+          "SUPPORTS_NARROW": {
+            "value": "1"
+          },
+          "WUSER_BITS_PER_BYTE": {
+            "value": "0"
+          },
+          "WUSER_WIDTH": {
+            "value": "0"
           }
         },
         "addressing": {
@@ -80,31 +222,129 @@
               "minimum": "0x00000000",
               "maximum": "0xFFFFFFFF",
               "width": "32"
+            },
+            "parameters": {
+              "master_id": {
+                "value": "1"
+              }
             }
           }
         }
       },
-      "myip_SA_AXI4_Slave_0": {
-        "vlnv": "user.org:user:myip_SA_AXI4_Slave:1.0",
-        "xci_name": "SYSTOLIC_ARRAY_myip_SA_AXI4_Slave_0_0",
-        "xci_path": "ip\\SYSTOLIC_ARRAY_myip_SA_AXI4_Slave_0_0\\SYSTOLIC_ARRAY_myip_SA_AXI4_Slave_0_0.xci",
-        "inst_hier_path": "myip_SA_AXI4_Slave_0",
+      "smartconnect_0": {
+        "vlnv": "xilinx.com:ip:smartconnect:1.0",
+        "xci_name": "SA_smartconnect_TB_smartconnect_0_2",
+        "xci_path": "ip\\SA_smartconnect_TB_smartconnect_0_2\\SA_smartconnect_TB_smartconnect_0_2.xci",
+        "inst_hier_path": "smartconnect_0",
         "parameters": {
-          "INIT_FILE": {
-            "value": "/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sim_1/new/hex_mem_128b.mem"
+          "NUM_MI": {
+            "value": "2"
+          }
+        },
+        "interface_ports": {
+          "S00_AXI": {
+            "mode": "Slave",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "bridges": [
+              "M00_AXI",
+              "M01_AXI"
+            ],
+            "parameters": {
+              "NUM_READ_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_WRITE_OUTSTANDING": {
+                "value": "8"
+              }
+            }
+          },
+          "S01_AXI": {
+            "mode": "Slave",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "bridges": [
+              "M00_AXI",
+              "M01_AXI"
+            ],
+            "parameters": {
+              "NUM_READ_OUTSTANDING": {
+                "value": "2"
+              },
+              "NUM_WRITE_OUTSTANDING": {
+                "value": "2"
+              }
+            }
+          },
+          "M00_AXI": {
+            "mode": "Master",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "parameters": {
+              "MAX_BURST_LENGTH": {
+                "value": "1"
+              },
+              "NUM_READ_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_WRITE_OUTSTANDING": {
+                "value": "8"
+              },
+              "RUSER_BITS_PER_BYTE": {
+                "value": "0"
+              },
+              "SUPPORTS_NARROW_BURST": {
+                "value": "0"
+              },
+              "WUSER_BITS_PER_BYTE": {
+                "value": "0"
+              }
+            }
+          },
+          "M01_AXI": {
+            "mode": "Master",
+            "vlnv": "xilinx.com:interface:aximm_rtl:1.0",
+            "parameters": {
+              "MAX_BURST_LENGTH": {
+                "value": "256"
+              },
+              "NUM_READ_OUTSTANDING": {
+                "value": "8"
+              },
+              "NUM_WRITE_OUTSTANDING": {
+                "value": "8"
+              },
+              "RUSER_BITS_PER_BYTE": {
+                "value": "0"
+              },
+              "SUPPORTS_NARROW_BURST": {
+                "value": "0"
+              },
+              "WUSER_BITS_PER_BYTE": {
+                "value": "0"
+              }
+            }
+          }
+        },
+        "interface_ports": {
+          "S00_AXI": {
+            "mode": "Slave",
+            "bridges": [
+              "M00_AXI",
+              "M01_AXI"
+            ]
+          },
+          "S01_AXI": {
+            "mode": "Slave",
+            "bridges": [
+              "M00_AXI",
+              "M01_AXI"
+            ]
           }
         }
       },
       "SYSTOLIC_ARRAY_AXI4_0": {
         "vlnv": "xilinx.com:module_ref:SYSTOLIC_ARRAY_AXI4_FULL:1.0",
-        "xci_name": "SYSTOLIC_ARRAY_SYSTOLIC_ARRAY_AXI4_0_0",
-        "xci_path": "ip\\SYSTOLIC_ARRAY_SYSTOLIC_ARRAY_AXI4_0_0\\SYSTOLIC_ARRAY_SYSTOLIC_ARRAY_AXI4_0_0.xci",
+        "xci_name": "SA_smartconnect_TB_SYSTOLIC_ARRAY_AXI4_0_0",
+        "xci_path": "ip\\SA_smartconnect_TB_SYSTOLIC_ARRAY_AXI4_0_0\\SA_smartconnect_TB_SYSTOLIC_ARRAY_AXI4_0_0.xci",
         "inst_hier_path": "SYSTOLIC_ARRAY_AXI4_0",
-        "parameters": {
-          "C_S00_AXI_ADDR_WIDTH": {
-            "value": "32"
-          }
-        },
         "reference_info": {
           "ref_type": "hdl",
           "ref_name": "SYSTOLIC_ARRAY_AXI4_FULL",
@@ -121,6 +361,11 @@
               "width": "32"
             },
             "parameters": {
+              "master_id": {
+                "value": "2"
+              }
+            },
+            "parameters": {
               "DATA_WIDTH": {
                 "value": "128",
                 "value_src": "auto"
@@ -128,6 +373,10 @@
               "PROTOCOL": {
                 "value": "AXI4",
                 "value_src": "constant"
+              },
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "user_prop"
               },
               "ID_WIDTH": {
                 "value": "16",
@@ -212,6 +461,10 @@
               "MAX_BURST_LENGTH": {
                 "value": "256",
                 "value_src": "auto"
+              },
+              "CLK_DOMAIN": {
+                "value": "SA_smartconnect_TB_clk",
+                "value_src": "default_prop"
               }
             },
             "port_maps": {
@@ -453,6 +706,10 @@
                 "value": "AXI4LITE",
                 "value_src": "constant"
               },
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "user_prop"
+              },
               "ID_WIDTH": {
                 "value": "0",
                 "value_src": "constant"
@@ -536,6 +793,18 @@
               "MAX_BURST_LENGTH": {
                 "value": "1",
                 "value_src": "auto"
+              },
+              "CLK_DOMAIN": {
+                "value": "SA_smartconnect_TB_clk",
+                "value_src": "default_prop"
+              },
+              "RUSER_BITS_PER_BYTE": {
+                "value": "0",
+                "value_src": "user_prop"
+              },
+              "WUSER_BITS_PER_BYTE": {
+                "value": "0",
+                "value_src": "user_prop"
               }
             },
             "port_maps": {
@@ -648,6 +917,14 @@
               "ASSOCIATED_BUSIF": {
                 "value": "m00_axi:s00_axi",
                 "value_src": "constant"
+              },
+              "FREQ_HZ": {
+                "value": "100000000",
+                "value_src": "user_prop"
+              },
+              "CLK_DOMAIN": {
+                "value": "SA_smartconnect_TB_clk",
+                "value_src": "default_prop"
               }
             }
           },
@@ -671,40 +948,65 @@
               "minimum": "0x00000000",
               "maximum": "0xFFFFFFFF",
               "width": "32"
+            },
+            "parameters": {
+              "master_id": {
+                "value": "2"
+              }
             }
           }
         }
       }
     },
     "interface_nets": {
+      "smartconnect_0_M00_AXI": {
+        "interface_ports": [
+          "SYSTOLIC_ARRAY_AXI4_0/s00_axi",
+          "smartconnect_0/M00_AXI"
+        ]
+      },
+      "smartconnect_0_M01_AXI": {
+        "interface_ports": [
+          "smartconnect_0/M01_AXI",
+          "axi_bram_ctrl_0/S_AXI"
+        ]
+      },
+      "axi_bram_ctrl_0_BRAM_PORTA": {
+        "interface_ports": [
+          "axi_bram_ctrl_0/BRAM_PORTA",
+          "blk_mem_gen_0/BRAM_PORTA"
+        ]
+      },
       "SYSTOLIC_ARRAY_AXI4_0_m00_axi": {
         "interface_ports": [
-          "SYSTOLIC_ARRAY_AXI4_0/m00_axi",
-          "myip_SA_AXI4_Slave_0/S00_AXI"
+          "smartconnect_0/S01_AXI",
+          "SYSTOLIC_ARRAY_AXI4_0/m00_axi"
         ]
       },
       "axi_vip_0_M_AXI": {
         "interface_ports": [
           "axi_vip_0/M_AXI",
-          "SYSTOLIC_ARRAY_AXI4_0/s00_axi"
+          "smartconnect_0/S00_AXI"
         ]
       }
     },
     "nets": {
+      "proc_sys_reset_0_peripheral_aresetn": {
+        "ports": [
+          "resetn",
+          "axi_bram_ctrl_0/s_axi_aresetn",
+          "axi_vip_0/aresetn",
+          "smartconnect_0/aresetn",
+          "SYSTOLIC_ARRAY_AXI4_0/reset_n"
+        ]
+      },
       "clk_1": {
         "ports": [
           "clk",
           "axi_vip_0/aclk",
-          "myip_SA_AXI4_Slave_0/s00_axi_aclk",
+          "axi_bram_ctrl_0/s_axi_aclk",
+          "smartconnect_0/aclk",
           "SYSTOLIC_ARRAY_AXI4_0/clk"
-        ]
-      },
-      "reset_n_1": {
-        "ports": [
-          "reset_n",
-          "axi_vip_0/aresetn",
-          "myip_SA_AXI4_Slave_0/s00_axi_aresetn",
-          "SYSTOLIC_ARRAY_AXI4_0/reset_n"
         ]
       }
     },
@@ -715,7 +1017,12 @@
             "segments": {
               "SEG_SYSTOLIC_ARRAY_AXI4_0_reg0": {
                 "address_block": "/SYSTOLIC_ARRAY_AXI4_0/s00_axi/reg0",
-                "offset": "0x44A00000",
+                "offset": "0xA0001000",
+                "range": "4K"
+              },
+              "SEG_axi_bram_ctrl_0_Mem0": {
+                "address_block": "/axi_bram_ctrl_0/S_AXI/Mem0",
+                "offset": "0xA0000000",
                 "range": "4K"
               }
             }
@@ -726,9 +1033,14 @@
         "address_spaces": {
           "m00_axi": {
             "segments": {
-              "SEG_myip_SA_AXI4_Slave_0_S00_AXI_mem": {
-                "address_block": "/myip_SA_AXI4_Slave_0/S00_AXI/S00_AXI_mem",
-                "offset": "0x76000000",
+              "SEG_SYSTOLIC_ARRAY_AXI4_0_reg0": {
+                "address_block": "/SYSTOLIC_ARRAY_AXI4_0/s00_axi/reg0",
+                "offset": "0xA0001000",
+                "range": "4K"
+              },
+              "SEG_axi_bram_ctrl_0_Mem0": {
+                "address_block": "/axi_bram_ctrl_0/S_AXI/Mem0",
+                "offset": "0xA0000000",
                 "range": "4K"
               }
             }

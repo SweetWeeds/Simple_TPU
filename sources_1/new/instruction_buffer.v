@@ -99,9 +99,9 @@ always @ (posedge clk) begin : PC_LOGIC
                 //  Go to 'start_addr' when increasing.
                 //  Go to 'end_addr' when decreasing.
                 if (ib_incr)
-                    counter <= start_addr;
+                    counter <= start_addr + 1;
                 else
-                    counter <= end_addr;
+                    counter <= end_addr - 1;
                 complete_flag <= 1'b0;
             end else begin
                 if (ib_incr) begin
