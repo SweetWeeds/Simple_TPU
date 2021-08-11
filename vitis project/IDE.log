@@ -1,0 +1,28 @@
+13:45:45 ERROR : Workspace location D:\workspace\210805_1710\systolic_array\systolic_array.srcs\vitis project contains spaces. Please switch to a workspace without spaces in its path.
+13:45:46 INFO  : Launching XSCT server: xsct.bat -n  -interactive D:\workspace\210805_1710\systolic_array\systolic_array.srcs\vitis project\temp_xsdb_launch_script.tcl
+13:45:46 INFO  : Registering command handlers for Vitis TCF services
+13:45:50 ERROR : (XSDB Server)couldn't read file "D:\workspace\210805_1710\systolic_array\systolic_array.srcs\vitis": no such file or directory
+
+13:45:51 INFO  : Platform repository initialization has completed.
+13:48:48 ERROR : Timed out. 180 seconds have elapsed while waiting for XSCT server to launch.
+13:48:48 INFO  : Launching XSCT server: xsct.bat -n  -interactive D:\workspace\210805_1710\systolic_array\systolic_array.srcs\vitis project\temp_xsdb_launch_script.tcl
+13:48:50 ERROR : (XSDB Server)couldn't read file "D:\workspace\210805_1710\systolic_array\systolic_array.srcs\vitis": no such file or directory
+
+13:51:50 ERROR : Timed out. 180 seconds have elapsed while waiting for XSCT server to launch.
+13:51:50 INFO  : Launching XSCT server: xsct.bat -n  -interactive D:\workspace\210805_1710\systolic_array\systolic_array.srcs\vitis project\temp_xsdb_launch_script.tcl
+13:51:50 ERROR : xsct server communication channel is not established.
+13:51:52 ERROR : (XSDB Server)couldn't read file "D:\workspace\210805_1710\systolic_array\systolic_array.srcs\vitis": no such file or directory
+
+13:54:51 ERROR : Timed out. 180 seconds have elapsed while waiting for XSCT server to launch.
+13:54:51 ERROR : Failed to call init_repo
+Reason: xsct server communication channel is not established.
+13:54:51 ERROR : Exception raised in executing the command =Failed to call init_repo
+Reason: xsct server communication channel is not established. 
+13:54:51 INFO  : Launching XSCT server: xsct.bat -n  -interactive D:\workspace\210805_1710\systolic_array\systolic_array.srcs\vitis project\temp_xsdb_launch_script.tcl
+13:54:53 ERROR : (XSDB Server)couldn't read file "D:\workspace\210805_1710\systolic_array\systolic_array.srcs\vitis": no such file or directory
+
+13:57:52 ERROR : Timed out. 180 seconds have elapsed while waiting for XSCT server to launch.
+13:57:52 ERROR : Failed to query RDI_DATADIR
+Reason: xsct server communication channel is not established.
+13:57:52 ERROR : Exception raised in executing the command =Failed to query RDI_DATADIR
+Reason: xsct server communication channel is not established. 
