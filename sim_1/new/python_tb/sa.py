@@ -1,5 +1,6 @@
 import os
 import random
+import math
 from datetime import datetime
 
 RAM_DEPTH = 256
@@ -226,11 +227,16 @@ class FIFO:
             return ret
 
 class MATRIX_MULTIPLY_UNIT:
-    def __init__(self, size: int, nbits: int):
+    def __init__(self, size: int, nbits: int, USE_Q_NUMBER=False, Q=4):
         self.size = size
         self.input_nbits = nbits
         self.output_nbits = nbits * 2 + 4
         self.weights = [[0 for i in range(size)] for i in range(size)]
+
+        # Q-Number format
+        self.USE_Q_NUMBER = USE_Q_NUMBER
+        self.Q = Q
+        self.K = 2**(self.Q-1)
 
     def weight_print(self, dec=False, do_print = True):
         if (dec == True):
@@ -259,17 +265,21 @@ class MATRIX_MULTIPLY_UNIT:
         for i in range(self.size):
             for j in range(self.size):
                 aout[j] += self.weights[i][j] * ain_decoded[i]
+        if (self.USE_Q_NUMBER):
+            for j in range(self.size):
+                aout[j] += self.K
+                aout[j] = math.floor(float(aout[j])/float(2**self.Q))
         ret = encode(aout, self.size, self.output_nbits)
         return ret
 
 class SYSTOLIC_ARRAY:
-    def __init__(self, gen_isa=False):
+    def __init__(self, gen_isa=False, USE_Q_NUMBER=False, Q=4):
         self.UB          = BRAM( depth=RAM_DEPTH,  data_num=RAM_DATA_NUM,  nbits=RAM_DATA_BITS , fill_zero=True )
         self.WB          = BRAM( depth=RAM_DEPTH,  data_num=RAM_DATA_NUM,  nbits=RAM_DATA_BITS , fill_zero=True )
         self.DATA_FIFO   = FIFO( depth=FIFO_DEPTH, data_num=FIFO_DATA_NUM, nbits=FIFO_DATA_BITS )
         self.WEIGHT_FIFO = FIFO( depth=FIFO_DEPTH, data_num=FIFO_DATA_NUM, nbits=FIFO_DATA_BITS )
         self.ACCUMULATOR = BRAM( depth=ACC_DEPTH,  data_num=ACC_DATA_NUM,  nbits=ACC_DATA_BITS, out_nbits=RAM_DATA_BITS )
-        self.MMU         = MATRIX_MULTIPLY_UNIT( size=MMU_SIZE, nbits=MMU_BITS )
+        self.MMU         = MATRIX_MULTIPLY_UNIT( size=MMU_SIZE, nbits=MMU_BITS, USE_Q_NUMBER=USE_Q_NUMBER, Q=Q)
         self.isa_fp      = None
         self.isa_file    = "./pc.mem"
         self.gen_isa     = gen_isa
@@ -277,7 +287,7 @@ class SYSTOLIC_ARRAY:
     # Deprecated
     #def WRITE_DATA(self, addr: int, val: str):
     #    self.UB.write(addr, val)
-    
+
     def AXI_TO_UB_INST(self, off_mem: BRAM, addra: str, addrb: str):
         buffer = list()
         off_mem.read(addrb)

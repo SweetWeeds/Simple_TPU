@@ -1967,10 +1967,10 @@
       }
     },
     "interface_nets": {
-      "smartconnect_0_M01_AXI": {
+      "zynq_ultra_ps_e_0_M_AXI_HPM0_FPD": {
         "interface_ports": [
-          "smartconnect_0/M01_AXI",
-          "axi_bram_ctrl_0/S_AXI"
+          "zynq_ultra_ps_e_0/M_AXI_HPM0_FPD",
+          "smartconnect_0/S00_AXI"
         ]
       },
       "axi_bram_ctrl_0_BRAM_PORTA": {
@@ -1979,16 +1979,16 @@
           "blk_mem_gen_0/BRAM_PORTA"
         ]
       },
-      "zynq_ultra_ps_e_0_M_AXI_HPM0_FPD": {
-        "interface_ports": [
-          "zynq_ultra_ps_e_0/M_AXI_HPM0_FPD",
-          "smartconnect_0/S00_AXI"
-        ]
-      },
       "smartconnect_0_M00_AXI": {
         "interface_ports": [
           "smartconnect_0/M00_AXI",
           "SYSTOLIC_ARRAY_AXI4_0/s00_axi"
+        ]
+      },
+      "smartconnect_0_M01_AXI": {
+        "interface_ports": [
+          "smartconnect_0/M01_AXI",
+          "axi_bram_ctrl_0/S_AXI"
         ]
       },
       "SYSTOLIC_ARRAY_AXI4_0_m00_axi": {

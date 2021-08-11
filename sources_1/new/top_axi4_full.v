@@ -46,8 +46,8 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
     parameter   OPCODE_BITS  = 4,
                 UB_ADDRA_BITS        = 8,
                 UB_ADDRB_BITS        = 8,
-                WB_ADDRA_BITS        = 8,
-                WB_ADDRB_BITS        = 8,
+                WB_ADDRA_BITS        = 32,
+                WB_ADDRB_BITS        = 32,
                 ACC_ADDRA_BITS       = 6,
                 ACC_ADDRB_BITS       = 6,
                 OFFMEM_ADDRA_BITS    = 32,
@@ -425,7 +425,7 @@ BRAM # (
 // Weight Buffer
 BRAM # (
     .RAM_WIDTH(16*8),
-    .RAM_DEPTH(256)
+    .RAM_DEPTH(8192)
 ) WB (
     .clk(clk),
     .wea(WRITE_WB_SIG),
