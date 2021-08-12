@@ -3,9 +3,15 @@ import random
 import math
 from datetime import datetime
 
-RAM_DEPTH = 256
-RAM_DATA_NUM = 16
-RAM_DATA_BITS = 8
+#RAM_DEPTH = 256
+UB_RAM_DEPTH = 256
+WB_RAM_DEPTH = 8192
+#RAM_DATA_NUM = 16
+UB_RAM_DATA_NUM = 16
+WB_RAM_DATA_NUM = 16
+#RAM_DATA_BITS = 8
+UB_RAM_DATA_BITS = 8
+WB_RAM_DATA_BITS = 8
 
 FIFO_DEPTH = 4
 FIFO_DATA_NUM = 16
@@ -263,6 +269,7 @@ class MATRIX_MULTIPLY_UNIT:
         aout = [0 for i in range(self.size)]
         ret = str()
         for i in range(self.size):
+            print(f"a:{ain_decoded}, w:{self.weights[i]}")
             for j in range(self.size):
                 aout[j] += self.weights[i][j] * ain_decoded[i]
         if (self.USE_Q_NUMBER):
@@ -274,11 +281,11 @@ class MATRIX_MULTIPLY_UNIT:
 
 class SYSTOLIC_ARRAY:
     def __init__(self, gen_isa=False, USE_Q_NUMBER=False, Q=4):
-        self.UB          = BRAM( depth=RAM_DEPTH,  data_num=RAM_DATA_NUM,  nbits=RAM_DATA_BITS , fill_zero=True )
-        self.WB          = BRAM( depth=RAM_DEPTH,  data_num=RAM_DATA_NUM,  nbits=RAM_DATA_BITS , fill_zero=True )
+        self.UB          = BRAM( depth=UB_RAM_DEPTH,  data_num=UB_RAM_DATA_NUM,  nbits=UB_RAM_DATA_BITS , fill_zero=True )
+        self.WB          = BRAM( depth=WB_RAM_DEPTH,  data_num=WB_RAM_DATA_NUM,  nbits=WB_RAM_DATA_BITS , fill_zero=True )
         self.DATA_FIFO   = FIFO( depth=FIFO_DEPTH, data_num=FIFO_DATA_NUM, nbits=FIFO_DATA_BITS )
         self.WEIGHT_FIFO = FIFO( depth=FIFO_DEPTH, data_num=FIFO_DATA_NUM, nbits=FIFO_DATA_BITS )
-        self.ACCUMULATOR = BRAM( depth=ACC_DEPTH,  data_num=ACC_DATA_NUM,  nbits=ACC_DATA_BITS, out_nbits=RAM_DATA_BITS )
+        self.ACCUMULATOR = BRAM( depth=ACC_DEPTH,  data_num=ACC_DATA_NUM,  nbits=ACC_DATA_BITS, out_nbits=UB_RAM_DATA_BITS )
         self.MMU         = MATRIX_MULTIPLY_UNIT( size=MMU_SIZE, nbits=MMU_BITS, USE_Q_NUMBER=USE_Q_NUMBER, Q=Q)
         self.isa_fp      = None
         self.isa_file    = "./pc.mem"
@@ -337,16 +344,16 @@ class SYSTOLIC_ARRAY:
     def MMU_WEIGHT_PRINT(self, dec=False, do_print = True):
         return self.MMU.weight_print(dec=dec, do_print=do_print)
 
-    def MAT_MUL(self, addra: int, addrb: int) -> str:
+    def MAT_MUL(self, addra: int) -> str:
         tmp = self.MMU.mul(self.DATA_FIFO.read())
         self.ACCUMULATOR.write(addra, tmp)
-        self.UB_TO_DATA_FIFO_INST(addrb)
+        #self.UB_TO_DATA_FIFO_INST(addrb)
         return self.ACCUMULATOR.read(addra)
 
-    def MAT_MUL_ACC(self, addra: int, addrb: int) -> str:
+    def MAT_MUL_ACC(self, addra: int) -> str:
         tmp = self.MMU.mul(self.DATA_FIFO.read())
         self.ACCUMULATOR.accumulate(addra, tmp)
-        self.UB_TO_DATA_FIFO_INST(addrb)
+        #self.UB_TO_DATA_FIFO_INST(addrb)
         return self.ACCUMULATOR.read(addra)
     
     def WRITE_RESULT(self, addra: int, addrb: int):

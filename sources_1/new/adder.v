@@ -22,13 +22,14 @@
 
 module ADDER_4_16b_20b #(
     // Q-Number options
-    parameter Q = 5,    // Q-2.5 (integer: 2b, decimal: 5b)
-    parameter K = (1 << (Q - 1))  // Rounding value
+    parameter Q = 4     // Q-3.4 (integer: 3b, decimal: 4b)
 )
 (
     input [255:0] ain,
     output signed [19:0] aout
 );
+
+localparam K = (1 << (Q - 1)); // Rounding value
 
 wire signed [15:0] stage1 [0:15];
 wire signed [16:0] stage2 [0:7];

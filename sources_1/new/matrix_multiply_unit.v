@@ -19,7 +19,11 @@
 // 
 //////////////////////////////////////////////////////////////////////////////////
 
-module MATRIX_MULTIPLY_UNIT (
+module MATRIX_MULTIPLY_UNIT #
+(
+    parameter Q = 4
+)
+(
     input reset_n,
     input clk,
     input wen,
@@ -67,7 +71,7 @@ endgenerate
 // Instantiation of ADDER_4_16b_20b modules.
 generate
     for (genvar j = 15; j >= 0; j = j - 1) begin
-        ADDER_4_16b_20b ADDER0 (
+        ADDER_4_16b_20b #(.Q(Q)) ADDER0 (
             .ain(
                 {
                     mul_result_reg[15][j],

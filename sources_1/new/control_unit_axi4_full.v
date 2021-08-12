@@ -589,7 +589,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 `endif
                 axi_sm_mode     = IDLE;
                 init_txn_pulse  = 1'b0;
-                read_ub         = 1'b1;
+                read_ub         = 1'b0;
                 write_ub        = 1'b0;
                 read_wb         = 1'b0;
                 write_wb        = 1'b0;
@@ -601,7 +601,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 mm_en           = 1'b0;
                 acc_en          = 1'b0;
                 ub_addra        = 8'b0;
-                ub_addrb        = addrb[UB_ADDRB_BITS+ADDR_LSB-1:ADDR_LSB];
+                ub_addrb        = 8'b0;
                 wb_addra        = 8'b0;
                 wb_addrb        = 8'b0;
                 acc_addra       = 6'b0;
@@ -622,7 +622,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 write_wb        = 1'b0;
                 read_acc        = 1'b0;
                 write_acc       = 1'b1;
-                data_fifo_en    = 1'b1;
+                data_fifo_en    = 1'b0;
                 mmu_load_weight_en = 1'b0;
                 weight_fifo_en  = 1'b0;
                 mm_en           = 1'b1;
@@ -649,7 +649,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 `endif
                 axi_sm_mode     = IDLE;
                 init_txn_pulse  = 1'b0;
-                read_ub         = 1'b1;
+                read_ub         = 1'b0;
                 write_ub        = 1'b0;
                 read_wb         = 1'b0;
                 write_wb        = 1'b0;
@@ -661,7 +661,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 mm_en           = 1'b0;
                 acc_en          = 1'b1;
                 ub_addra        = 8'b0;
-                ub_addrb        = addrb[UB_ADDRB_BITS+ADDR_LSB-1:ADDR_LSB];
+                ub_addrb        = 8'b0;
                 wb_addra        = 8'b0;
                 wb_addrb        = 8'b0;
                 acc_addra       = 6'b0;
@@ -682,7 +682,7 @@ always @ (opcode or minor_state or addra or addrb or dout or txn_done  or din or
                 write_wb        = 1'b0;
                 read_acc        = 1'b0;
                 write_acc       = 1'b1;
-                data_fifo_en    = 1'b1;
+                data_fifo_en    = 1'b0;
                 mmu_load_weight_en = 1'b0;
                 weight_fifo_en  = 1'b0;
                 mm_en           = 1'b1;

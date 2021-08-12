@@ -46,8 +46,8 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
     parameter   OPCODE_BITS  = 4,
                 UB_ADDRA_BITS        = 8,
                 UB_ADDRB_BITS        = 8,
-                WB_ADDRA_BITS        = 32,
-                WB_ADDRB_BITS        = 32,
+                WB_ADDRA_BITS        = 16,
+                WB_ADDRB_BITS        = 16,
                 ACC_ADDRA_BITS       = 6,
                 ACC_ADDRB_BITS       = 6,
                 OFFMEM_ADDRA_BITS    = 32,
@@ -86,7 +86,9 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
                                     // Write result data from ACC to UB (1-cycle)
                                     ACC_TO_UB_INST          = 4'h9,
                                     // Write unsigned-Buffer's data to AXI (n-cycles)
-                                    UB_TO_AXI_INST          = 4'ha
+                                    UB_TO_AXI_INST          = 4'ha,
+    // Q-Number Parameter (Fixed Point Parameter. ex) Q=4 : 1b:sign, 3b:int, 4b:dec)
+    parameter Q = 4
 )
 (
     input  wire reset_n,
@@ -449,7 +451,9 @@ FIFO #(
 );
 
 // Matrix-Multiplication Unit
-MATRIX_MULTIPLY_UNIT MMU (
+MATRIX_MULTIPLY_UNIT #(
+    .Q(Q)   // Q-Param
+) MMU (
     .reset_n(reset_n),
     .clk(clk),
     .wen(MMU_LOAD_WEIGHT_SIG),

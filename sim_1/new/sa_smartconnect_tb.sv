@@ -172,7 +172,7 @@ module sa_smc_tb;
         // Set VIP's params
         mtestID = 0;
         mtestBurstLength = 0;
-        mtestBaseADDR = 'hA000_1000;
+        mtestBaseADDR = 'hA000_4000;
         //mtestDataSize = xil_axi_size_t'(xil_clog2(128/8));
         mtestDataSize = XIL_AXI_SIZE_4BYTE; // 32-bit
 

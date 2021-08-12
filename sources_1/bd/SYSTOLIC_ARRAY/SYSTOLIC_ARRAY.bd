@@ -740,16 +740,16 @@
       }
     },
     "interface_nets": {
-      "SYSTOLIC_ARRAY_AXI4_0_m00_axi": {
-        "interface_ports": [
-          "SYSTOLIC_ARRAY_AXI4_0/m00_axi",
-          "myip_SA_AXI4_Slave_0/S00_AXI"
-        ]
-      },
       "axi_vip_0_M_AXI": {
         "interface_ports": [
           "axi_vip_0/M_AXI",
           "SYSTOLIC_ARRAY_AXI4_0/s00_axi"
+        ]
+      },
+      "SYSTOLIC_ARRAY_AXI4_0_m00_axi": {
+        "interface_ports": [
+          "SYSTOLIC_ARRAY_AXI4_0/m00_axi",
+          "myip_SA_AXI4_Slave_0/S00_AXI"
         ]
       }
     },

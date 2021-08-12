@@ -14,10 +14,10 @@ preplace inst smartconnect_0 -pg 1 -lvl 2 -x 360 -y 110 -defaultsOSRD
 preplace inst SYSTOLIC_ARRAY_AXI4_0 -pg 1 -lvl 3 -x 640 -y 120 -defaultsOSRD
 preplace netloc proc_sys_reset_0_peripheral_aresetn 1 0 3 20 150 230 200 510
 preplace netloc clk_1 1 0 3 20 10 220 10 500
-preplace netloc smartconnect_0_M00_AXI 1 2 1 N 100
-preplace netloc smartconnect_0_M01_AXI 1 2 1 490 120n
 preplace netloc axi_bram_ctrl_0_BRAM_PORTA 1 3 1 N 260
 preplace netloc SYSTOLIC_ARRAY_AXI4_0_m00_axi 1 1 3 230 20 NJ 20 770
+preplace netloc smartconnect_0_M01_AXI 1 2 1 490 120n
+preplace netloc smartconnect_0_M00_AXI 1 2 1 N 100
 preplace netloc axi_vip_0_M_AXI 1 1 1 N 80
 levelinfo -pg 1 0 120 360 640 890 1020
 pagesize -pg 1 -db -bbox -sgen -90 0 1020 340
