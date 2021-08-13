@@ -269,13 +269,14 @@ class MATRIX_MULTIPLY_UNIT:
         aout = [0 for i in range(self.size)]
         ret = str()
         for i in range(self.size):
-            print(f"a:{ain_decoded}, w:{self.weights[i]}")
+            #print(f"a:{ain_decoded}, w:{self.weights[i]}")
             for j in range(self.size):
                 aout[j] += self.weights[i][j] * ain_decoded[i]
         if (self.USE_Q_NUMBER):
             for j in range(self.size):
                 aout[j] += self.K
                 aout[j] = math.floor(float(aout[j])/float(2**self.Q))
+        print(aout)
         ret = encode(aout, self.size, self.output_nbits)
         return ret
 
