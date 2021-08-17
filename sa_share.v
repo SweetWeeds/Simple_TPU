@@ -43,7 +43,7 @@ parameter [OPCODE_BITS-1:0]     // Do nothing (1-cycyle)
                                 // Load data from UB to data-FIFO (1-cycle)
                                 UB_TO_DATA_FIFO_INST    = 4'h5,
                                 // Load Weight from WB to weight-FIFO (1-cycle)
-                                UB_TO_WEIGHT_FIFO_INST  = 4'h6,
+                                WB_TO_WEIGHT_FIFO_INST  = 4'h6,
                                 // Execute Matrix Multiplication (1-cycle)
                                 MAT_MUL_INST            = 4'h7,
                                 // Execute Matrix Multiplication with accumulation (1-cycle)

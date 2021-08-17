@@ -22,7 +22,7 @@
 module INSTRUCTION_BUFFER # 
 (
     parameter integer PC_DEPTH = 1024,
-    parameter integer ADDR_BITS = 10,
+    parameter integer ADDR_BITS = 32,
     parameter integer INST_BITS = 128,
     parameter INIT_FILE = ""
 )

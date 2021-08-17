@@ -2,6 +2,7 @@ import os
 import random
 import math
 from datetime import datetime
+import numpy as np
 
 #RAM_DEPTH = 256
 UB_RAM_DEPTH = 256
@@ -34,7 +35,7 @@ OPCODE = {
     "AXI_TO_UB_INST"    : 3,
     "AXI_TO_WB_INST"    : 4,
     "UB_TO_DATA_FIFO_INST" : 5,
-    "UB_TO_WEIGHT_FIFO_INST" : 6,
+    "WB_TO_WEIGHT_FIFO_INST" : 6,
     "MAT_MUL_INST"      : 7,
     "MAT_MUL_ACC_INST"  : 8,
     "ACC_TO_UB_INST"    : 9,
@@ -268,8 +269,9 @@ class MATRIX_MULTIPLY_UNIT:
         ain_decoded = list(reversed(decode(ain, self.size, self.input_nbits)))
         aout = [0 for i in range(self.size)]
         ret = str()
+        #print(f"a:{ain_decoded}")
         for i in range(self.size):
-            print(f"a:{ain_decoded}, w:{self.weights[i]}")
+            #print(f"w:{self.weights[i]}")
             for j in range(self.size):
                 aout[j] += self.weights[i][j] * ain_decoded[i]
         if (self.USE_Q_NUMBER):
@@ -290,7 +292,7 @@ class SYSTOLIC_ARRAY:
         self.MMU         = MATRIX_MULTIPLY_UNIT( size=MMU_SIZE, nbits=MMU_BITS, USE_Q_NUMBER=USE_Q_NUMBER, Q=Q)
         self.isa_fp      = None
         self.isa_file    = "./pc.mem"
-        self.gen_isa     = gen_isa
+        self.gen_isa     = False
     
     # Deprecated
     #def WRITE_DATA(self, addr: int, val: str):
@@ -303,6 +305,7 @@ class SYSTOLIC_ARRAY:
         for i in range(partition_num):
             buffer.append(off_mem.read(addrb+(partition_num-1)-i))
         self.UB.write(addra, "".join(buffer))
+        self.GENERATE_ISA(opcode="AXI_TO_UB_INST", addra=addra*16, addrb=addrb*16)
     
     def AXI_TO_WB_INST(self, off_mem: BRAM, addra: str, addrb: str):
         buffer = list()
@@ -311,6 +314,7 @@ class SYSTOLIC_ARRAY:
         for i in range(partition_num):
             buffer.append(off_mem.read(addrb+(partition_num-1)-i))
         self.WB.write(addra, "".join(buffer))
+        self.GENERATE_ISA(opcode="AXI_TO_WB_INST", addra=addra*16, addrb=addrb*16)
 
     def UB_TO_AXI_INST(self, off_mem: BRAM, addra: str, addrb: str):
         buffer = self.UB.read(addrb)
@@ -318,9 +322,11 @@ class SYSTOLIC_ARRAY:
         partition_size = int(off_mem.data_num*8/4)
         for i in range(partition_num):
             off_mem.write(addra+(partition_num-1)-i, buffer[i*partition_size:(i+1)*partition_size])
+        self.GENERATE_ISA(opcode="UB_TO_AXI_INST", addra=addra*16, addrb=addrb*16)
 
     def UB_TO_DATA_FIFO_INST(self, addr: int):
         self.DATA_FIFO.write(self.UB.read(addr))
+        self.GENERATE_ISA(opcode="UB_TO_DATA_FIFO_INST", addra=0*16, addrb=addr*16)
     
     def UB_PRINT(self, dec = False, do_print = True):
         return self.UB.print(dec=dec, do_print=do_print)
@@ -332,6 +338,7 @@ class SYSTOLIC_ARRAY:
     def LOAD_WEIGHT(self, addr: int):
         tmp = self.WEIGHT_FIFO.write(self.WB.read(addr))
         self.MMU.load_weights(tmp)
+        self.GENERATE_ISA(opcode="WB_TO_WEIGHT_FIFO_INST", addra=0*16, addrb=addr*16)
 
     def WB_PRINT(self, dec = False, do_print = True):
         return self.WB.print(dec=dec, do_print=do_print)
@@ -349,24 +356,45 @@ class SYSTOLIC_ARRAY:
         tmp = self.MMU.mul(self.DATA_FIFO.read())
         self.ACCUMULATOR.write(addra, tmp)
         #self.UB_TO_DATA_FIFO_INST(addrb)
+        self.GENERATE_ISA(opcode="MAT_MUL_INST", addra=addra*16, addrb=0*16)
         return self.ACCUMULATOR.read(addra)
 
     def MAT_MUL_ACC(self, addra: int) -> str:
         tmp = self.MMU.mul(self.DATA_FIFO.read())
+        print(tmp)
         self.ACCUMULATOR.accumulate(addra, tmp)
         #self.UB_TO_DATA_FIFO_INST(addrb)
+        self.GENERATE_ISA(opcode="MAT_MUL_ACC_INST", addra=addra*16, addrb=0*16)
         return self.ACCUMULATOR.read(addra)
     
     def WRITE_RESULT(self, addra: int, addrb: int):
-        self.UB.write(addra, self.ACCUMULATOR.read(addrb))
+        # Flip
+        tmp = self.ACCUMULATOR.read(addrb)
+        tmp = np.array(decode(tmp, 16, 8))
+        tmp = np.flip(tmp).tolist()
+        tmp = encode(tmp, 16, 8)
+        # Write to UB
+        self.UB.write(addra, tmp)
+        self.GENERATE_ISA(opcode="ACC_TO_UB_INST", addra=addra*16, addrb=addrb*16)
 
     def ACC_PRINT(self, dec = False, do_print = True) -> str:
         return self.ACCUMULATOR.print(dec=dec, do_print=do_print)
 
     def READ_UB(self, addrb) -> str:
+        self.GENERATE_ISA(opcode="READ_UB", addra=0, addrb=addrb*16)
         return self.UB.read(addrb)
 
-    def GENERATE_ISA(self, opcode: str, addra: int, addrb: int, isa_bits=128, fp_close=False):
+    def START_GEN_ISA(self, isa_file=None):
+        if isa_file == None:
+            isa_file = self.isa_file
+        self.isa_fp = open(isa_file, "w")
+        self.gen_isa = True
+    
+    def END_GEN_ISA(self):
+        self.isa_fp.close()
+        self.gen_isa = False
+
+    def GENERATE_ISA(self, opcode: str, addra: int, addrb: int, isa_bits=128):
         if (self.gen_isa == False):
             return
         if (self.isa_fp == None):
@@ -374,7 +402,7 @@ class SYSTOLIC_ARRAY:
                 os.remove(os.path.join(self.isa_file))
             self.isa_fp = open(self.isa_file, "a")
         if (opcode not in OPCODE):
-            print("[ERROR] opcode is not included.")
+            print(f"[ERROR] opcode[{opcode}] is not included.")
             return
         opcode = tohex(OPCODE[opcode], OPCODE_BITS)
         addra  = tohex(addra, ADDRA_BITS)

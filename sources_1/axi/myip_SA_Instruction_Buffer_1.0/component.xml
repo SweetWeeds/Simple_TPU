@@ -266,7 +266,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>e80c457e</spirit:value>
+            <spirit:value>734993ad</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -282,7 +282,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>e80c457e</spirit:value>
+            <spirit:value>734993ad</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -310,7 +310,7 @@
         <spirit:parameters>
           <spirit:parameter>
             <spirit:name>viewChecksum</spirit:name>
-            <spirit:value>3a33a131</spirit:value>
+            <spirit:value>8bd33769</spirit:value>
           </spirit:parameter>
         </spirit:parameters>
       </spirit:view>
@@ -378,7 +378,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_ADDR_BITS&apos;)) - 1)">9</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_ADDR_BITS&apos;)) - 1)">31</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -460,7 +460,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_ADDR_BITS&apos;)) - 1)">9</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_ADDR_BITS&apos;)) - 1)">31</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -477,7 +477,7 @@
         <spirit:wire>
           <spirit:direction>out</spirit:direction>
           <spirit:vector>
-            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_ADDR_BITS&apos;)) - 1)">9</spirit:left>
+            <spirit:left spirit:format="long" spirit:resolve="dependent" spirit:dependency="(spirit:decode(id(&apos;MODELPARAM_VALUE.C_S00_ADDR_BITS&apos;)) - 1)">31</spirit:left>
             <spirit:right spirit:format="long">0</spirit:right>
           </spirit:vector>
           <spirit:wireTypeDefs>
@@ -815,7 +815,7 @@
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_S00_ADDR_BITS</spirit:name>
         <spirit:displayName>C S00 Addr Bits</spirit:displayName>
-        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_S00_ADDR_BITS">10</spirit:value>
+        <spirit:value spirit:format="long" spirit:resolve="generated" spirit:id="MODELPARAM_VALUE.C_S00_ADDR_BITS">32</spirit:value>
       </spirit:modelParameter>
       <spirit:modelParameter spirit:dataType="integer">
         <spirit:name>C_S00_INST_BITS</spirit:name>
@@ -850,7 +850,7 @@
       <spirit:file>
         <spirit:name>hdl/myip_SA_Instruction_Buffer_v1_0.v</spirit:name>
         <spirit:fileType>verilogSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_b58361dc</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_5a12d2b7</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
     <spirit:fileSet>
@@ -901,7 +901,7 @@
       <spirit:file>
         <spirit:name>xgui/myip_SA_Instruction_Buffer_v1_0.tcl</spirit:name>
         <spirit:fileType>tclSource</spirit:fileType>
-        <spirit:userFileType>CHECKSUM_3a33a131</spirit:userFileType>
+        <spirit:userFileType>CHECKSUM_8bd33769</spirit:userFileType>
         <spirit:userFileType>XGUI_VERSION_2</spirit:userFileType>
       </spirit:file>
     </spirit:fileSet>
@@ -972,7 +972,7 @@
     <spirit:parameter>
       <spirit:name>C_S00_ADDR_BITS</spirit:name>
       <spirit:displayName>C S00 Addr Bits</spirit:displayName>
-      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.C_S00_ADDR_BITS">10</spirit:value>
+      <spirit:value spirit:format="long" spirit:resolve="user" spirit:id="PARAM_VALUE.C_S00_ADDR_BITS">32</spirit:value>
     </spirit:parameter>
     <spirit:parameter>
       <spirit:name>C_S00_INST_BITS</spirit:name>
@@ -989,8 +989,8 @@
         <xilinx:taxonomy>AXI_Peripheral</xilinx:taxonomy>
       </xilinx:taxonomies>
       <xilinx:displayName>myip_SA_Instruction_Buffer_v1.0</xilinx:displayName>
-      <xilinx:coreRevision>10</xilinx:coreRevision>
-      <xilinx:coreCreationDateTime>2021-08-03T07:41:55Z</xilinx:coreCreationDateTime>
+      <xilinx:coreRevision>11</xilinx:coreRevision>
+      <xilinx:coreCreationDateTime>2021-08-17T06:21:17Z</xilinx:coreCreationDateTime>
       <xilinx:tags>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@5a2ac05d_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@66c0af69_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
@@ -1063,16 +1063,28 @@
         <xilinx:tag xilinx:name="ui.data.coregen.dd@796d9da7_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@7a01e47f_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
         <xilinx:tag xilinx:name="ui.data.coregen.dd@6ccc17f3_ARCHIVE_LOCATION">/home/hankyulkwon/vivado_project/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@70c571fc_ARCHIVE_LOCATION">d:/workspace/210805_1710/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@68638a31_ARCHIVE_LOCATION">d:/workspace/210805_1710/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@e320bcf_ARCHIVE_LOCATION">d:/workspace/210805_1710/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@47642c84_ARCHIVE_LOCATION">d:/workspace/210805_1710/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@78cc7a81_ARCHIVE_LOCATION">d:/workspace/210805_1710/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@41922dd1_ARCHIVE_LOCATION">d:/workspace/210805_1710/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@5b3b46c8_ARCHIVE_LOCATION">d:/workspace/210805_1710/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@71121568_ARCHIVE_LOCATION">d:/workspace/210805_1710/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@735e5c75_ARCHIVE_LOCATION">d:/workspace/210805_1710/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@1f626724_ARCHIVE_LOCATION">d:/workspace/210805_1710/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@76e04f1b_ARCHIVE_LOCATION">d:/workspace/210805_1710/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
+        <xilinx:tag xilinx:name="ui.data.coregen.dd@18a461f8_ARCHIVE_LOCATION">d:/workspace/210805_1710/systolic_array/systolic_array.srcs/sources_1/axi/myip_SA_Instruction_Buffer_1.0</xilinx:tag>
       </xilinx:tags>
     </xilinx:coreExtensions>
     <xilinx:packagingInfo>
       <xilinx:xilinxVersion>2020.2</xilinx:xilinxVersion>
       <xilinx:checksum xilinx:scope="busInterfaces" xilinx:value="616027be"/>
       <xilinx:checksum xilinx:scope="memoryMaps" xilinx:value="ed1368d5"/>
-      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="b1af01db"/>
-      <xilinx:checksum xilinx:scope="ports" xilinx:value="8ec0a8a3"/>
-      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="fafa1767"/>
-      <xilinx:checksum xilinx:scope="parameters" xilinx:value="695db06e"/>
+      <xilinx:checksum xilinx:scope="fileGroups" xilinx:value="a9c15f68"/>
+      <xilinx:checksum xilinx:scope="ports" xilinx:value="82900741"/>
+      <xilinx:checksum xilinx:scope="hdlParameters" xilinx:value="17f11e54"/>
+      <xilinx:checksum xilinx:scope="parameters" xilinx:value="4da78104"/>
     </xilinx:packagingInfo>
   </spirit:vendorExtensions>
 </spirit:component>

@@ -11,10 +11,10 @@
       "validated": "true"
     },
     "design_tree": {
-      "axi_bram_ctrl_0": "",
       "blk_mem_gen_0": "",
       "axi_vip_0": "",
       "smartconnect_0": "",
+      "axi_bram_ctrl_0": "",
       "SYSTOLIC_ARRAY_AXI4_0": ""
     },
     "ports": {
@@ -63,23 +63,6 @@
       }
     },
     "components": {
-      "axi_bram_ctrl_0": {
-        "vlnv": "xilinx.com:ip:axi_bram_ctrl:4.1",
-        "xci_name": "SA_smartconnect_TB_axi_bram_ctrl_0_0",
-        "xci_path": "ip\\SA_smartconnect_TB_axi_bram_ctrl_0_0\\SA_smartconnect_TB_axi_bram_ctrl_0_0.xci",
-        "inst_hier_path": "axi_bram_ctrl_0",
-        "parameters": {
-          "DATA_WIDTH": {
-            "value": "128"
-          },
-          "READ_LATENCY": {
-            "value": "1"
-          },
-          "SINGLE_PORT_BRAM": {
-            "value": "1"
-          }
-        }
-      },
       "blk_mem_gen_0": {
         "vlnv": "xilinx.com:ip:blk_mem_gen:8.4",
         "xci_name": "SA_smartconnect_TB_blk_mem_gen_0_0",
@@ -87,7 +70,7 @@
         "inst_hier_path": "blk_mem_gen_0",
         "parameters": {
           "Coe_File": {
-            "value": "../../../../../sim_1/new/hex_mem_128b.coe"
+            "value": "../../../../../sim_1/new/python_tb/TEST_OFF_MEM.coe"
           },
           "EN_SAFETY_CKT": {
             "value": "true"
@@ -121,6 +104,9 @@
           },
           "Use_RSTA_Pin": {
             "value": "true"
+          },
+          "Write_Depth_A": {
+            "value": "8192"
           },
           "Write_Width_A": {
             "value": "128"
@@ -337,6 +323,23 @@
               "M00_AXI",
               "M01_AXI"
             ]
+          }
+        }
+      },
+      "axi_bram_ctrl_0": {
+        "vlnv": "xilinx.com:ip:axi_bram_ctrl:4.1",
+        "xci_name": "SA_smartconnect_TB_axi_bram_ctrl_0_0",
+        "xci_path": "ip\\SA_smartconnect_TB_axi_bram_ctrl_0_0\\SA_smartconnect_TB_axi_bram_ctrl_0_0.xci",
+        "inst_hier_path": "axi_bram_ctrl_0",
+        "parameters": {
+          "DATA_WIDTH": {
+            "value": "128"
+          },
+          "READ_LATENCY": {
+            "value": "1"
+          },
+          "SINGLE_PORT_BRAM": {
+            "value": "1"
           }
         }
       },
@@ -959,10 +962,10 @@
       }
     },
     "interface_nets": {
-      "axi_bram_ctrl_0_BRAM_PORTA": {
+      "smartconnect_0_M00_AXI": {
         "interface_ports": [
-          "axi_bram_ctrl_0/BRAM_PORTA",
-          "blk_mem_gen_0/BRAM_PORTA"
+          "smartconnect_0/M00_AXI",
+          "SYSTOLIC_ARRAY_AXI4_0/s00_axi"
         ]
       },
       "axi_vip_0_M_AXI": {
@@ -971,22 +974,22 @@
           "smartconnect_0/S00_AXI"
         ]
       },
-      "SYSTOLIC_ARRAY_AXI4_0_m00_axi": {
-        "interface_ports": [
-          "SYSTOLIC_ARRAY_AXI4_0/m00_axi",
-          "smartconnect_0/S01_AXI"
-        ]
-      },
       "smartconnect_0_M01_AXI": {
         "interface_ports": [
           "smartconnect_0/M01_AXI",
           "axi_bram_ctrl_0/S_AXI"
         ]
       },
-      "smartconnect_0_M00_AXI": {
+      "axi_bram_ctrl_0_BRAM_PORTA": {
         "interface_ports": [
-          "smartconnect_0/M00_AXI",
-          "SYSTOLIC_ARRAY_AXI4_0/s00_axi"
+          "axi_bram_ctrl_0/BRAM_PORTA",
+          "blk_mem_gen_0/BRAM_PORTA"
+        ]
+      },
+      "SYSTOLIC_ARRAY_AXI4_0_m00_axi": {
+        "interface_ports": [
+          "SYSTOLIC_ARRAY_AXI4_0/m00_axi",
+          "smartconnect_0/S01_AXI"
         ]
       }
     },
@@ -994,9 +997,9 @@
       "proc_sys_reset_0_peripheral_aresetn": {
         "ports": [
           "resetn",
-          "axi_bram_ctrl_0/s_axi_aresetn",
           "axi_vip_0/aresetn",
           "smartconnect_0/aresetn",
+          "axi_bram_ctrl_0/s_axi_aresetn",
           "SYSTOLIC_ARRAY_AXI4_0/reset_n"
         ]
       },
@@ -1004,8 +1007,8 @@
         "ports": [
           "clk",
           "axi_vip_0/aclk",
-          "axi_bram_ctrl_0/s_axi_aclk",
           "smartconnect_0/aclk",
+          "axi_bram_ctrl_0/s_axi_aclk",
           "SYSTOLIC_ARRAY_AXI4_0/clk"
         ]
       }
@@ -1017,13 +1020,13 @@
             "segments": {
               "SEG_SYSTOLIC_ARRAY_AXI4_0_reg0": {
                 "address_block": "/SYSTOLIC_ARRAY_AXI4_0/s00_axi/reg0",
-                "offset": "0xA0004000",
-                "range": "4K"
+                "offset": "0xA0020000",
+                "range": "128K"
               },
               "SEG_axi_bram_ctrl_0_Mem0": {
                 "address_block": "/axi_bram_ctrl_0/S_AXI/Mem0",
                 "offset": "0xA0000000",
-                "range": "8K"
+                "range": "128K"
               }
             }
           }
@@ -1035,13 +1038,13 @@
             "segments": {
               "SEG_SYSTOLIC_ARRAY_AXI4_0_reg0": {
                 "address_block": "/SYSTOLIC_ARRAY_AXI4_0/s00_axi/reg0",
-                "offset": "0xA0004000",
-                "range": "4K"
+                "offset": "0xA0020000",
+                "range": "128K"
               },
               "SEG_axi_bram_ctrl_0_Mem0": {
                 "address_block": "/axi_bram_ctrl_0/S_AXI/Mem0",
                 "offset": "0xA0000000",
-                "range": "8K"
+                "range": "128K"
               }
             }
           }

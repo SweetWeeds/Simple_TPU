@@ -5,23 +5,23 @@
    "ExpandedHierarchyInLayout":"",
    "guistr":"# # String gsaved with Nlview 7.0r6  2020-01-29 bk=1.5227 VDI=41 GEI=36 GUI=JA:10.0 non-TLS
 #  -string -flagsOSRD
-preplace port aclk -pg 1 -lvl 0 -x 0 -y 50 -defaultsOSRD
-preplace port aresetn -pg 1 -lvl 0 -x 0 -y 130 -defaultsOSRD
-preplace port force_inst -pg 1 -lvl 3 -x 540 -y 40 -defaultsOSRD
-preplace port wea -pg 1 -lvl 3 -x 540 -y 70 -defaultsOSRD
-preplace portBus douta -pg 1 -lvl 3 -x 540 -y 100 -defaultsOSRD
-preplace portBus addra -pg 1 -lvl 3 -x 540 -y 130 -defaultsOSRD
+preplace port aclk -pg 1 -lvl 0 -x -10 -y 50 -defaultsOSRD
+preplace port aresetn -pg 1 -lvl 0 -x -10 -y 130 -defaultsOSRD
+preplace port force_inst -pg 1 -lvl 3 -x 580 -y 40 -defaultsOSRD
+preplace port wea -pg 1 -lvl 3 -x 580 -y 70 -defaultsOSRD
+preplace portBus douta -pg 1 -lvl 3 -x 580 -y 100 -defaultsOSRD
+preplace portBus addra -pg 1 -lvl 3 -x 580 -y 130 -defaultsOSRD
 preplace inst axi_vip_0 -pg 1 -lvl 1 -x 120 -y 120 -defaultsOSRD
-preplace inst myip_SA_Instruction_0 -pg 1 -lvl 2 -x 370 -y 150 -defaultsOSRD
-preplace netloc aclk_1 1 0 2 20 50 220
-preplace netloc aresetn_1 1 0 2 20 190 220J
-preplace netloc myip_SA_Instruction_0_c_s00_addra 1 2 1 520J 120n
+preplace inst myip_SA_Instruction_0 -pg 1 -lvl 2 -x 390 -y 150 -defaultsOSRD
+preplace netloc aclk_1 1 0 2 10 40 230
+preplace netloc aresetn_1 1 0 2 20 50 220J
+preplace netloc myip_SA_Instruction_0_c_s00_addra 1 2 1 540J 120n
 preplace netloc myip_SA_Instruction_0_c_s00_douta 1 2 1 NJ 100
-preplace netloc myip_SA_Instruction_0_c_s00_wea 1 2 1 520J 70n
-preplace netloc myip_SA_Instruction_0_c_s00_force_inst 1 2 1 520J 40n
+preplace netloc myip_SA_Instruction_0_c_s00_wea 1 2 1 540J 70n
+preplace netloc myip_SA_Instruction_0_c_s00_force_inst 1 2 1 540J 40n
 preplace netloc axi_vip_0_M_AXI 1 1 1 N 120
-levelinfo -pg 1 0 120 370 540
-pagesize -pg 1 -db -bbox -sgen -100 0 670 300
+levelinfo -pg 1 -10 120 390 580
+pagesize -pg 1 -db -bbox -sgen -110 0 710 300
 "
 }
 0

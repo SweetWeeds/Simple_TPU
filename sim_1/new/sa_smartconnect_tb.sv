@@ -127,13 +127,15 @@ module sa_smc_tb;
     bit [32767:0]                           mtestWData;
     bit [32767:0]                           mtestRData;
 
-    reg [127:0] instruction[0:2047];
+    reg [127:0] instruction[0:65535];
     reg [31:0]  slv_reg0;    // Logic control
     reg [31:0]  slv_reg1;    // C_S_DOUTA[0]
     reg [31:0]  slv_reg2;    // C_S_DOUTA[1]
     reg [31:0]  slv_reg3;    // C_S_DOUTA[2]
     reg [31:0]  slv_reg4;    // C_S_DOUTA[3]
     reg [31:0]  slv_reg5;    // addr
+    reg [31:0]  slv_reg6;    // Start addr
+    reg [31:0]  slv_reg7;    // End addr
     
     SA_smartconnect_TB_axi_vip_0_0_mst_t master_agent;
 
@@ -162,7 +164,8 @@ module sa_smc_tb;
     end
 
     initial begin : TESTBENCH_LOGIC
-        $readmemh(IB_MEM_FILE, instruction, 0, 635);
+        //$readmemh(IB_MEM_FILE, instruction);
+        $readmemh(IB_MEM_FILE, DUT.SA_smartconnect_TB_i.SYSTOLIC_ARRAY_AXI4_0.inst.IB.ISA_MEMORY.bram);
         # 110;  // Wait for reset
         master_agent = new("master", DUT.SA_smartconnect_TB_i.axi_vip_0.inst.IF);
         master_agent.set_agent_tag("master vip");
@@ -172,7 +175,7 @@ module sa_smc_tb;
         // Set VIP's params
         mtestID = 0;
         mtestBurstLength = 0;
-        mtestBaseADDR = 'hA000_4000;
+        mtestBaseADDR = 'hA002_0000;
         //mtestDataSize = xil_axi_size_t'(xil_clog2(128/8));
         mtestDataSize = XIL_AXI_SIZE_4BYTE; // 32-bit
 
@@ -182,8 +185,51 @@ module sa_smc_tb;
         mtestRegion = 0;
         mtestQOS = 0;
 
-        // 1. Fill data in instruction buffer
-        for (integer pc_addr=0; pc_addr < 635; pc_addr=pc_addr+1) begin
+        // 1. Define range of PC address
+        slv_reg6 = 32'd0;
+        slv_reg7 = 32'd13996;
+
+        mtestWData = slv_reg6;
+        mtestADDR = mtestBaseADDR + 6*4;
+        master_agent.AXI4_WRITE_BURST(
+            mtestID,
+            mtestADDR,
+            mtestBurstLength,
+            mtestDataSize,
+            mtestBurstType,
+            mtestLOCK,
+            mtestCacheType,
+            mtestProtectionType,
+            mtestRegion,
+            mtestQOS,
+            mtestAWUSER,
+            mtestWData,
+            mtestWUSER,
+            mtestBresp
+        );
+
+        mtestWData = slv_reg7;
+        mtestADDR = mtestBaseADDR + 7*4;
+        master_agent.AXI4_WRITE_BURST(
+            mtestID,
+            mtestADDR,
+            mtestBurstLength,
+            mtestDataSize,
+            mtestBurstType,
+            mtestLOCK,
+            mtestCacheType,
+            mtestProtectionType,
+            mtestRegion,
+            mtestQOS,
+            mtestAWUSER,
+            mtestWData,
+            mtestWUSER,
+            mtestBresp
+        );
+
+        // 2. Fill data in instruction buffer
+        /*
+        for (integer pc_addr=0; pc_addr < 13997; pc_addr=pc_addr+1) begin
             // Prepare data
             slv_reg0 = 32'b0010010;
             slv_reg1 = instruction[pc_addr][127:96];
@@ -311,9 +357,9 @@ module sa_smc_tb;
                 mtestWUSER,
                 mtestBresp
             );
-        end
+        end*/
 
-        // 2. Generate force instruction pulse signal
+        // 3. Generate force instruction pulse signal
         slv_reg0 = 32'b0000000000_1001111011_00000_0111001;
         mtestWData = slv_reg0;
         mtestADDR = mtestBaseADDR + 0*4;

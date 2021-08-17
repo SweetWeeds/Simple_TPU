@@ -46,7 +46,7 @@ module CONTROL_UNIT #
     parameter AXI_TO_UB_INST          = 4'h3,
     parameter AXI_TO_WB_INST          = 4'h4,
     parameter UB_TO_DATA_FIFO_INST    = 4'h5,
-    parameter UB_TO_WEIGHT_FIFO_INST  = 4'h6,
+    parameter WB_TO_WEIGHT_FIFO_INST  = 4'h6,
     parameter MAT_MUL_INST            = 4'h7,
     parameter MAT_MUL_ACC_INST        = 4'h8,
     parameter ACC_TO_UB_INST          = 4'h9,
@@ -142,7 +142,7 @@ always @ (negedge clk) begin : COMPLETE_FLAG
         end
     end
     IDLE_INST, DATA_FIFO_INST, WEIGHT_FIFO_INST, UB_TO_DATA_FIFO_INST,
-    UB_TO_WEIGHT_FIFO_INST : begin
+    WB_TO_WEIGHT_FIFO_INST : begin
         // 1-cycle
         if (minor_state == 0) begin
             `ifdef TB
@@ -390,10 +390,10 @@ always @ (opcode or minor_state or addra or addrb or dout or inst_done or din or
         offmem_addrb    = 32'h00000000;
         dout            = 128'd0;
     end
-    // UB_TO_WEIGHT_FIFO_INST (1-cycle)
-    UB_TO_WEIGHT_FIFO_INST : begin
+    // WB_TO_WEIGHT_FIFO_INST (1-cycle)
+    WB_TO_WEIGHT_FIFO_INST : begin
         `ifdef TB
-        $display("[%0t:CU:OUTPUT_LOGIC] UB_TO_WEIGHT_FIFO_INST", $time);
+        $display("[%0t:CU:OUTPUT_LOGIC] WB_TO_WEIGHT_FIFO_INST", $time);
         `endif
         axi_sm_mode     = IDLE;
         axi_txn_en      = 1'b0;

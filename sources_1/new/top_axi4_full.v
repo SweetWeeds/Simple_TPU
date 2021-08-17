@@ -52,7 +52,7 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
                 ACC_ADDRB_BITS       = 6,
                 OFFMEM_ADDRA_BITS    = 32,
                 OFFMEM_ADDRB_BITS    = 32,
-                PC_ADDR_BITS         = 10,
+                PC_ADDR_BITS         = 32,
                 INST_BITS    = OPCODE_BITS + OFFMEM_ADDRA_BITS + OFFMEM_ADDRB_BITS,   // 4+32+32=68-bit
                 DIN_BITS     = 128,
 
@@ -78,7 +78,7 @@ module SYSTOLIC_ARRAY_AXI4_FULL #
                                     // Load data from UB to data-FIFO (1-cycle)
                                     UB_TO_DATA_FIFO_INST    = 4'h5,
                                     // Load Weight from WB to weight-FIFO (1-cycle)
-                                    UB_TO_WEIGHT_FIFO_INST  = 4'h6,
+                                    WB_TO_WEIGHT_FIFO_INST  = 4'h6,
                                     // Execute Matrix Multiplication (1-cycle)
                                     MAT_MUL_INST            = 4'h7,
                                     // Execute Matrix Multiplication with accumulation (1-cycle)
@@ -331,7 +331,7 @@ CONTROL_UNIT_AXI4_FULL # (
     .AXI_TO_UB_INST(AXI_TO_UB_INST),
     .AXI_TO_WB_INST(AXI_TO_WB_INST),
     .UB_TO_DATA_FIFO_INST(UB_TO_DATA_FIFO_INST),
-    .UB_TO_WEIGHT_FIFO_INST(UB_TO_WEIGHT_FIFO_INST),
+    .WB_TO_WEIGHT_FIFO_INST(WB_TO_WEIGHT_FIFO_INST),
     .MAT_MUL_INST(MAT_MUL_INST),
     .MAT_MUL_ACC_INST(MAT_MUL_ACC_INST),
     .ACC_TO_UB_INST(ACC_TO_UB_INST),
@@ -374,7 +374,7 @@ CONTROL_UNIT_AXI4_FULL # (
 
 // Instruction Buffer
 INSTRUCTION_BUFFER # (
-    .PC_DEPTH(1024),
+    .PC_DEPTH(65536),
     .ADDR_BITS(PC_ADDR_BITS),
     .INST_BITS(128)
 ) IB (

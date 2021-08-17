@@ -4,7 +4,7 @@
 	module myip_SA_Instruction_Buffer_v1_0 #
 	(
 		// Users to add parameters here
-        parameter integer C_S00_ADDR_BITS = 10,
+        parameter integer C_S00_ADDR_BITS = 32,
         parameter integer C_S00_INST_BITS = 128,
 		// User parameters ends
 		// Do not modify the parameters beyond this line

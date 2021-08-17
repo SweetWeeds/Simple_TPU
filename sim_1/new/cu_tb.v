@@ -115,7 +115,7 @@ initial begin: TEST_BENCH
 
     // 5. Load Weight
     for (integer i = 0; i < 21; i = i + 1) begin
-        OPCODE = UB_TO_WEIGHT_FIFO_INST;
+        OPCODE = WB_TO_WEIGHT_FIFO_INST;
         ADDRB = i;
         # (UB_TO_WEIGHT_FIFO_CYCLE * clock_period);
     end

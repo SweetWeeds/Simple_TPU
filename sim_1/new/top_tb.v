@@ -215,7 +215,7 @@ initial begin: TEST_BENCH
     $display("[%0t:TOP_TB:TEST_BENCH] 5. Load Weight", $time);
     for (integer i = 0; i < 21; i = i + 1) begin
         $display("[%0t:TOP_TB:TEST_BENCH] Load weight(%d)", $time, i);
-        OPCODE <= UB_TO_WEIGHT_FIFO_INST;
+        OPCODE <= WB_TO_WEIGHT_FIFO_INST;
         ADDRB <= i;
         @ (flag == 1'b1);
         @ (flag == 1'b0);

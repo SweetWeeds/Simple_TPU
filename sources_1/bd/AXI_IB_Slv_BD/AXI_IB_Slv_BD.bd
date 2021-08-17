@@ -102,7 +102,12 @@
         "vlnv": "user.org:user:myip_SA_Instruction_Buffer:1.0",
         "xci_name": "AXI_IB_Slv_BD_myip_SA_Instruction_0_0",
         "xci_path": "ip\\AXI_IB_Slv_BD_myip_SA_Instruction_0_0\\AXI_IB_Slv_BD_myip_SA_Instruction_0_0.xci",
-        "inst_hier_path": "myip_SA_Instruction_0"
+        "inst_hier_path": "myip_SA_Instruction_0",
+        "parameters": {
+          "C_S00_ADDR_BITS": {
+            "value": "10"
+          }
+        }
       }
     },
     "interface_nets": {

@@ -70,7 +70,8 @@ generate
         assign brama_parsed[i] = bram[addra][i*DATA_SIZE+:DATA_SIZE];
         assign bramb_parsed[i] = bram[addrb][i*DATA_SIZE+:DATA_SIZE];
         assign dina_parsed[i] = dina[i*DATA_SIZE+:DATA_SIZE];
-        assign doutb[i*OUTPUT_DATA_SIZE+:OUTPUT_DATA_SIZE] = dout_parsed[i];
+        //assign doutb[i*OUTPUT_DATA_SIZE+:OUTPUT_DATA_SIZE] = dout_parsed[i];
+        assign doutb[i*OUTPUT_DATA_SIZE+:OUTPUT_DATA_SIZE] = dout_parsed[DATA_NUM - 1 - i];
     end
 endgenerate
 
