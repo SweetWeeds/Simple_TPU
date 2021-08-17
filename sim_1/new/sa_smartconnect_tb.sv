@@ -187,7 +187,7 @@ module sa_smc_tb;
 
         // 1. Define range of PC address
         slv_reg6 = 32'd0;
-        slv_reg7 = 32'd13996;
+        slv_reg7 = 32'd13998;
 
         mtestWData = slv_reg6;
         mtestADDR = mtestBaseADDR + 6*4;
