@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ASCII"?>
+<sdkproject:SdkProject xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sdkproject="http://www.xilinx.com/sdkproject" name="SA_rev6_2_FC_TB" location="C:/Users/DICE/workspace/SA_rev6_2_FC_TB" platform="C:/Users/DICE/workspace/SA_rev6_2/export/SA_rev6_2/SA_rev6_2.xpfm" platformUID="xilinx:zcu102::0.0(custom)" systemProject="SA_rev6_2_FC_TB_system" sysConfig="SA_rev6_2" runtime="C/C++" cpu="standalone_domain" cpuInstance="psu_cortexa53_0" os="standalone" mssSignature="4810adf8623378e98c2a7c038f9ec5db">
+  <configuration name="Debug" id="xilinx.gnu.arm.a53.exe.debug.106972772">
+    <configBuildOptions xsi:type="sdkproject:SdkOptions"/>
+    <lastBuildOptions xsi:type="sdkproject:SdkOptions"/>
+  </configuration>
+  <configuration name="Release" id="xilinx.gnu.arm.a53.exe.release.1674736888" dirty="true">
+    <configBuildOptions xsi:type="sdkproject:SdkOptions"/>
+  </configuration>
+  <template appTemplateName="hello_world"/>
+</sdkproject:SdkProject>

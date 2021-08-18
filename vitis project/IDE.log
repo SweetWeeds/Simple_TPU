@@ -26,3 +26,9 @@ Reason: xsct server communication channel is not established.
 Reason: xsct server communication channel is not established.
 13:57:52 ERROR : Exception raised in executing the command =Failed to query RDI_DATADIR
 Reason: xsct server communication channel is not established. 
+12:04:20 ERROR : Workspace location D:\workspace\210805_1710\systolic_array\systolic_array.srcs\vitis project contains spaces. Please switch to a workspace without spaces in its path.
+12:04:21 INFO  : Launching XSCT server: xsct.bat -n  -interactive D:\workspace\210805_1710\systolic_array\systolic_array.srcs\vitis project\temp_xsdb_launch_script.tcl
+12:04:21 INFO  : Registering command handlers for Vitis TCF services
+12:04:24 ERROR : (XSDB Server)couldn't read file "D:\workspace\210805_1710\systolic_array\systolic_array.srcs\vitis": no such file or directory
+
+12:04:26 INFO  : Platform repository initialization has completed.

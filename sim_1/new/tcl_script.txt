@@ -96,7 +96,7 @@ for {set i 0} {$i < 256} {incr i} {
 close $fp
 
 // AXI VIP
-set fp [open VIP_OFF_MEM_TB.txt w]
+set fp [open Q_VIP_OFF_MEM_TB.txt w]
 for {set i 0} {$i < 256} {incr i} {
     set result ""
     append result [get_value -radix hex "/DUT/SA_smartconnect_TB_i/blk_mem_gen_0/inst/\\native_mem_mapped_module\.blk_mem_gen_v8_4_4_inst /memory[$i]"]
