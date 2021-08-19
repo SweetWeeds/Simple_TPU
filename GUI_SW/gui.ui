@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>581</width>
+    <width>742</width>
     <height>399</height>
    </rect>
   </property>
@@ -28,7 +28,7 @@
     <rect>
      <x>360</x>
      <y>30</y>
-     <width>201</width>
+     <width>361</width>
      <height>51</height>
     </rect>
    </property>
@@ -41,7 +41,7 @@
     <rect>
      <x>360</x>
      <y>90</y>
-     <width>201</width>
+     <width>361</width>
      <height>71</height>
     </rect>
    </property>
@@ -54,7 +54,7 @@
     <rect>
      <x>360</x>
      <y>170</y>
-     <width>201</width>
+     <width>361</width>
      <height>61</height>
     </rect>
    </property>
@@ -62,27 +62,89 @@
     <string>Inference</string>
    </property>
   </widget>
-  <widget class="QTextEdit" name="textEdit">
-   <property name="geometry">
-    <rect>
-     <x>20</x>
-     <y>330</y>
-     <width>541</width>
-     <height>41</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pushButton_4">
    <property name="geometry">
     <rect>
      <x>360</x>
      <y>240</y>
-     <width>201</width>
+     <width>361</width>
      <height>61</height>
     </rect>
    </property>
    <property name="text">
     <string>Benchmark</string>
+   </property>
+  </widget>
+  <widget class="QProgressBar" name="progressBar">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>320</y>
+     <width>521</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="value">
+    <number>24</number>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="AcclineEdit">
+   <property name="geometry">
+    <rect>
+     <x>120</x>
+     <y>360</y>
+     <width>81</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="AccuracyLabel">
+   <property name="geometry">
+    <rect>
+     <x>40</x>
+     <y>360</y>
+     <width>64</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Accruacy</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="PredictionLabel">
+   <property name="geometry">
+    <rect>
+     <x>240</x>
+     <y>360</y>
+     <width>64</width>
+     <height>15</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Prediction</string>
+   </property>
+  </widget>
+  <widget class="QLineEdit" name="PredlabelEdit">
+   <property name="geometry">
+    <rect>
+     <x>320</x>
+     <y>360</y>
+     <width>81</width>
+     <height>21</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QLabel" name="ProgressLabel">
+   <property name="geometry">
+    <rect>
+     <x>570</x>
+     <y>320</y>
+     <width>131</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>0/150</string>
    </property>
   </widget>
  </widget>
