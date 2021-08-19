@@ -1,6 +1,6 @@
 #include "user.h"
 
-U32 clogb2(int bit_depth) {
+U32 clogb2(U32 bit_depth) {
     U32 ret;
     for(ret=0; bit_depth>0; ret=ret+1)
         bit_depth = bit_depth >> 1;

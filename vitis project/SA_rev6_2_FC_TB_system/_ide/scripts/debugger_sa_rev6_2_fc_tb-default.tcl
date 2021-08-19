@@ -24,9 +24,9 @@ set mode [expr [mrd -value 0xFF5E0200] & 0xf]
 targets -set -nocase -filter {name =~ "*A53*#0"}
 rst -processor
 dow C:/Users/DICE/workspace/SA_rev6_2/export/SA_rev6_2/sw/SA_rev6_2/boot/fsbl.elf
-set bp_37_26_fsbl_bp [bpadd -addr &XFsbl_Exit]
+set bp_46_59_fsbl_bp [bpadd -addr &XFsbl_Exit]
 con -block -timeout 60
-bpremove $bp_37_26_fsbl_bp
+bpremove $bp_46_59_fsbl_bp
 targets -set -nocase -filter {name =~ "*A53*#0"}
 rst -processor
 dow C:/Users/DICE/workspace/SA_rev6_2_FC_TB/Debug/SA_rev6_2_FC_TB.elf
