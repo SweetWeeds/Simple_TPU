@@ -7,7 +7,7 @@ Implemented simple neural-network (3 FC-Layer, without bias & batchnorm) for cla
 [![](https://img.youtube.com/vi/KS9wVxYWHA0/0.jpg)](https://www.youtube.com/watch?v=KS9wVxYWHA0)
 
 ## Tested Environment
-FPGA: Xilinx UltraScale+ ZCU102
+Board: Xilinx UltraScale+ ZCU102
 
 Tool: Xilinx Vivado 2020.2
 
