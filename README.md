@@ -1,6 +1,8 @@
-# Project: Systolic Array
+## Systolic Array
 # Abstract
-This is systolic array which supports 8bit signed integer multiplication.
+This is systolic array which supports Q-Number multiplication.
+
+Implemented simple neural-network (3 FC-Layer, without bias & batchnorm) for classification of MNIST Hand-written dataset
 
 # File/Directory Info
 GUI_SW: Graphic Interface for PC-FPGA with UART
