@@ -4,6 +4,8 @@ This is systolic array which supports Q-Number multiplication.
 
 Implemented simple neural-network (3 FC-Layer, without bias & batchnorm) for classification of MNIST Hand-written dataset
 
+[![](https://img.youtube.com/vi/KS9wVxYWHA0/0.jpg)](https://www.youtube.com/watch?v=KS9wVxYWHA0)
+
 ## Tested Environment
 FPGA: Xilinx UltraScale+ ZCU102
 
