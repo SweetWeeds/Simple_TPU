@@ -1,6 +1,6 @@
 # Simple TPU
 ## Abstract
-This is systolic array which supports Q-Number multiplication.
+This IP supports Q-Number multiplication.
 
 Implemented simple neural-network (3 FC-Layer, without bias & batchnorm) for classification of MNIST Hand-written dataset
 
