@@ -1,4 +1,4 @@
-# Systolic Array
+# Simple TPU
 ## Abstract
 This is systolic array which supports Q-Number multiplication.
 
